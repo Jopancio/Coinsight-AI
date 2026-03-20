@@ -280,10 +280,15 @@
     </div>
   </section>
 
-  <section id="news" class="py-20 px-6 bg-black/20 overflow-hidden">
+  <section id="news" class="py-20 px-6 bg-black/20 overflow-hidden relative">
+    <!-- Background ambient glows -->
+    <div class="absolute top-1/4 -left-20 w-[450px] h-[450px] bg-blue-600/6 rounded-full blur-[130px] -z-10 pointer-events-none"></div>
+    <div class="absolute bottom-0 -right-10 w-[380px] h-[380px] bg-purple-600/5 rounded-full blur-[110px] -z-10 pointer-events-none"></div>
+
     <div class="max-w-7xl mx-auto">
 
-      <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 section-fade-up">
+      <!-- Section Header -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6 section-fade-up">
         <div>
           <div
             class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-900/40 border border-blue-700/30 text-xs font-bold text-blue-400 mb-3">
@@ -291,37 +296,74 @@
             LIVE UPDATES
           </div>
           <h2 class="text-3xl lg:text-4xl font-bold mb-2">Crypto <span class="text-tech-blue">News & Updates</span></h2>
-          <p class="text-gray-400 max-w-lg">Berita dan artikel terkini dari pasar cryptocurrency global, diperbarui
-            setiap saat.</p>
+          <p class="text-gray-400 max-lg:max-w-full max-w-lg">Berita dan artikel terkini dari pasar cryptocurrency global, diperbarui setiap saat.</p>
+          <!-- Stats bar – revealed after data loads -->
+          <div id="news-stats-bar" class="hidden flex-wrap items-center gap-2 mt-3">
+            <span id="news-article-count"
+              class="inline-flex items-center gap-1.5 text-xs text-gray-400 bg-white/5 border border-white/8 px-2.5 py-1 rounded-full">
+              <i class="fa-regular fa-newspaper text-blue-400"></i> <span>-- artikel</span>
+            </span>
+            <span id="news-last-updated"
+              class="inline-flex items-center gap-1.5 text-xs text-gray-500">
+              <i class="fa-regular fa-clock"></i> Diperbarui barusan
+            </span>
+            <button id="news-refresh-btn"
+              class="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-white bg-blue-900/30 hover:bg-blue-800/40 border border-blue-700/30 px-2.5 py-1 rounded-full transition-all duration-200">
+              <i class="fa-solid fa-rotate-right text-[10px]"></i> Refresh
+            </button>
+          </div>
         </div>
-        <a href="news.html"
-          class="group flex items-center gap-2 px-5 py-2.5 rounded-full glass-card border border-white/10 text-sm font-bold text-gray-300 hover:text-white hover:border-tech-blue/50 transition-all duration-300 shrink-0">
-          Lihat Semua Berita
-          <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
-        </a>
+
+        <div class="flex flex-col items-start md:items-end gap-3 shrink-0">
+          <!-- Category filter pills – revealed after data loads -->
+          <div id="news-filter-pills" class="hidden flex-wrap gap-1.5">
+            <button class="news-filter-pill active" data-cat="all"><i class="fa-solid fa-grip text-[8px]"></i> Semua</button>
+            <button class="news-filter-pill" data-cat="Market"><i class="fa-solid fa-chart-line text-[8px]"></i> Market</button>
+            <button class="news-filter-pill" data-cat="DeFi"><i class="fa-solid fa-coins text-[8px]"></i> DeFi</button>
+            <button class="news-filter-pill" data-cat="Analysis"><i class="fa-solid fa-magnifying-glass-chart text-[8px]"></i> Analysis</button>
+            <button class="news-filter-pill" data-cat="NFT"><i class="fa-solid fa-image text-[8px]"></i> NFT</button>
+            <button class="news-filter-pill" data-cat="Regulation"><i class="fa-solid fa-scale-balanced text-[8px]"></i> Regulation</button>
+          </div>
+          <a href="news.html"
+            class="group flex items-center gap-2 px-5 py-2.5 rounded-full glass-card border border-white/10 text-sm font-bold text-gray-300 hover:text-white hover:border-tech-blue/50 transition-all duration-300">
+            Lihat Semua Berita
+            <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+          </a>
+        </div>
       </div>
 
       <div id="news-layout-wrapper" class="section-fade-up">
+        <!-- Loading state -->
         <div id="news-loader" class="col-span-full py-20 flex flex-col items-center justify-center">
           <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-tech-blue mb-4"></div>
           <p class="text-gray-500">Memuat berita terbaru...</p>
         </div>
 
         <div id="news-main-grid" class="hidden">
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5">
+          <!-- Editorial grid: featured hero + side stack -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
             <div id="news-featured" class="lg:col-span-7"></div>
-            <div id="news-side-stack" class="lg:col-span-5 flex flex-col gap-5"></div>
+            <div id="news-side-stack" class="lg:col-span-5 flex flex-col gap-4"></div>
           </div>
 
-          <div class="relative">
-            <div
-              class="absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-black/20 to-transparent z-10 pointer-events-none">
+          <!-- More Stories row -->
+          <div id="news-more-stories" class="pt-5 border-t border-white/5">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2.5">
+                <span class="w-1 h-5 rounded-full bg-tech-blue block"></span>
+                <h3 class="text-sm font-bold text-gray-200 tracking-wide">More Stories</h3>
+                <span id="ticker-count"
+                  class="text-[10px] font-semibold text-gray-500 bg-white/5 border border-white/8 px-2 py-0.5 rounded-full"></span>
+              </div>
+              <div class="flex items-center gap-1.5 text-[10px] text-gray-500 select-none">
+                <i class="fa-regular fa-hand-pointer text-[9px]"></i>
+                <span>Hover untuk pause</span>
+              </div>
             </div>
-            <div
-              class="absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-black/20 to-transparent z-10 pointer-events-none">
+            <div class="relative">
+              <!-- fade masks applied via CSS on #news-ticker-track -->
+              <div id="news-ticker-track" class="overflow-hidden pb-2"></div>
             </div>
-            <div id="news-ticker-track" class="flex gap-4 overflow-x-auto scrollbar-hide pb-1"
-              style="scroll-behavior: auto;"></div>
           </div>
         </div>
       </div>

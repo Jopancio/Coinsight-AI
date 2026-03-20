@@ -1609,6 +1609,9 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
 (function () {
 
     var NEWS_API_URL = "https://skidibi-toilet.jovancion.workers.dev/api/news";
+    var _allArticles = [];
+    var _currentFilter = "all";
+    var _uiInitialized = false;
 
     function estimateReadTime(text) {
         var words = (text || "").split(/\s+/).length;
@@ -1616,9 +1619,46 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
         return mins + " min read";
     }
 
-    function getRandomCategory() {
-        var cats = ["Market", "DeFi", "Analysis", "NFT", "Regulation", "Altcoin"];
-        return cats[Math.floor(Math.random() * cats.length)];
+    function getCategoryFromTitle(title) {
+        var t = (title || "").toLowerCase();
+        if (/defi|yield|liquidity|amm|swap|protocol|lending|staking|vault/.test(t)) return "DeFi";
+        if (/nft|metaverse|gaming|collectible|opensea|mint/.test(t)) return "NFT";
+        if (/regulation|sec|ban|law|legal|government|regulatory|court|ruling|policy/.test(t)) return "Regulation";
+        if (/analysis|forecast|prediction|technical|chart|indicator|signal|outlook|report/.test(t)) return "Analysis";
+        if (/solana|ethereum|polygon|avalanche|cardano|ripple|xrp|bnb|altcoin|ada|dot/.test(t)) return "Altcoin";
+        return "Market";
+    }
+
+    var CAT_STYLE = {
+        "Market":     { bg: "rgba(59,130,246,0.85)",  text: "#fff",  border: "rgba(59,130,246,0.5)"  },
+        "DeFi":       { bg: "rgba(16,185,129,0.85)",  text: "#fff",  border: "rgba(16,185,129,0.5)"  },
+        "Analysis":   { bg: "rgba(245,158,11,0.85)",  text: "#111",  border: "rgba(245,158,11,0.5)"  },
+        "NFT":        { bg: "rgba(139,92,246,0.85)",  text: "#fff",  border: "rgba(139,92,246,0.5)"  },
+        "Regulation": { bg: "rgba(239,68,68,0.85)",   text: "#fff",  border: "rgba(239,68,68,0.5)"   },
+        "Altcoin":    { bg: "rgba(6,182,212,0.85)",   text: "#111",  border: "rgba(6,182,212,0.5)"   },
+    };
+
+    function catBadge(cat, extraClass) {
+        var c = CAT_STYLE[cat] || CAT_STYLE["Market"];
+        var cls = "px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide " + (extraClass || "");
+        return '<span class="' + cls + '" style="background:' + c.bg + ';color:' + c.text + ';">' + cat + '</span>';
+    }
+
+    function getRelativeTime(dateStr) {
+        var now = new Date();
+        var past = new Date(dateStr);
+        if (isNaN(past)) return "";
+        var diff = Math.floor((now - past) / 1000);
+        if (diff < 60)     return "Baru saja";
+        if (diff < 3600)   return Math.floor(diff / 60) + " menit lalu";
+        if (diff < 86400)  return Math.floor(diff / 3600) + " jam lalu";
+        if (diff < 604800) return Math.floor(diff / 86400) + " hari lalu";
+        return past.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+    }
+
+    function isBreaking(dateStr) {
+        var diff = Math.floor((new Date() - new Date(dateStr)) / 1000);
+        return diff < 21600;
     }
 
     function buildFeaturedCard(article) {
@@ -1626,37 +1666,42 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
         var title = article.title || "Berita Crypto Terbaru";
         var subtitle = article.subtitle || "";
         var url = article.url || "#";
-        var date = new Date(article.released_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        var relTime = getRelativeTime(article.released_at);
         var source = article.source || "Crypto News";
         var readTime = estimateReadTime(subtitle);
-        var cat = getRandomCategory();
+        var cat = article._cat || getCategoryFromTitle(title);
+        var breaking = isBreaking(article.released_at);
+        var c = CAT_STYLE[cat] || CAT_STYLE["Market"];
+        var accentGlow = c.bg.replace("0.85", "0.07");
 
         var a = document.createElement("a");
         a.href = url;
         a.target = "_blank";
-        a.className = "group relative block w-full h-full rounded-3xl overflow-hidden border border-white/10 hover:border-tech-blue/40 transition-all duration-500 shadow-lg hover:shadow-[0_0_40px_rgba(30,58,138,0.25)]";
-        a.style.minHeight = "420px";
+        a.rel = "noopener noreferrer";
+        a.className = "group relative block w-full h-full rounded-3xl overflow-hidden border border-white/10 hover:border-white/25 transition-all duration-500 shadow-xl hover:shadow-[0_0_50px_rgba(0,0,0,0.5)]";
+        a.style.minHeight = "440px";
         a.innerHTML = `
             <div class="absolute inset-0">
                 <img src="${coverUrl}" alt="Featured News" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80'" />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/10"></div>
-                <div class="absolute inset-0 bg-tech-blue/10 group-hover:bg-transparent transition-colors duration-500"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/10"></div>
+                <div class="absolute inset-0 transition-opacity duration-500" style="background:linear-gradient(135deg,${accentGlow} 0%,transparent 55%);"></div>
             </div>
-            <div class="relative z-10 flex flex-col h-full p-7" style="min-height:420px;">
-                <div class="flex items-center gap-2 mb-auto">
-                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-tech-blue text-white tracking-wider uppercase">${cat}</span>
-                    <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-black/50 border border-white/10 text-white tracking-wide uppercase">FEATURED</span>
+            <div class="relative z-10 flex flex-col h-full p-6 sm:p-7" style="min-height:440px;">
+                <div class="flex items-center gap-2 mb-auto flex-wrap">
+                    ${catBadge(cat)}
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-white/15 border border-white/15 text-white uppercase tracking-wide backdrop-blur-sm">FEATURED</span>
+                    ${breaking ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/90 text-white uppercase tracking-wide"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse inline-block"></span>Breaking</span>' : ''}
                 </div>
                 <div class="mt-auto">
-                    <div class="flex items-center gap-3 mb-3">
-                        <span class="text-xs font-bold text-white/70 bg-black/40 backdrop-blur-sm px-2 py-1 rounded-lg border border-white/10">${source}</span>
-                        <span class="text-xs text-gray-400 font-mono"><i class="fa-regular fa-clock mr-1"></i>${date}</span>
-                        <span class="text-xs text-gray-500 font-mono">${readTime}</span>
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mb-3">
+                        <span class="text-xs font-bold text-white/80 bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded-md border border-white/10">${source}</span>
+                        <span class="text-xs text-gray-400 flex items-center gap-1"><i class="fa-regular fa-clock"></i>${relTime}</span>
+                        <span class="text-xs text-gray-500 flex items-center gap-1"><i class="fa-regular fa-bookmark"></i>${readTime}</span>
                     </div>
-                    <h3 class="text-xl lg:text-2xl font-bold text-white mb-3 leading-tight group-hover:text-blue-200 transition-colors line-clamp-3">${title}</h3>
-                    <p class="text-sm text-gray-300/80 line-clamp-2 mb-4">${subtitle}</p>
-                    <div class="inline-flex items-center gap-2 text-sm font-bold text-blue-300 group-hover:text-white transition-colors">
-                        Baca Artikel <i class="fa-solid fa-arrow-right-long transition-transform group-hover:translate-x-2"></i>
+                    <h3 class="text-xl lg:text-2xl font-extrabold text-white mb-3 leading-tight group-hover:text-blue-100 transition-colors line-clamp-3">${title}</h3>
+                    <p class="text-sm text-gray-300/80 line-clamp-2 mb-5 leading-relaxed">${subtitle}</p>
+                    <div class="inline-flex items-center gap-2 text-sm font-bold px-4 py-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-sm text-white group-hover:bg-blue-600 group-hover:border-blue-500 transition-all duration-300">
+                        Baca Artikel <i class="fa-solid fa-arrow-right-long transition-transform group-hover:translate-x-1"></i>
                     </div>
                 </div>
             </div>
@@ -1664,34 +1709,39 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
         return a;
     }
 
-    function buildSideCard(article, isTop) {
+    function buildSideCard(article) {
         var coverUrl = article.cover || "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80";
         var title = article.title || "Berita Crypto";
         var subtitle = article.subtitle || "";
         var url = article.url || "#";
-        var date = new Date(article.released_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        var relTime = getRelativeTime(article.released_at);
         var source = article.source || "Crypto News";
-        var cat = getRandomCategory();
+        var readTime = estimateReadTime(subtitle);
+        var cat = article._cat || getCategoryFromTitle(title);
+        var c = CAT_STYLE[cat] || CAT_STYLE["Market"];
 
         var a = document.createElement("a");
         a.href = url;
         a.target = "_blank";
-        a.className = "group flex gap-4 rounded-2xl glass-card border border-white/10 hover:border-tech-blue/40 transition-all duration-500 overflow-hidden hover:shadow-[0_0_25px_rgba(30,58,138,0.2)] hover:-translate-y-0.5 flex-1";
+        a.rel = "noopener noreferrer";
+        a.className = "group flex gap-0 rounded-2xl overflow-hidden border border-white/8 hover:border-white/20 transition-all duration-400 hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:-translate-y-0.5 flex-1";
+        a.style.background = "rgba(255,255,255,0.035)";
         a.innerHTML = `
-            <div class="relative w-28 sm:w-36 shrink-0 overflow-hidden" style="min-height:120px;">
-                <img src="${coverUrl}" alt="News" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-600" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
-                <div class="absolute inset-0 bg-gradient-to-r from-transparent to-black/20"></div>
-                <span class="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] font-bold bg-tech-blue/90 text-white uppercase tracking-wide">${cat}</span>
+            <div class="relative w-28 sm:w-32 shrink-0 overflow-hidden" style="min-height:130px;">
+                <img src="${coverUrl}" alt="News" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent to-black/30"></div>
+                <div class="absolute bottom-0 left-0 w-1 h-full" style="background:${c.bg};opacity:0.8;"></div>
             </div>
-            <div class="flex flex-col justify-center p-4 min-w-0 flex-1">
-                <div class="flex items-center gap-2 mb-1.5">
-                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-wider">${source}</span>
-                    <span class="text-[10px] text-gray-500 font-mono"><i class="fa-regular fa-clock mr-0.5"></i>${date}</span>
+            <div class="flex flex-col justify-center px-4 py-3 min-w-0 flex-1">
+                <div class="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                    ${catBadge(cat, "!text-[9px] !px-1.5 !py-0")}
+                    <span class="text-[9px] font-bold text-gray-500 uppercase tracking-wide truncate">${source}</span>
                 </div>
                 <h3 class="text-sm font-bold text-white line-clamp-2 group-hover:text-blue-200 transition-colors mb-1.5 leading-snug">${title}</h3>
-                <p class="text-xs text-gray-400 line-clamp-2">${subtitle}</p>
-                <div class="mt-2 inline-flex items-center gap-1 text-xs font-bold text-gray-400 group-hover:text-blue-300 transition-colors">
-                    Baca <i class="fa-solid fa-arrow-right text-[10px] transition-transform group-hover:translate-x-1"></i>
+                <p class="text-xs text-gray-500 line-clamp-1 mb-2">${subtitle}</p>
+                <div class="flex items-center gap-3 text-[10px] text-gray-500">
+                    <span class="flex items-center gap-1"><i class="fa-regular fa-clock"></i>${relTime}</span>
+                    <span class="flex items-center gap-1"><i class="fa-regular fa-bookmark"></i>${readTime}</span>
                 </div>
             </div>
         `;
@@ -1703,61 +1753,119 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
         var title = article.title || "Berita Crypto";
         var subtitle = article.subtitle || "";
         var url = article.url || "#";
-        var date = new Date(article.released_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        var relTime = getRelativeTime(article.released_at);
         var source = article.source || "Crypto News";
-        var cat = getRandomCategory();
+        var readTime = estimateReadTime(subtitle);
+        var cat = article._cat || getCategoryFromTitle(title);
+        var c = CAT_STYLE[cat] || CAT_STYLE["Market"];
+        var accentRaw = c.bg.replace("0.85", "1");
 
         var a = document.createElement("a");
         a.href = url;
         a.target = "_blank";
-        a.className = "group news-ticker-card flex flex-col rounded-2xl overflow-hidden border border-white/10 hover:border-tech-blue/40 transition-all duration-400 shrink-0 hover:shadow-[0_0_20px_rgba(30,58,138,0.2)] hover:-translate-y-1";
-        a.style.cssText = "width:230px;background:rgba(255,255,255,0.04);";
+        a.rel = "noopener noreferrer";
+        a.className = "group news-ticker-card flex flex-col rounded-2xl overflow-hidden border border-white/8 hover:border-white/20 transition-all duration-300 shrink-0 hover:shadow-[0_0_25px_rgba(0,0,0,0.5)] hover:-translate-y-1";
+        a.style.cssText = "width:250px;background:rgba(255,255,255,0.04);";
         a.innerHTML = `
-            <div class="relative h-28 overflow-hidden shrink-0">
-                <img src="${coverUrl}" alt="News" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-600" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                <span class="absolute top-2 left-2 px-2 py-0.5 rounded text-[9px] font-bold bg-black/60 border border-white/10 text-white uppercase tracking-wide backdrop-blur-sm">${cat}</span>
+            <div class="relative h-32 overflow-hidden shrink-0">
+                <img src="${coverUrl}" alt="News" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent"></div>
+                <div class="absolute top-0 left-0 w-full h-0.5" style="background:${c.bg};"></div>
+                ${catBadge(cat, "absolute bottom-2 left-2 !text-[9px] !px-1.5 !py-0")}
             </div>
             <div class="p-3 flex flex-col flex-1">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="text-[9px] font-bold text-blue-400 uppercase tracking-wide truncate">${source}</span>
-                    <span class="text-[9px] text-gray-500 font-mono ml-auto shrink-0">${date}</span>
+                <div class="flex items-center gap-1.5 mb-1.5">
+                    <span class="text-[9px] font-bold uppercase tracking-wide truncate flex-1" style="color:${accentRaw};">${source}</span>
+                    <span class="text-[9px] text-gray-500 font-mono shrink-0 flex items-center gap-0.5"><i class="fa-regular fa-clock"></i>${relTime}</span>
                 </div>
-                <h4 class="text-xs font-bold text-white line-clamp-3 group-hover:text-blue-200 transition-colors leading-snug flex-1">${title}</h4>
-                <div class="mt-2 flex items-center gap-1 text-[10px] font-semibold text-gray-500 group-hover:text-blue-400 transition-colors">
-                    Baca <i class="fa-solid fa-arrow-right text-[9px] transition-transform group-hover:translate-x-1"></i>
+                <h4 class="text-xs font-bold text-white line-clamp-3 group-hover:text-blue-200 transition-colors leading-snug flex-1 mb-2">${title}</h4>
+                <div class="flex items-center justify-between text-[9px] text-gray-500 mt-auto">
+                    <span class="flex items-center gap-0.5"><i class="fa-regular fa-bookmark"></i>${readTime}</span>
+                    <span class="flex items-center gap-0.5 group-hover:text-blue-400 transition-colors font-semibold">Baca <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-0.5"></i></span>
                 </div>
             </div>
         `;
         return a;
     }
 
-    function startTickerScroll(track) {
-        var isPaused = false;
-        var speed = 0.6;
+    function startTickerScroll(inner, baseCount) {
+        // Smooth CSS-animation marquee. Duration scales with article count (min 25s, max 90s)
+        var duration = Math.min(90, Math.max(25, baseCount * 4));
+        inner.style.cssText += ";will-change:transform;animation:news-ticker-scroll " + duration.toFixed(1) + "s linear infinite;";
 
-        track.addEventListener("mouseenter", function () { isPaused = true; });
-        track.addEventListener("mouseleave", function () { isPaused = false; });
-        track.addEventListener("touchstart", function () { isPaused = true; }, { passive: true });
-        track.addEventListener("touchend", function () { isPaused = false; });
+        function pause()  { inner.style.animationPlayState = "paused"; }
+        function resume() { inner.style.animationPlayState = "running"; }
 
-        function step() {
-            if (!isPaused && track.scrollWidth > track.clientWidth) {
-                track.scrollLeft += speed;
-                if (track.scrollLeft >= (track.scrollWidth - track.clientWidth - 1)) {
-                    track.scrollLeft = 0;
-                }
-            }
-            requestAnimationFrame(step);
+        inner.addEventListener("mouseenter", pause);
+        inner.addEventListener("mouseleave", resume);
+        inner.addEventListener("touchstart", pause,  { passive: true });
+        inner.addEventListener("touchend",   resume);
+    }
+
+    function renderGrid(articles) {
+        var featuredSlot = document.getElementById("news-featured");
+        var sideStack = document.getElementById("news-side-stack");
+        var tickerTrack = document.getElementById("news-ticker-track");
+        var tickerCountEl = document.getElementById("ticker-count");
+        var moreRow = document.getElementById("news-more-stories");
+
+        if (!featuredSlot || !sideStack || !tickerTrack) return;
+
+        featuredSlot.innerHTML = "";
+        sideStack.innerHTML = "";
+        tickerTrack.innerHTML = "";
+        tickerTrack.scrollLeft = 0;
+
+        if (!articles.length) {
+            featuredSlot.innerHTML = '<div class="min-h-[200px] flex items-center justify-center rounded-3xl border border-white/8 text-gray-500 text-sm" style="background:rgba(255,255,255,0.03);"><i class="fa-regular fa-face-sad-tear mr-2 text-lg"></i>Tidak ada berita untuk kategori ini.</div>';
+            if (moreRow) moreRow.style.display = "none";
+            return;
         }
-        requestAnimationFrame(step);
+        if (moreRow) moreRow.style.display = "";
+
+        if (articles[0]) {
+            var fc = buildFeaturedCard(articles[0]);
+            gsap.set(fc, { opacity: 0, y: 20 });
+            featuredSlot.appendChild(fc);
+            gsap.to(fc, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", delay: 0.05 });
+        }
+
+        [articles[1], articles[2]].forEach(function (article, i) {
+            if (!article) return;
+            var sc = buildSideCard(article);
+            gsap.set(sc, { opacity: 0, x: 20 });
+            sideStack.appendChild(sc);
+            gsap.to(sc, { opacity: 1, x: 0, duration: 0.55, ease: "power3.out", delay: 0.15 + i * 0.1 });
+        });
+
+        // Use ALL articles in the ticker (triplicate for seamless infinite CSS loop)
+        var tickerArticles = articles.length > 0 ? articles : [];
+        if (tickerArticles.length > 0) {
+            // Build 3 identical copies → animation scrolls -33.33% (= 1 full set) for a gapless loop
+            var inner = document.createElement("div");
+            inner.id = "news-ticker-inner";
+            var loopSet = tickerArticles.concat(tickerArticles).concat(tickerArticles);
+            loopSet.forEach(function (article) {
+                inner.appendChild(buildTickerCard(article));
+            });
+            tickerTrack.appendChild(inner);
+            gsap.fromTo(inner, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", delay: 0.35 });
+            if (tickerCountEl) tickerCountEl.textContent = tickerArticles.length + " artikel";
+            if (moreRow) moreRow.style.display = "";
+            startTickerScroll(inner, tickerArticles.length);
+        } else {
+            if (moreRow) moreRow.style.display = "none";
+        }
     }
 
     async function fetchNews() {
         var loader = document.getElementById("news-loader");
         var mainGrid = document.getElementById("news-main-grid");
-        var featuredSlot = document.getElementById("news-featured");
-        var sideStack = document.getElementById("news-side-stack");
+        var statsBar = document.getElementById("news-stats-bar");
+        var articleCountEl = document.getElementById("news-article-count");
+        var lastUpdatedEl = document.getElementById("news-last-updated");
+        var refreshBtn = document.getElementById("news-refresh-btn");
+        var filterPills = document.getElementById("news-filter-pills");
         var tickerTrack = document.getElementById("news-ticker-track");
 
         if (!loader || !mainGrid) return;
@@ -1768,6 +1876,9 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
             var result = await response.json();
             var articles = result.data || [];
 
+            articles.forEach(function (a) { a._cat = getCategoryFromTitle(a.title); });
+            _allArticles = articles;
+
             loader.style.display = "none";
             mainGrid.classList.remove("hidden");
 
@@ -1776,36 +1887,46 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
                 return;
             }
 
-            if (featuredSlot && articles[0]) {
-                var fc = buildFeaturedCard(articles[0]);
-                gsap.set(fc, { opacity: 0, y: 30 });
-                featuredSlot.appendChild(fc);
-                gsap.to(fc, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out", delay: 0.1 });
+            var toShow = _currentFilter === "all" ? articles : articles.filter(function (a) { return a._cat === _currentFilter; });
+            renderGrid(toShow);
+
+            // Stats bar
+            if (statsBar) { statsBar.classList.remove("hidden"); statsBar.classList.add("flex"); }
+            if (articleCountEl) { var sp = articleCountEl.querySelector("span"); if (sp) sp.textContent = articles.length + " artikel"; }
+            if (lastUpdatedEl) {
+                var now = new Date();
+                lastUpdatedEl.innerHTML = '<i class="fa-regular fa-clock"></i> ' + now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
             }
 
-            if (sideStack) {
-                [articles[1], articles[2]].forEach(function (article, i) {
-                    if (!article) return;
-                    var sc = buildSideCard(article, i === 0);
-                    gsap.set(sc, { opacity: 0, x: 30 });
-                    sideStack.appendChild(sc);
-                    gsap.to(sc, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out", delay: 0.2 + i * 0.15 });
+            // Show filter pills + attach listeners ONCE
+            if (filterPills && !_uiInitialized) {
+                filterPills.classList.remove("hidden");
+                filterPills.classList.add("flex");
+                filterPills.querySelectorAll(".news-filter-pill").forEach(function (pill) {
+                    pill.addEventListener("click", function () {
+                        filterPills.querySelectorAll(".news-filter-pill").forEach(function (p) { p.classList.remove("active"); });
+                        pill.classList.add("active");
+                        _currentFilter = pill.dataset.cat;
+                        var filtered = _currentFilter === "all" ? _allArticles : _allArticles.filter(function (a) { return a._cat === _currentFilter; });
+                        gsap.to(mainGrid, { opacity: 0, duration: 0.18, onComplete: function () {
+                            renderGrid(filtered);
+                            gsap.to(mainGrid, { opacity: 1, duration: 0.28 });
+                        }});
+                    });
                 });
             }
 
-            if (tickerTrack && articles.length > 3) {
-                var tickerArticles = articles.slice(3);
-                var allTickerArticles = tickerArticles.length >= 4 ? [...tickerArticles, ...tickerArticles] : tickerArticles;
-                allTickerArticles.forEach(function (article, i) {
-                    var tc = buildTickerCard(article);
-                    gsap.set(tc, { opacity: 0, y: 20 });
-                    tickerTrack.appendChild(tc);
-                    gsap.to(tc, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", delay: 0.4 + i * 0.06 });
+            // Refresh button – attach ONCE
+            if (refreshBtn && !_uiInitialized) {
+                refreshBtn.addEventListener("click", function () {
+                    var icon = refreshBtn.querySelector("i");
+                    if (icon) { icon.style.transition = "transform 0.5s"; icon.style.transform = "rotate(360deg)"; }
+                    setTimeout(function () { if (icon) { icon.style.transition = ""; icon.style.transform = ""; } }, 520);
+                    fetchNews();
                 });
-                startTickerScroll(tickerTrack);
-            } else if (tickerTrack) {
-                tickerTrack.parentElement.style.display = "none";
             }
+
+            _uiInitialized = true;
 
         } catch (error) {
             console.error("Error fetching news:", error);

@@ -883,6 +883,22 @@ body {
 
 .loader-char {
   display: inline-block;
+  color: #e2e8f0;
+  animation: wave-glow 2s ease-in-out infinite;
+}
+
+@keyframes wave-glow {
+  0%, 100% {
+    color: #e2e8f0;
+    text-shadow: none;
+  }
+  50% {
+    color: #10b981;
+    text-shadow:
+      0 0 6px #10b981,
+      0 0 16px #10b981,
+      0 0 36px rgba(16, 185, 129, 0.6);
+  }
 }
 
 #news-featured {
@@ -892,7 +908,7 @@ body {
 
 #news-featured>a {
   flex: 1;
-  min-height: 420px;
+  min-height: 440px;
 }
 
 #news-side-stack {
@@ -902,17 +918,59 @@ body {
 
 #news-side-stack>a {
   flex: 1;
-  min-height: 120px;
+  min-height: 130px;
 }
 
+/* News filter pills */
+.news-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: #9ca3af;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.news-filter-pill:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #93c5fd;
+  transform: translateY(-1px);
+}
+
+.news-filter-pill.active {
+  background: rgba(59, 130, 246, 0.18);
+  border-color: rgba(59, 130, 246, 0.5);
+  color: #60a5fa;
+}
+
+/* Marquee viewport — hides the inner moving strip */
 #news-ticker-track {
-  overflow-x: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
 }
 
-#news-ticker-track::-webkit-scrollbar {
-  display: none;
+/* Moving strip — CSS animation drives the scroll */
+#news-ticker-inner {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+}
+
+/* Seamless infinite scroll: 3 copies → translateX(-33.333%) = exactly 1 set width */
+@keyframes news-ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-33.3334%); }
 }
 
 .news-ticker-card {

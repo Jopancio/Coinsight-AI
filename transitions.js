@@ -14,7 +14,13 @@
 
         var container = document.createElement("div");
         container.className = "loader-text-container";
-        container.textContent = "Coinsight AI";
+        "Coinsight AI".split("").forEach(function (char, i) {
+            var span = document.createElement("span");
+            span.className = "loader-char";
+            span.textContent = char === " " ? "\u00A0" : char;
+            span.style.animationDelay = (i * 0.1) + "s";
+            container.appendChild(span);
+        });
 
         loader.appendChild(container);
         document.documentElement.appendChild(loader);

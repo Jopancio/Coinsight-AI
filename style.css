@@ -161,14 +161,35 @@ body {
 }
 
 .nav-hover-link {
-  transition: text-shadow 0.3s ease;
+  position: relative;
+  transition: text-shadow 0.35s ease;
   will-change: transform;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
 
+.nav-hover-link::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0%;
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-hover-link:hover::after,
+.nav-active::after {
+  width: 80%;
+}
+
 .nav-active {
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+  color: #ffffff !important;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 #connection-error-overlay {
@@ -395,6 +416,7 @@ body {
   height: 2.5rem;
   align-items: center;
   justify-content: center;
+  gap: 5px;
   border-radius: 0.5rem;
   cursor: pointer;
   background: rgba(255, 255, 255, 0.05);
@@ -432,7 +454,7 @@ body {
 }
 
 #mobile-menu-dropdown.open {
-  max-height: 420px;
+  max-height: 520px;
   opacity: 1;
   pointer-events: all;
 }
@@ -512,6 +534,38 @@ body {
   display: block;
 }
 
+/* Hide Coba App button on mobile — moved into hamburger menu */
+@media (max-width: 767px) {
+  #nav-btn {
+    display: none !important;
+  }
+}
+
+/* Coba App CTA inside mobile menu */
+#mobile-menu-dropdown .mobile-nav-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border-radius: 0.875rem;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: #0F172A !important;
+  text-decoration: none;
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  border: none !important;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.35);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  margin-top: 0.25rem;
+}
+
+#mobile-menu-dropdown .mobile-nav-cta:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, #F59E0B, #D97706) !important;
+  color: #0F172A !important;
+}
+
 /* Hamburger icon bars */
 .hamburger-bar {
   display: block;
@@ -519,21 +573,31 @@ body {
   height: 2px;
   background: currentColor;
   border-radius: 2px;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.28s ease,
+              width 0.28s ease;
   transform-origin: center;
 }
 
+#mobile-menu-btn:hover .hamburger-bar:nth-child(1) {
+  transform: translateY(-1px);
+}
+#mobile-menu-btn:hover .hamburger-bar:nth-child(3) {
+  transform: translateY(1px);
+}
+
 #mobile-menu-btn.is-open .hamburger-bar:nth-child(1) {
-  transform: translateY(4px) rotate(45deg);
+  transform: translateY(7px) rotate(45deg);
 }
 
 #mobile-menu-btn.is-open .hamburger-bar:nth-child(2) {
   opacity: 0;
   transform: scaleX(0);
+  width: 0;
 }
 
 #mobile-menu-btn.is-open .hamburger-bar:nth-child(3) {
-  transform: translateY(-4px) rotate(-45deg);
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 /* ── Toast Notification System ── */
@@ -732,60 +796,56 @@ body {
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%) translateY(20px);
-  padding: 0.75rem 1.5rem;
-  border-radius: 9999px;
-  background: rgba(30, 58, 138, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #fff;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  color: rgba(148, 163, 184, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   cursor: pointer;
   z-index: 9000;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    background 0.3s ease, box-shadow 0.3s ease;
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.025em;
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
 }
 
 #back-to-top.visible {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
   pointer-events: all;
-  animation: float-btt 3s ease-in-out infinite alternate;
-  animation-delay: 0.3s;
-}
-
-@keyframes float-btt {
-  0% {
-    transform: translateX(-50%) translateY(0);
-  }
-
-  100% {
-    transform: translateX(-50%) translateY(-6px);
-  }
 }
 
 #back-to-top:hover {
-  background: rgba(30, 58, 138, 1);
-  box-shadow: 0 6px 28px rgba(30, 58, 138, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.2);
-  animation-play-state: paused;
+  color: rgba(226, 232, 240, 0.9);
+  background: transparent;
+  box-shadow: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  #back-to-top {
-    transition: none;
-  }
+/* Mouse icon bounces upward */
+.btt-mouse-icon {
+  display: flex;
+  align-items: center;
+  animation: btt-bounce 1.6s ease-in-out infinite;
+}
 
-  #back-to-top.visible {
-    animation: none;
-    transform: translateX(-50%) translateY(0);
+@keyframes btt-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  45% {
+    transform: translateY(-6px);
+  }
+  65% {
+    transform: translateY(-3px);
   }
 }
 

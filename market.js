@@ -57,9 +57,12 @@ lucide.createIcons();
     var statBtcDom    = document.getElementById("stat-btc-dom");
     var statCoinCount = document.getElementById("stat-coin-count");
 
-    var allCoins     = [];
-    var currentView  = "card";
-    var activeFilter = "all";
+    var allCoins          = [];
+    var currentView       = "card";
+    var activeFilter      = "all";
+    var visibleCount      = 10;
+    var LOAD_MORE_STEP    = 10;
+    var lastRenderedCount = 0;
 
     function formatCurrency(val) {
         return new Intl.NumberFormat("en-US", {
@@ -320,17 +323,22 @@ lucide.createIcons();
         renderMiniList(topVolumeList, byVol.slice(0, 10), "text-blue-400", "");
     }
 
-    function renderCards(coins) {
+    function renderCards(coins, appendFrom) {
         if (!container) return;
+        appendFrom = appendFrom || 0;
         container.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6";
 
-        if (coins.length === 0) {
-            container.innerHTML = '<div class="col-span-full py-20 text-center text-gray-500">Tidak ada koin ditemukan.</div>';
-            return;
+        if (appendFrom === 0) {
+            if (coins.length === 0) {
+                container.innerHTML = '<div class="col-span-full py-20 text-center text-gray-500">Tidak ada koin ditemukan.</div>';
+                return;
+            }
+            container.innerHTML = "";
         }
 
-        container.innerHTML = "";
-        coins.forEach(function (coin, index) {
+        var newEls = [];
+        coins.slice(appendFrom).forEach(function (coin, i) {
+            var index = appendFrom + i;
             var card = document.createElement("div");
             card.className = "glass-card rounded-3xl border border-white/10 group flex flex-col cursor-pointer relative overflow-hidden hover:-translate-y-2 transition-all";
             card.onclick   = function () {
@@ -385,22 +393,28 @@ lucide.createIcons();
                 '</div>';
 
             container.appendChild(card);
+            newEls.push(card);
         });
 
-        animateIn(container.querySelectorAll(".glass-card"), "card");
+        animateIn(newEls, "card");
     }
 
-    function renderBars(coins) {
+    function renderBars(coins, appendFrom, appendFrom) {
         if (!container) return;
+        appendFrom = appendFrom || 0;
         container.className = "flex flex-col gap-3";
 
-        if (coins.length === 0) {
-            container.innerHTML = '<div class="py-20 text-center text-gray-500 w-full">Tidak ada koin ditemukan.</div>';
-            return;
+        if (appendFrom === 0) {
+            if (coins.length === 0) {
+                container.innerHTML = '<div class="py-20 text-center text-gray-500 w-full">Tidak ada koin ditemukan.</div>';
+                return;
+            }
+            container.innerHTML = "";
         }
 
-        container.innerHTML = "";
-        coins.forEach(function (coin, index) {
+        var newEls = [];
+        coins.slice(appendFrom).forEach(function (coin, i) {
+            var index = appendFrom + i;
             var bar = document.createElement("div");
             bar.className = "glass-card rounded-2xl border border-white/10 p-4 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-all group";
             bar.onclick   = function () {
@@ -436,9 +450,10 @@ lucide.createIcons();
                 '</div>';
 
             container.appendChild(bar);
+            newEls.push(bar);
         });
 
-        animateIn(container.querySelectorAll(".glass-card"), "bar");
+        animateIn(newEls, "bar");
     }
 
     function animateIn(els, type) {
@@ -466,6 +481,31 @@ lucide.createIcons();
         });
     }
 
+    function renderShowMoreBtn(total, visible) {
+        var existing = document.getElementById("show-more-btn-wrap");
+        if (existing) existing.remove();
+
+        if (visible >= total) return;
+
+        var remaining = total - visible;
+        var wrap = document.createElement("div");
+        wrap.id = "show-more-btn-wrap";
+        wrap.className = "flex flex-col items-center gap-2 pt-6 pb-4";
+
+        var btn = document.createElement("button");
+        btn.className = "px-8 py-3 rounded-full font-bold text-sm glass-card border border-white/10 text-gray-300 hover:bg-emerald/20 hover:border-emerald/40 hover:text-white transition-all";
+        btn.innerHTML = '<i class="fa-solid fa-chevron-down mr-2"></i>Tampilkan Lebih <span class="opacity-60">(' + remaining + ' koin lagi)</span>';
+        btn.onclick = function () {
+            visibleCount += LOAD_MORE_STEP;
+            render(true);
+        };
+
+        wrap.appendChild(btn);
+        if (container && container.parentNode) {
+            container.parentNode.insertBefore(wrap, container.nextSibling);
+        }
+    }
+
     function getDisplayCoins() {
         var query = (searchInput ? searchInput.value : "").toLowerCase().trim();
         var base  = allCoins;
@@ -487,9 +527,16 @@ lucide.createIcons();
         });
     }
 
-    function render() {
-        if (currentView === "card") renderCards(getDisplayCoins());
-        else renderBars(getDisplayCoins());
+    function render(fromShowMore) {
+        var displayCoins = getDisplayCoins();
+        var coinsToShow  = displayCoins.slice(0, visibleCount);
+        var appendFrom   = (fromShowMore && lastRenderedCount > 0 && lastRenderedCount <= coinsToShow.length)
+                           ? lastRenderedCount : 0;
+        if (appendFrom === 0) lastRenderedCount = 0;
+        if (currentView === "card") renderCards(coinsToShow, appendFrom);
+        else renderBars(coinsToShow, appendFrom);
+        lastRenderedCount = coinsToShow.length;
+        renderShowMoreBtn(displayCoins.length, visibleCount);
     }
 
     var activeViewCls   = "px-5 py-3 rounded-full font-semibold text-sm transition-all bg-emerald text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]";
@@ -498,6 +545,7 @@ lucide.createIcons();
     if (cardBtn) {
         cardBtn.onclick = function () {
             currentView = "card";
+            visibleCount = 10;
             cardBtn.className = activeViewCls;
             barBtn.className  = inactiveViewCls;
             render();
@@ -506,6 +554,7 @@ lucide.createIcons();
     if (barBtn) {
         barBtn.onclick = function () {
             currentView = "bar";
+            visibleCount = 10;
             barBtn.className  = activeViewCls;
             cardBtn.className = inactiveViewCls;
             render();
@@ -518,6 +567,7 @@ lucide.createIcons();
     filterTabs.forEach(function (tab) {
         tab.addEventListener("click", function () {
             activeFilter = tab.getAttribute("data-filter");
+            visibleCount = 10;
             filterTabs.forEach(function (t) {
                 t.className = (t === tab) ? activeFilterCls : inactiveFilterCls;
             });
@@ -526,7 +576,10 @@ lucide.createIcons();
     });
 
     if (searchInput) {
-        searchInput.addEventListener("input", debounce(render, 300));
+        searchInput.addEventListener("input", debounce(function () {
+            visibleCount = 10;
+            render();
+        }, 300));
     }
 
     async function fetchMarketData() {

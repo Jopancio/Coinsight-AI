@@ -20,6 +20,11 @@
             var navH = nav.getBoundingClientRect().height;
             mobileDropdown.style.paddingTop = navH + "px";
             mobileDropdown.classList.add("open");
+            var links = mobileDropdown.querySelectorAll("a");
+            gsap.fromTo(links,
+                { y: 14, opacity: 0, x: -10 },
+                { y: 0, opacity: 1, x: 0, duration: 0.4, ease: "power3.out", stagger: 0.06, delay: 0.08, clearProps: "transform" }
+            );
         }
         if (mobileOverlay) mobileOverlay.classList.add("active");
         document.body.style.overflow = "hidden";
@@ -28,7 +33,12 @@
     function closeMobileMenu() {
         mobileOpen = false;
         if (mobileBtn) mobileBtn.classList.remove("is-open");
-        if (mobileDropdown) mobileDropdown.classList.remove("open");
+        if (mobileDropdown) {
+            var links = mobileDropdown.querySelectorAll("a");
+            gsap.killTweensOf(links);
+            gsap.set(links, { clearProps: "all" });
+            mobileDropdown.classList.remove("open");
+        }
         if (mobileOverlay) mobileOverlay.classList.remove("active");
         document.body.style.overflow = "";
     }
@@ -60,7 +70,7 @@
         btt = document.createElement("button");
         btt.id = "back-to-top";
         btt.setAttribute("aria-label", "Kembali ke atas");
-        btt.innerHTML = '<span class="btt-text">Klik untuk kembali ke atas</span>';
+        btt.innerHTML = '<span class="btt-mouse-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="7"/><path d="M12 6v4"/></svg></span><span class="btt-text">Klik untuk kembali ke atas</span>';
         document.body.appendChild(btt);
     }
 
@@ -84,11 +94,11 @@
         isScrolled = true;
 
         if (navTween) navTween.kill();
-        navTween = gsap.timeline({ defaults: { duration: 0.4, ease: "power2.out", overwrite: "auto" } });
+        navTween = gsap.timeline({ defaults: { duration: 0.6, ease: "expo.out", overwrite: "auto" } });
 
         navTween
-            .to(nav, { width: "56rem", maxWidth: "90%", top: "1rem", borderRadius: "9999px", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)" }, 0)
-            .to(navContainer, { padding: "0.75rem 1.5rem" }, 0)
+            .to(nav, { width: "58rem", maxWidth: "88%", top: "0.875rem", borderRadius: "9999px", boxShadow: "0 30px 60px -15px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06)" }, 0)
+            .to(navContainer, { padding: "0.7rem 1.5rem" }, 0)
             .to(logoIcon, { width: "2rem", height: "2rem", fontSize: "1.25rem" }, 0)
             .to(logoText, { fontSize: "1.25rem" }, 0)
             .to(navLinks, { gap: "1.5rem", fontSize: "0.875rem" }, 0)
@@ -100,7 +110,7 @@
         isScrolled = false;
 
         if (navTween) navTween.kill();
-        navTween = gsap.timeline({ defaults: { duration: 0.4, ease: "power2.out", overwrite: "auto" } });
+        navTween = gsap.timeline({ defaults: { duration: 0.6, ease: "expo.out", overwrite: "auto" } });
 
         navTween
             .to(nav, { width: "100%", maxWidth: "100%", top: "0px", borderRadius: "0px", boxShadow: "0 0 0 0 rgba(0,0,0,0)" }, 0)
@@ -137,48 +147,29 @@
     }
 
     document.querySelectorAll(".nav-hover-link").forEach(function (link) {
-        var floatTween = null;
         link._isHovered = false;
 
         link.addEventListener("mouseenter", function () {
             link._isHovered = true;
             gsap.killTweensOf(link);
-            if (floatTween) {
-                floatTween.kill();
-                floatTween = null;
-            }
-
             gsap.to(link, {
-                scale: 1.35,
+                scale: 1.07,
+                y: -2,
                 color: "#ffffff",
-                duration: 0.3,
-                ease: "back.out(1.7)",
-                onComplete: function () {
-                    if (link._isHovered) {
-                        floatTween = gsap.to(link, {
-                            y: -4,
-                            duration: 0.75,
-                            ease: "sine.inOut",
-                            yoyo: true,
-                            repeat: -1
-                        });
-                    }
-                }
+                textShadow: "0 0 16px rgba(255,255,255,0.45)",
+                duration: 0.35,
+                ease: "power3.out"
             });
         });
 
         link.addEventListener("mouseleave", function () {
             link._isHovered = false;
             gsap.killTweensOf(link);
-            if (floatTween) {
-                floatTween.kill();
-                floatTween = null;
-            }
 
             if (link.classList.contains("nav-active")) {
-                gsap.to(link, { scale: 1.15, y: 0, color: "#ffffff", duration: 0.4, ease: "power2.out" });
+                gsap.to(link, { scale: 1.04, y: 0, color: "#ffffff", textShadow: "0 0 10px rgba(255,255,255,0.25)", duration: 0.45, ease: "power3.out" });
             } else {
-                gsap.to(link, { scale: 1, y: 0, color: "", duration: 0.4, ease: "power2.out", clearProps: "color" });
+                gsap.to(link, { scale: 1, y: 0, duration: 0.45, ease: "power3.out", clearProps: "color,textShadow" });
             }
         });
     });

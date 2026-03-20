@@ -129,24 +129,7 @@
         </div>
       </div>
 
-      <!-- Search + View Toggle -->
-      <div class="flex flex-col md:flex-row justify-center items-center gap-4">
-        <div class="relative w-full md:w-96">
-          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
-          <input type="text" id="market-search" placeholder="Cari koin atau simbol..."
-            class="w-full bg-white/5 border border-white/10 rounded-full py-3 pl-12 pr-4 text-white focus:outline-none focus:border-emerald/50 transition-all glass-card" />
-        </div>
-        <div class="flex gap-2">
-          <button id="view-card-btn"
-            class="px-5 py-3 rounded-full font-semibold text-sm transition-all bg-emerald text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-            <i class="fa-solid fa-grip mr-2"></i>Card
-          </button>
-          <button id="view-bar-btn"
-            class="px-5 py-3 rounded-full font-semibold text-sm transition-all glass-card text-gray-300 hover:bg-white/10 border border-white/10">
-            <i class="fa-solid fa-bars mr-2"></i>Bar
-          </button>
-        </div>
-      </div>
+
     </div>
   </section>
 
@@ -241,28 +224,49 @@
   <section class="px-6 pb-20">
     <div class="max-w-7xl mx-auto">
 
-      <!-- Section header + filter tabs -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h2 class="text-xl md:text-2xl font-bold border-l-4 border-emerald pl-3">
-          Semua <span class="text-emerald">Koin</span>
-        </h2>
-        <div id="market-filter-tabs" class="flex gap-2 flex-wrap">
-          <button data-filter="all"
-            class="market-tab active-tab px-4 py-2 rounded-full text-xs font-bold transition-all bg-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.3)]">
-            <i class="fa-solid fa-globe mr-1"></i>Semua
-          </button>
-          <button data-filter="bullish"
-            class="market-tab px-4 py-2 rounded-full text-xs font-bold transition-all glass-card text-gray-300 border border-white/10 hover:bg-white/10">
-            <i class="fa-solid fa-caret-up mr-1 text-emerald"></i>Bullish
-          </button>
-          <button data-filter="bearish"
-            class="market-tab px-4 py-2 rounded-full text-xs font-bold transition-all glass-card text-gray-300 border border-white/10 hover:bg-white/10">
-            <i class="fa-solid fa-caret-down mr-1 text-red-400"></i>Bearish
-          </button>
-          <button data-filter="volume"
-            class="market-tab px-4 py-2 rounded-full text-xs font-bold transition-all glass-card text-gray-300 border border-white/10 hover:bg-white/10">
-            <i class="fa-solid fa-fire mr-1 text-blue-400"></i>Volume
-          </button>
+      <!-- Section header + search + filter tabs -->
+      <div class="flex flex-col gap-3 mb-6">
+        <!-- Row 1: Title + View Toggle -->
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl md:text-2xl font-bold border-l-4 border-emerald pl-3">
+            Semua <span class="text-emerald">Koin</span>
+          </h2>
+          <div class="flex gap-2">
+            <button id="view-card-btn"
+              class="px-4 py-2 rounded-full font-semibold text-sm transition-all bg-emerald text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+              <i class="fa-solid fa-grip mr-1.5"></i>Card
+            </button>
+            <button id="view-bar-btn"
+              class="px-4 py-2 rounded-full font-semibold text-sm transition-all glass-card text-gray-300 hover:bg-white/10 border border-white/10">
+              <i class="fa-solid fa-bars mr-1.5"></i>Bar
+            </button>
+          </div>
+        </div>
+        <!-- Row 2: Search + Filter Tabs -->
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div class="relative w-full sm:w-80">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+            <input type="text" id="market-search" placeholder="Cari koin atau simbol..."
+              class="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-emerald/50 transition-all glass-card" />
+          </div>
+          <div id="market-filter-tabs" class="flex gap-2 flex-wrap">
+            <button data-filter="all"
+              class="market-tab active-tab px-4 py-2 rounded-full text-xs font-bold transition-all bg-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.3)]">
+              <i class="fa-solid fa-globe mr-1"></i>Semua
+            </button>
+            <button data-filter="bullish"
+              class="market-tab px-4 py-2 rounded-full text-xs font-bold transition-all glass-card text-gray-300 border border-white/10 hover:bg-white/10">
+              <i class="fa-solid fa-caret-up mr-1 text-emerald"></i>Bullish
+            </button>
+            <button data-filter="bearish"
+              class="market-tab px-4 py-2 rounded-full text-xs font-bold transition-all glass-card text-gray-300 border border-white/10 hover:bg-white/10">
+              <i class="fa-solid fa-caret-down mr-1 text-red-400"></i>Bearish
+            </button>
+            <button data-filter="volume"
+              class="market-tab px-4 py-2 rounded-full text-xs font-bold transition-all glass-card text-gray-300 border border-white/10 hover:bg-white/10">
+              <i class="fa-solid fa-fire mr-1 text-blue-400"></i>Volume
+            </button>
+          </div>
         </div>
       </div>
 

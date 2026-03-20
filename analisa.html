@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Risk Sandbox | CoinSight AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+        select option {
+            background-color: #0f172a;
+            color: white;
+        }
+    </style>
+    <script>if(sessionStorage.getItem('page-transitioning')){document.documentElement.style.opacity='0';}</script>
+</head>
+
+<body class="antialiased overflow-x-hidden pt-24">
+    <nav id="main-nav"
+        style="position:fixed;left:50%;transform:translateX(-50%);top:0;width:100%;border-radius:0;z-index:50;"
+        class="glass-card border border-white/10">
+        <div id="nav-container"
+            style="max-width:80rem;margin:0 auto;padding:1.5rem 1.5rem;display:flex;justify-content:space-between;align-items:center;">
+            <a href="home.html" class="flex items-center gap-2">
+                <div id="logo-icon" style="width:2.5rem;height:2.5rem;font-size:1.5rem;"
+                    class="rounded-lg bg-tech-blue flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <span id="logo-text" style="font-size:1.5rem;" class="font-bold tracking-tight wave-glow-text"><span
+                        class="char" style="animation-delay: 0s">C</span><span class="char"
+                        style="animation-delay: 0.1s">o</span><span class="char"
+                        style="animation-delay: 0.2s">i</span><span class="char"
+                        style="animation-delay: 0.3s">n</span><span class="char"
+                        style="animation-delay: 0.4s">S</span><span class="char"
+                        style="animation-delay: 0.5s">i</span><span class="char"
+                        style="animation-delay: 0.6s">g</span><span class="char"
+                        style="animation-delay: 0.7s">h</span><span class="char"
+                        style="animation-delay: 0.8s">t</span><span class="char"
+                        style="animation-delay: 0.9s">&nbsp;</span><span class="char text-emerald"
+                        style="animation-delay: 1s">A</span><span class="char text-emerald"
+                        style="animation-delay: 1.1s">I</span></span>
+            </a>
+            <div id="nav-links" style="gap:2.5rem;font-size:1rem;" class="hidden md:flex font-semibold text-gray-300">
+                <a href="home.html" class="nav-hover-link"
+                    style="display:inline-flex;align-items:center;gap:0.4rem;"><i data-lucide="home"
+                        style="width:1rem;height:1rem;"></i>Home</a>
+                <a href="market.html" class="nav-hover-link"
+                    style="display:inline-flex;align-items:center;gap:0.4rem;"><i data-lucide="trending-up"
+                        style="width:1rem;height:1rem;"></i>Market</a>
+                <a href="analisa.html" class="nav-hover-link nav-active"
+                    style="display:inline-flex;align-items:center;gap:0.4rem;"><i data-lucide="bar-chart-2"
+                        style="width:1rem;height:1rem;"></i>Analisa</a>
+                <a href="about.html" class="nav-hover-link"
+                    style="display:inline-flex;align-items:center;gap:0.4rem;"><i data-lucide="users"
+                        style="width:1rem;height:1rem;"></i>About Us</a>
+                <a href="news.html" class="nav-hover-link"
+                    style="display:inline-flex;align-items:center;gap:0.4rem;"><i data-lucide="newspaper"
+                        style="width:1rem;height:1rem;"></i>Berita</a>
+            </div>
+            <div id="nav-actions" class="flex items-center gap-4">
+                <button id="nav-btn" style="padding:0.75rem 2rem;font-size:1rem;"
+                    onclick="window.location.href='auth.html'"
+                    class="bg-amber hover:bg-yellow-500 text-slate-900 rounded-full font-bold shadow-[0_0_15px_rgba(245,158,11,0.4)]">
+                    Coba App <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+                <button id="mobile-menu-btn" class="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-xl glass-card border border-white/10" aria-label="Toggle menu">
+                    <span class="hamburger-bar"></span>
+                    <span class="hamburger-bar"></span>
+                    <span class="hamburger-bar"></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    <div id="mobile-menu-dropdown">
+        <div class="mobile-nav-inner">
+            <a href="home.html"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="market.html"><i class="fa-solid fa-chart-line"></i> Market</a>
+            <a href="analisa.html" class="nav-active"><i class="fa-solid fa-bar-chart"></i> Analisa</a>
+            <a href="news.html"><i class="fa-solid fa-newspaper"></i> Berita</a>
+            <a href="about.html"><i class="fa-solid fa-users"></i> About Us</a>
+        </div>
+    </div>
+    <div id="mobile-menu-overlay"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            const navActions = document.getElementById("nav-actions");
+            if (currentUser && navActions) {
+                navActions.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-semibold text-gray-300 hidden md:block">Halo, ${currentUser.name.split(' ')[0]}</span>
+                        <div class="w-10 h-10 rounded-full bg-tech-blue flex items-center justify-center text-white font-bold border-2 border-white/10 shadow-sm cursor-pointer hover:bg-blue-600 transition" onclick="logout()" title="Logout">
+                            ${currentUser.name.charAt(0).toUpperCase()}
+                        </div>
+                    </div>
+                `;
+            }
+            lucide.createIcons();
+        });
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin keluar?')) {
+                localStorage.removeItem('currentUser');
+                window.location.reload();
+            }
+        }
+    </script>
+
+    <main class="pb-20 px-6">
+        <div class="max-w-6xl mx-auto z-10 relative">
+            <div class="mb-12 text-center pt-8">
+                <h1 class="text-4xl lg:text-5xl font-extrabold mb-4">
+                    Risk <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Sandbox</span>
+                </h1>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+                    Analyze volatility and market greed side-by-side to understand speculative risks before investing.
+                </p>
+            </div>
+
+            <div id="coinCards" class="flex flex-col lg:flex-row gap-6 mb-10 items-stretch justify-center">
+                <div id="primaryCard"
+                    style="background:#131B2E;border:1px solid #1F293D;border-radius:20px;overflow:hidden;flex:1;max-width:380px;">
+                    <div
+                        style="background:linear-gradient(180deg, rgba(30,58,138,0.05) 0%, transparent 100%);border-bottom:1px solid #1F293D;padding:24px;display:flex;flex-direction:column;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                <img id="primaryImg" src="" alt=""
+                                    style="width:44px;height:44px;border-radius:22px;flex-shrink:0;" />
+                                <div style="display:flex;flex-direction:column;">
+                                    <span
+                                        style="color:#9CA3AF;font-size:10px;letter-spacing:1px;text-transform:uppercase;">Primary</span>
+                                    <span><span id="primaryName"
+                                            style="color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;">--</span>
+                                        <span id="primarySymbol"
+                                            style="color:#6B7280;font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:600;">(--)</span></span>
+                                </div>
+                            </div>
+                            <div
+                                style="background:#1E293B;border:1px solid #334155;border-radius:8px;padding:6px 12px;display:flex;align-items:center;gap:6px;cursor:pointer;position:relative;">
+                                <span style="color:#fff;font-size:12px;">Change</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF"
+                                    stroke-width="2">
+                                    <path d="m6 9 6 6 6-6" />
+                                </svg>
+                                <select id="asset1"
+                                    style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
+                                    <option value="bitcoin">Bitcoin (BTC)</option>
+                                    <option value="ethereum" selected>Ethereum (ETH)</option>
+                                    <option value="solana">Solana (SOL)</option>
+                                    <option value="cardano">Cardano (ADA)</option>
+                                    <option value="ripple">XRP (XRP)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:baseline;gap:12px;">
+                            <span id="primaryPrice"
+                                style="color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:800;">$--</span>
+                            <div id="primaryChangeBadge"
+                                style="display:flex;align-items:center;gap:4px;background:rgba(16,185,129,0.1);border-radius:6px;padding:4px 8px;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981"
+                                    stroke-width="3">
+                                    <path d="m18 15-6-6-6 6" />
+                                </svg>
+                                <span id="primaryChange" style="color:#10B981;font-size:14px;">--%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding:24px;display:flex;flex-direction:column;gap:16px;">
+                        <div style="display:flex;gap:16px;">
+                            <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+                                <span style="color:#6B7280;font-size:12px;text-transform:uppercase;">Market Cap</span>
+                                <span id="primaryMcap" style="color:#E5E7EB;font-size:14px;">--</span>
+                            </div>
+                            <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+                                <span style="color:#6B7280;font-size:12px;text-transform:uppercase;">24h Volume</span>
+                                <span id="primaryVol" style="color:#E5E7EB;font-size:14px;">--</span>
+                            </div>
+                        </div>
+                        <div style="background:#1F293D;height:1px;width:100%;"></div>
+                        <div style="display:flex;gap:16px;">
+                            <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+                                <span style="color:#6B7280;font-size:12px;text-transform:uppercase;">All Time
+                                    High</span>
+                                <span id="primaryAth" style="color:#E5E7EB;font-size:14px;">--</span>
+                            </div>
+                            <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+                                <span style="color:#6B7280;font-size:12px;text-transform:uppercase;">Dist. to
+                                    ATH</span>
+                                <span id="primaryAthDist" style="color:#EF4444;font-size:14px;">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="riskScoreCard"
+                    style="background:linear-gradient(135deg, rgba(30,58,138,0.05) 0%, rgba(245,158,11,0.05) 100%);border:1px solid #1F293D;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;flex:1;max-width:400px;position:relative;overflow:hidden;box-shadow:inset 0 0 40px rgba(0,0,0,0.2);">
+                    <span style="color:#9CA3AF;font-size:12px;text-transform:uppercase;margin-bottom:8px;">Composite
+                        Risk Score</span>
+                    <span id="medianScore"
+                        style="color:#fff;font-size:80px;font-weight:400;line-height:1;">--%</span>
+                    <div id="riskLabelBadge"
+                        style="background:rgba(245,158,11,0.1);border-radius:9999px;padding:6px 16px;margin-top:16px;">
+                        <span id="riskLabel"
+                            style="color:#FBBF24;font-size:12px;">Menunggu Analisis</span>
+                    </div>
+                </div>
+
+                <div id="comparisonCard"
+                    style="background:#131B2E;border:1px solid #1F293D;border-radius:20px;overflow:hidden;flex:1;max-width:380px;">
+                    <div
+                        style="background:linear-gradient(180deg, rgba(245,158,11,0.05) 0%, transparent 100%);border-bottom:1px solid #1F293D;padding:24px;display:flex;flex-direction:column;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                <img id="compImg" src="" alt=""
+                                    style="width:44px;height:44px;border-radius:22px;flex-shrink:0;" />
+                                <div style="display:flex;flex-direction:column;">
+                                    <span
+                                        style="color:#FBBF24;font-size:10px;letter-spacing:1px;text-transform:uppercase;">Comparison</span>
+                                    <span><span id="compName"
+                                            style="color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;">--</span>
+                                        <span id="compSymbol"
+                                            style="color:#6B7280;font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:600;">(--)</span></span>
+                                </div>
+                            </div>
+                            <div
+                                style="background:#1E293B;border:1px solid #334155;border-radius:8px;padding:6px 12px;display:flex;align-items:center;gap:6px;cursor:pointer;position:relative;">
+                                <span style="color:#fff;font-size:12px;">Change</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF"
+                                    stroke-width="2">
+                                    <path d="m6 9 6 6 6-6" />
+                                </svg>
+                                <select id="asset2"
+                                    style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
+                                    <option value="dogecoin" selected>Dogecoin (DOGE)</option>
+                                    <option value="pepe">Pepe (PEPE)</option>
+                                    <option value="cardano">Cardano (ADA)</option>
+                                    <option value="shiba-inu">Shiba Inu (SHIB)</option>
+                                    <option value="bitcoin">Bitcoin (BTC)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:baseline;gap:12px;">
+                            <span id="compPrice"
+                                style="color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:32px;font-weight:800;">$--</span>
+                            <div id="compChangeBadge"
+                                style="display:flex;align-items:center;gap:4px;background:rgba(16,185,129,0.1);border-radius:6px;padding:4px 8px;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981"
+                                    stroke-width="3">
+                                    <path d="m18 15-6-6-6 6" />
+                                </svg>
+                                <span id="compChange" style="color:#10B981;font-size:14px;">--%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding:24px;display:flex;flex-direction:column;gap:16px;">
+                        <div style="display:flex;gap:16px;">
+                            <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+                                <span style="color:#6B7280;font-size:12px;text-transform:uppercase;">Market Cap</span>
+                                <span id="compMcap" style="color:#E5E7EB;font-size:14px;">--</span>
+                            </div>
+                            <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+                                <span style="color:#6B7280;font-size:12px;text-transform:uppercase;">24h Volume</span>
+                                <span id="compVol24" style="color:#E5E7EB;font-size:14px;">--</span>
+                            </div>
+                        </div>
+                        <div style="background:#1F293D;height:1px;width:100%;"></div>
+                        <div style="display:flex;gap:16px;">
+                            <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+                                <span style="color:#6B7280;font-size:12px;text-transform:uppercase;">All Time
+                                    High</span>
+                                <span id="compAth" style="color:#E5E7EB;font-size:14px;">--</span>
+                            </div>
+                            <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+                                <span style="color:#6B7280;font-size:12px;text-transform:uppercase;">Dist. to
+                                    ATH</span>
+                                <span id="compAthDist" style="color:#EF4444;font-size:14px;">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chartSection"
+                style="background:#131B2E;border:1px solid #1F293D;border-radius:20px;padding:32px;margin-bottom:24px;max-width:1100px;margin-left:auto;margin-right:auto;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+                    <div>
+                        <h3 style="color:#fff;font-size:18px;font-weight:800;margin-bottom:4px;">Price Action History
+                            (30 Days)</h3>
+                        <p style="color:#6B7280;font-size:14px;">Normalized percentage return to compare performance
+                            equally.</p>
+                    </div>
+                    <div style="display:flex;gap:16px;align-items:center;">
+                        <div style="display:flex;align-items:center;gap:6px;">
+                            <div style="width:12px;height:12px;border-radius:6px;background:#3B82F6;"></div>
+                            <span id="legendPrimary" style="color:#9CA3AF;font-size:14px;">Primary</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:6px;">
+                            <div style="width:12px;height:12px;border-radius:6px;background:#F59E0B;"></div>
+                            <span id="legendComp" style="color:#9CA3AF;font-size:14px;">Comparison</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="background:rgba(255,255,255,0.02);border-radius:12px;padding:16px;">
+                    <canvas id="historicalChart" height="260"></canvas>
+                </div>
+            </div>
+
+            <div id="alertSection"
+                style="background:#131B2E;border:1px solid #1F293D;border-radius:20px;padding:24px;margin-bottom:24px;max-width:1100px;margin-left:auto;margin-right:auto;display:flex;align-items:flex-start;gap:16px;">
+                <div
+                    style="width:48px;height:48px;border-radius:12px;background:rgba(245,158,11,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                </div>
+                <div style="flex:1;">
+                    <h4 id="alertTitle"
+                        style="color:#F59E0B;font-size:16px;font-weight:700;margin-bottom:4px;">
+                        Investment Recommendation Alert</h4>
+                    <p id="alertText" style="color:#9CA3AF;font-size:14px;line-height:1.6;">
+                        Klik "Update Live Data" untuk mendapatkan analisis risiko berdasarkan data pasar terkini.
+                    </p>
+                </div>
+            </div>
+
+            <div style="text-align:center;margin-bottom:40px;">
+                <button id="btnRun" onclick="runComparison()"
+                    style="background:linear-gradient(135deg, #F59E0B, #D97706);color:#0F172A;padding:14px 40px;border-radius:9999px;font-weight:700;font-size:16px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:10px;box-shadow:0 0 20px rgba(245,158,11,0.3);transition:all 0.3s;">
+                    Update Live Data
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                        <path d="M21 3v5h-5" />
+                    </svg>
+                    <div id="loading" class="hidden"
+                        style="width:20px;height:20px;border:3px solid #0F172A;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;">
+                    </div>
+                </button>
+            </div>
+
+            <div id="insightSection"
+                style="background:#131B2E;border:1px solid #1F293D;border-radius:20px;padding:32px;max-width:1100px;margin-left:auto;margin-right:auto;">
+                <div
+                    style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <div
+                            style="width:32px;height:32px;border-radius:8px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 16v-4" />
+                                <path d="M12 8h.01" />
+                            </svg>
+                        </div>
+                        <h3 style="color:#fff;font-size:20px;font-weight:800;">AI Insight & Data Breakdown</h3>
+                    </div>
+                    <div
+                        style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:9999px;padding:4px 12px;">
+                        <span
+                            style="color:#6B7280;font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Powered
+                            by CoinSight</span>
+                    </div>
+                </div>
+                <div style="display:flex;gap:24px;flex-wrap:wrap;">
+                    <div
+                        style="flex:1;min-width:260px;background:rgba(255,255,255,0.02);border:1px solid #1F293D;border-radius:16px;padding:24px;">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B"
+                                stroke-width="2">
+                                <path
+                                    d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                            </svg>
+                            <span style="color:#F59E0B;font-size:14px;font-weight:600;">Volatilitas Ekstrem</span>
+                        </div>
+                        <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;">
+                            <span id="insightVolRatio"
+                                style="color:#fff;font-size:24px;font-weight:800;">--x</span>
+                            <span style="color:#9CA3AF;font-size:14px;">Lebih Tinggi</span>
+                        </div>
+                        <p id="insightVolText" style="color:#6B7280;font-size:13px;line-height:1.6;">
+                            Menunggu data analisis...
+                        </p>
+                    </div>
+                    <div
+                        style="flex:1;min-width:260px;background:rgba(255,255,255,0.02);border:1px solid #1F293D;border-radius:16px;padding:24px;">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444"
+                                stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                            </svg>
+                            <span style="color:#EF4444;font-size:14px;font-weight:600;">Max Drawdown (30D)</span>
+                        </div>
+                        <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;">
+                            <span id="insightDrawdown"
+                                style="color:#fff;font-size:24px;font-weight:800;">--%</span>
+                            <span id="insightDrawdownVs" style="color:#9CA3AF;font-size:14px;">vs --%</span>
+                        </div>
+                        <p id="insightDrawdownText" style="color:#6B7280;font-size:13px;line-height:1.6;">
+                            Menunggu data analisis...
+                        </p>
+                    </div>
+                    <div
+                        style="flex:1;min-width:260px;background:rgba(255,255,255,0.02);border:1px solid #1F293D;border-radius:16px;padding:24px;">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 16v-4" />
+                                <path d="M12 8h.01" />
+                            </svg>
+                            <span style="color:#8B5CF6;font-size:14px;font-weight:600;">Sentimen FOMO</span>
+                        </div>
+                        <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;">
+                            <span id="insightFomo"
+                                style="color:#fff;font-size:24px;font-weight:800;">Index --</span>
+                            <span id="insightFomoLabel" style="color:#9CA3AF;font-size:14px;">(--)</span>
+                        </div>
+                        <p id="insightFomoText" style="color:#6B7280;font-size:13px;line-height:1.6;">
+                            Menunggu data analisis...
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-black/50 py-8 border-t border-white/10 mt-10">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-chart-pie text-tech-blue text-xl"></i>
+                <span class="font-bold text-lg">CoinSight AI</span>
+            </div>
+            <p class="text-gray-500 text-sm">
+                &copy; 2026 Project Innovate (Jovan, Deco, Daniel). All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <style>
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
+    <script>
+        var API_BASE = "https://skidibi-toilet.jovancion.workers.dev/api";
+        var chartInstance = null;
+
+        function formatCurrency(val) {
+            if (typeof val !== "number" || !isFinite(val)) return "$0";
+            return new Intl.NumberFormat("en-US", {
+                style: "currency", currency: "USD",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: val < 1 ? 6 : 2
+            }).format(val);
+        }
+
+        function formatCompact(val) {
+            if (!val) return "$0";
+            if (val >= 1e12) return "$" + (val / 1e12).toFixed(2) + "T";
+            if (val >= 1e9) return "$" + (val / 1e9).toFixed(2) + "B";
+            if (val >= 1e6) return "$" + (val / 1e6).toFixed(2) + "M";
+            if (val >= 1e3) return "$" + (val / 1e3).toFixed(2) + "K";
+            return "$" + val.toFixed(2);
+        }
+
+        function updateCoinCard(prefix, coin) {
+            var el = function (id) { return document.getElementById(id); };
+            var change = coin.price_change_percentage_24h || 0;
+            var isUp = change >= 0;
+
+            el(prefix + "Img").src = coin.image || "";
+            el(prefix + "Name").textContent = coin.name + " ";
+            el(prefix + "Symbol").textContent = "(" + (coin.symbol || "").toUpperCase() + ")";
+            el(prefix + "Price").textContent = formatCurrency(coin.current_price);
+            el(prefix + "Change").textContent = (isUp ? " " : "") + change.toFixed(2) + "%";
+            el(prefix + "Change").style.color = isUp ? "#10B981" : "#EF4444";
+
+            var badge = el(prefix + "ChangeBadge");
+            badge.style.background = isUp ? "rgba(16,185,129,0.1)" : "rgba(239,68,68,0.1)";
+            badge.querySelector("svg").setAttribute("stroke", isUp ? "#10B981" : "#EF4444");
+            if (!isUp) badge.querySelector("svg path").setAttribute("d", "m6 9 6 6 6-6");
+            else badge.querySelector("svg path").setAttribute("d", "m18 15-6-6-6 6");
+
+            el(prefix + "Mcap").textContent = formatCompact(coin.market_cap);
+
+            if (prefix === "primary") {
+                el("primaryVol").textContent = formatCompact(coin.total_volume);
+            } else {
+                el("compVol24").textContent = formatCompact(coin.total_volume);
+            }
+
+            el(prefix + "Ath").textContent = formatCurrency(coin.ath);
+            var athChange = coin.ath_change_percentage || 0;
+            el(prefix + "AthDist").textContent = athChange.toFixed(2) + "%";
+            el(prefix + "AthDist").style.color = athChange >= 0 ? "#10B981" : "#EF4444";
+        }
+
+        async function fetchCoinData(coinId) {
+            var res = await fetch(API_BASE + "/coins");
+            var data = await res.json();
+            return data.find(function (c) { return c.id === coinId; });
+        }
+
+        async function fetchHistory(coinId) {
+            var res = await fetch(
+                "https://api.coingecko.com/api/v3/coins/" + coinId + "/market_chart?vs_currency=usd&days=30&interval=daily"
+            );
+            var data = await res.json();
+            return data.prices.map(function (p) {
+                return { t: new Date(p[0]).toLocaleDateString(), v: p[1] };
+            });
+        }
+
+        async function fetchSentiment() {
+            var res = await fetch("https://api.alternative.me/fng/");
+            var data = await res.json();
+            return data.data[0];
+        }
+
+        function calculateVolatility(prices) {
+            var returns = [];
+            for (var i = 1; i < prices.length; i++) {
+                returns.push((prices[i].v - prices[i - 1].v) / prices[i - 1].v);
+            }
+            var mean = returns.reduce(function (a, b) { return a + b; }) / returns.length;
+            var variance = returns.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / returns.length;
+            return Math.sqrt(variance) * 100;
+        }
+
+        function calculateMaxDrawdown(prices) {
+            var peak = prices[0].v;
+            var maxDd = 0;
+            for (var i = 1; i < prices.length; i++) {
+                if (prices[i].v > peak) peak = prices[i].v;
+                var dd = ((prices[i].v - peak) / peak) * 100;
+                if (dd < maxDd) maxDd = dd;
+            }
+            return maxDd;
+        }
+
+        async function loadCards() {
+            var id1 = document.getElementById("asset1").value;
+            var id2 = document.getElementById("asset2").value;
+            try {
+                var res = await fetch(API_BASE + "/coins");
+                var allCoins = await res.json();
+                var coin1 = allCoins.find(function (c) { return c.id === id1; });
+                var coin2 = allCoins.find(function (c) { return c.id === id2; });
+                if (coin1) updateCoinCard("primary", coin1);
+                if (coin2) updateCoinCard("comp", coin2);
+                document.getElementById("legendPrimary").textContent = coin1 ? coin1.name : id1;
+                document.getElementById("legendComp").textContent = coin2 ? coin2.name : id2;
+            } catch (e) {
+                console.error("Failed to load coin data", e);
+            }
+        }
+
+        document.getElementById("asset1").addEventListener("change", loadCards);
+        document.getElementById("asset2").addEventListener("change", loadCards);
+        loadCards();
+
+        async function runComparison() {
+            var id1 = document.getElementById("asset1").value;
+            var id2 = document.getElementById("asset2").value;
+            var btn = document.getElementById("btnRun");
+            var loading = document.getElementById("loading");
+
+            btn.disabled = true;
+            btn.style.opacity = "0.7";
+            loading.classList.remove("hidden");
+
+            try {
+                var results = await Promise.all([
+                    fetchHistory(id1),
+                    fetchHistory(id2),
+                    fetchSentiment()
+                ]);
+
+                var data1 = results[0];
+                var data2 = results[1];
+                var sentiment = results[2];
+
+                var vol1 = calculateVolatility(data1);
+                var vol2 = calculateVolatility(data2);
+                var dd1 = calculateMaxDrawdown(data1);
+                var dd2 = calculateMaxDrawdown(data2);
+                var fngScore = parseInt(sentiment.value);
+                var medianRisk = Math.round((vol2 * 5 + (100 - fngScore)) / 2);
+
+                var name1 = document.getElementById("primaryName").textContent.trim();
+                var name2 = document.getElementById("compName").textContent.trim();
+
+                updateChart(data1, data2, name1, name2);
+                updateRiskScore(medianRisk);
+                updateInsights(vol1, vol2, dd1, dd2, fngScore, sentiment.value_classification, name1, name2);
+                updateAlert(medianRisk, vol1, vol2, fngScore, name1, name2);
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById("alertText").textContent =
+                    "Gagal mengambil data. CoinGecko API memiliki limit, silakan tunggu 1 menit lalu coba lagi.";
+            } finally {
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                loading.classList.add("hidden");
+            }
+        }
+
+        function updateChart(d1, d2, name1, name2) {
+            var base1 = d1[0].v;
+            var base2 = d2[0].v;
+            var norm1 = d1.map(function (p) { return ((p.v - base1) / base1) * 100; });
+            var norm2 = d2.map(function (p) { return ((p.v - base2) / base2) * 100; });
+
+            Chart.defaults.color = "#6B7280";
+            var ctx = document.getElementById("historicalChart").getContext("2d");
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: d1.map(function (x) { return x.t; }),
+                    datasets: [
+                        {
+                            label: name1,
+                            data: norm1,
+                            borderColor: "#3B82F6",
+                            backgroundColor: "rgba(59,130,246,0.1)",
+                            tension: 0.4,
+                            borderWidth: 2.5,
+                            fill: true,
+                            pointRadius: 0
+                        },
+                        {
+                            label: name2,
+                            data: norm2,
+                            borderColor: "#F59E0B",
+                            backgroundColor: "rgba(245,158,11,0.1)",
+                            tension: 0.4,
+                            borderWidth: 2.5,
+                            fill: true,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    interaction: { intersect: false, mode: "index" },
+                    scales: {
+                        y: {
+                            grid: { color: "rgba(255,255,255,0.05)" },
+                            ticks: { callback: function (v) { return v + "%"; } }
+                        },
+                        x: {
+                            grid: { color: "rgba(255,255,255,0.03)" },
+                            ticks: { maxTicksLimit: 8 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (ctx) { return ctx.dataset.label + ": " + ctx.parsed.y.toFixed(2) + "%"; }
+                            }
+                        }
+                    }
+                }
+            });
+
+            document.getElementById("legendPrimary").textContent = name1;
+            document.getElementById("legendComp").textContent = name2;
+        }
+
+        function updateRiskScore(median) {
+            var el = document.getElementById("medianScore");
+            el.textContent = median + "%";
+
+            var labelEl = document.getElementById("riskLabel");
+            var badgeEl = document.getElementById("riskLabelBadge");
+
+            if (median < 30) {
+                labelEl.textContent = "LOW RISK";
+                labelEl.style.color = "#10B981";
+                badgeEl.style.background = "rgba(16,185,129,0.1)";
+            } else if (median < 60) {
+                labelEl.textContent = "MODERATE CAUTION";
+                labelEl.style.color = "#FBBF24";
+                badgeEl.style.background = "rgba(245,158,11,0.1)";
+            } else {
+                labelEl.textContent = "HIGH RISK - SPECULATIVE";
+                labelEl.style.color = "#EF4444";
+                badgeEl.style.background = "rgba(239,68,68,0.1)";
+            }
+
+            gsap.fromTo(el, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: "back.out(2)" });
+        }
+
+        function updateInsights(v1, v2, dd1, dd2, fng, fngLabel, name1, name2) {
+            var ratio = (v2 / v1).toFixed(1);
+            document.getElementById("insightVolRatio").textContent = ratio + "x";
+            document.getElementById("insightVolText").textContent =
+                name2 + " memiliki volatilitas " + v2.toFixed(1) + "% dibandingkan " + name1 + " (" + v1.toFixed(1) + "%). Ini menandakan pergerakan harga yang liar tak terprediksi dalam waktu dekat (speculative).";
+
+            document.getElementById("insightDrawdown").textContent = dd2.toFixed(1) + "%";
+            document.getElementById("insightDrawdownVs").textContent = "vs " + dd1.toFixed(1) + "%";
+            document.getElementById("insightDrawdownText").textContent =
+                "Dalam 30 hari terakhir, penurunan terdalam (drawdown) " + name2 + " mencapai lebih dari pembagian 1/4 nilainya. Risiko kehilangan pokok investasi sangat besar.";
+
+            document.getElementById("insightFomo").textContent = "Index " + fng;
+            document.getElementById("insightFomoLabel").textContent = "(" + fngLabel + ")";
+            document.getElementById("insightFomoText").textContent =
+                "Pasar saat ini dipengaruhi sifat keserakahan. Aset spekulatif rentan \"dump\" atau jatuh setelah banyak pembeli tersulut FOMO masuk.";
+        }
+
+        function updateAlert(median, v1, v2, fng, name1, name2) {
+            var alertText = document.getElementById("alertText");
+            var ratio = (v2 / v1).toFixed(0);
+
+            if (median < 30) {
+                alertText.textContent =
+                    "Low Risk Zone: Kedua aset menunjukkan volatilitas rendah dan sentimen pasar yang stabil. Kombinasi " + name1 + " dan " + name2 + " termasuk dalam zona aman untuk portofolio jangka panjang.";
+            } else if (median < 60) {
+                alertText.textContent =
+                    "Moderate Caution: " + name2 + " menunjukkan volatilitas yang cukup tinggi (" + ratio + "x lebih tinggi dari " + name1 + "). Pastikan Anda melakukan riset mendalam dan jangan investasikan lebih dari yang Anda mampu kehilangan.";
+            } else {
+                alertText.textContent =
+                    "High Speculation Flag: " + name2 + " displays severe volatility (" + ratio + "x higher than " + name1 + ") coupled with overwhelming market greed. Combining these assets pushes the portfolio into highly speculative territory, contradicting SDG 12 principles of responsible financial behavior.";
+            }
+        }
+    </script>
+
+    <script src="navbar.js"></script>
+    <script src="transitions.js"></script>
+</body>
+
+</html>

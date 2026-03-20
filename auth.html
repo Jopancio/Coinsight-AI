@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CoinSight AI | Login & Sign Up</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="toast.js"></script>
+
+  <style>
+    .form-container {
+      transition: all 0.4s ease-in-out;
+    }
+
+    .hidden-form {
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      transform: translateX(20px);
+    }
+
+    .active-form {
+      opacity: 1;
+      pointer-events: auto;
+      position: relative;
+      transform: translateX(0);
+    }
+
+    .input-field {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      transition: border-color 0.3s;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #10b981;
+      /* emerald-500 */
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+    }
+  </style>
+  <script>if(sessionStorage.getItem('page-transitioning')){document.documentElement.style.opacity='0';}</script>
+</head>
+
+<body
+  class="antialiased min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-900 text-slate-50">
+
+  <!-- Back to Home -->
+  <a href="home.html"
+    class="absolute top-6 left-6 flex items-center gap-2 text-gray-400 hover:text-emerald transition-colors z-50">
+    <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
+  </a>
+
+  <!-- Background Effects -->
+  <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-tech-blue-glow rounded-full blur-[100px] -z-10 opacity-50"></div>
+  <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-glow rounded-full blur-[120px] -z-10 opacity-50"></div>
+
+  <!-- Auth Card -->
+  <div class="glass-card w-full max-w-md p-8 rounded-3xl shadow-2xl relative z-10 border border-white/10">
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="flex items-center justify-center gap-2 mb-4">
+        <i class="fa-solid fa-chart-line text-emerald text-3xl"></i>
+        <span class="text-2xl font-extrabold tracking-tight">
+          Coin<span class="text-emerald">Sight</span> AI
+        </span>
+      </div>
+      <p class="text-gray-400 text-sm" id="auth-subtitle">Masuk untuk melanjutkan ke dashboard.</p>
+    </div>
+
+    <!-- Toggle Buttons -->
+    <div class="flex p-1 mb-8 bg-slate-800/50 rounded-xl border border-white/5">
+      <button id="btn-login"
+        class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all bg-emerald/20 text-emerald shadow-sm"
+        onclick="switchTab('login')">Login</button>
+      <button id="btn-signup"
+        class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all text-gray-400 hover:text-gray-200"
+        onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <div class="relative min-h-[300px]">
+
+      <!-- Login Form -->
+      <form id="login-form" class="form-container active-form space-y-5" onsubmit="handleAuth(event, 'login')">
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-1.5">Email</label>
+          <div class="relative">
+            <i class="fa-regular fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"></i>
+            <input type="email" required class="input-field w-full pl-10 pr-4 py-3 rounded-xl text-sm"
+              placeholder="nama@email.com">
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label class="block text-sm font-medium text-gray-300">Password</label>
+            <a href="#" class="text-xs text-emerald hover:underline">Lupa password?</a>
+          </div>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"></i>
+            <input id="login-password" type="password" required class="input-field w-full pl-10 pr-10 py-3 rounded-xl text-sm"
+              placeholder="••••••••">
+            <button type="button" onclick="togglePassword('login-password', 'login-pw-eye')" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors">
+              <i id="login-pw-eye" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit"
+          class="w-full bg-emerald hover:bg-emerald-600 text-white py-3 rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] mt-2">
+          Masuk <i class="fa-solid fa-arrow-right ml-1"></i>
+        </button>
+
+        <div class="mt-6 flex items-center justify-center space-x-2">
+          <span class="h-px bg-white/10 flex-1"></span>
+          <span class="text-xs text-gray-500">atau masuk dengan</span>
+          <span class="h-px bg-white/10 flex-1"></span>
+        </div>
+
+        <div class="flex gap-3 mt-4">
+          <button type="button"
+            class="flex-1 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 transition-colors flex justify-center items-center">
+            <i class="fa-brands fa-google text-lg"></i>
+          </button>
+          <button type="button"
+            class="flex-1 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 transition-colors flex justify-center items-center">
+            <i class="fa-brands fa-apple text-lg mb-1"></i>
+          </button>
+        </div>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="signup-form" class="form-container hidden-form space-y-4" onsubmit="handleAuth(event, 'signup')">
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-1.5">Nama Lengkap</label>
+          <div class="relative">
+            <i class="fa-regular fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"></i>
+            <input type="text" required class="input-field w-full pl-10 pr-4 py-3 rounded-xl text-sm"
+              placeholder="Masukan Nama Lengkap">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-1.5">Email</label>
+          <div class="relative">
+            <i class="fa-regular fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"></i>
+            <input type="email" required class="input-field w-full pl-10 pr-4 py-3 rounded-xl text-sm"
+              placeholder="nama@email.com">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-1.5">Password</label>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"></i>
+            <input id="signup-password" type="password" required class="input-field w-full pl-10 pr-10 py-3 rounded-xl text-sm"
+              placeholder="Minimal 8 karakter">
+            <button type="button" onclick="togglePassword('signup-password', 'signup-pw-eye')" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors">
+              <i id="signup-pw-eye" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit"
+          class="w-full bg-tech-blue hover:bg-blue-600 text-white py-3 rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(30,58,138,0.4)] mt-4">
+          Buat Akun <i class="fa-solid fa-user-plus ml-1"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+    function togglePassword(inputId, iconId) {
+      var input = document.getElementById(inputId);
+      var icon = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    }
+
+    function switchTab(tab) {
+      const loginForm = document.getElementById('login-form');
+      const signupForm = document.getElementById('signup-form');
+      const btnLogin = document.getElementById('btn-login');
+      const btnSignup = document.getElementById('btn-signup');
+      const subtitle = document.getElementById('auth-subtitle');
+
+      if (tab === 'login') {
+        loginForm.classList.remove('hidden-form');
+        loginForm.classList.add('active-form');
+        signupForm.classList.remove('active-form');
+        signupForm.classList.add('hidden-form');
+
+        btnLogin.className = "flex-1 py-2 rounded-lg text-sm font-semibold transition-all bg-emerald/20 text-emerald shadow-sm";
+        btnSignup.className = "flex-1 py-2 rounded-lg text-sm font-semibold transition-all text-gray-400 hover:text-gray-200";
+        subtitle.textContent = "Masuk untuk melanjutkan ke dashboard.";
+      } else {
+        signupForm.classList.remove('hidden-form');
+        signupForm.classList.add('active-form');
+        loginForm.classList.remove('active-form');
+        loginForm.classList.add('hidden-form');
+
+        btnSignup.className = "flex-1 py-2 rounded-lg text-sm font-semibold transition-all bg-tech-blue/20 text-tech-blue shadow-sm";
+        btnLogin.className = "flex-1 py-2 rounded-lg text-sm font-semibold transition-all text-gray-400 hover:text-gray-200";
+        subtitle.textContent = "Daftar sekarang dan mulai investasi kripto cerdas.";
+      }
+    }
+
+    function handleAuth(e, type) {
+      e.preventDefault();
+      
+      const btn = e.target.querySelector('button[type="submit"]');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        if (type === 'signup') {
+          const name = e.target.querySelector('input[type="text"]').value;
+          const email = e.target.querySelector('input[type="email"]').value;
+          const password = e.target.querySelector('input[type="password"]').value;
+
+          let users = JSON.parse(localStorage.getItem('users')) || [];
+          
+          if (users.find(u => u.email === email)) {
+            showToast('Email sudah terdaftar! Silakan login.', 'error');
+          } else {
+            users.push({ name, email, password });
+            localStorage.setItem('users', JSON.stringify(users));
+            showToast('Akun berhasil dibuat! Silakan masuk.', 'success');
+            switchTab('login');
+            e.target.reset();
+          }
+        } else if (type === 'login') {
+          const email = e.target.querySelector('input[type="email"]').value;
+          const password = e.target.querySelector('input[type="password"]').value;
+          
+          let users = JSON.parse(localStorage.getItem('users')) || [];
+          const user = users.find(u => u.email === email && u.password === password);
+
+          if (user) {
+            localStorage.setItem('currentUser', JSON.stringify({ name: user.name, email: user.email }));
+            showToast('Login berhasil! Mengalihkan...', 'success', 1500);
+            setTimeout(() => { window.location.href = 'home.html'; }, 1200);
+          } else {
+            showToast('Email atau password salah!', 'error');
+          }
+        }
+        
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }, 800);
+    }
+  </script>
+</body>
+
+</html>

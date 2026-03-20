@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CoinSight AI | Smart Crypto Analysis</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="toast.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Flip.min.js"></script>
+  <script>if (sessionStorage.getItem('page-transitioning')) { document.documentElement.style.opacity = '0'; }</script>
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+</head>
+
+<body class="antialiased overflow-x-hidden">
+  <nav id="main-nav"
+    style="position:fixed;left:50%;transform:translateX(-50%);top:0;width:100%;border-radius:0;z-index:50;"
+    class="glass-card border border-white/10">
+    <div id="nav-container"
+      style="max-width:80rem;margin:0 auto;padding:2rem 1.5rem;display:flex;justify-content:space-between;align-items:center;">
+      <div class="flex items-center gap-2">
+        <div id="logo-icon" style="width:2.5rem;height:2.5rem;font-size:1.5rem;"
+          class="rounded-lg bg-tech-blue flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">
+          <i class="fa-solid fa-chart-pie"></i>
+        </div>
+        <span id="logo-text" style="font-size:1.5rem;" class="font-bold tracking-tight wave-glow-text"><span
+            class="char" style="animation-delay: 0s">C</span><span class="char"
+            style="animation-delay: 0.1s">o</span><span class="char" style="animation-delay: 0.2s">i</span><span
+            class="char" style="animation-delay: 0.3s">n</span><span class="char"
+            style="animation-delay: 0.4s">S</span><span class="char" style="animation-delay: 0.5s">i</span><span
+            class="char" style="animation-delay: 0.6s">g</span><span class="char"
+            style="animation-delay: 0.7s">h</span><span class="char" style="animation-delay: 0.8s">t</span><span
+            class="char" style="animation-delay: 0.9s">&nbsp;</span><span class="char text-emerald"
+            style="animation-delay: 1s">A</span><span class="char text-emerald"
+            style="animation-delay: 1.1s">I</span></span>
+      </div>
+      <div id="nav-links" style="gap:2.5rem;font-size:1rem;" class="hidden md:flex font-semibold text-gray-300">
+        <a href="home.html" class="nav-hover-link nav-active"
+          style="display:inline-flex;align-items:center;gap:0.4rem;"><i data-lucide="home"
+            style="width:1rem;height:1rem;"></i>Home</a>
+        <a href="market.html" class="nav-hover-link" style="display:inline-flex;align-items:center;gap:0.4rem;"><i
+            data-lucide="trending-up" style="width:1rem;height:1rem;"></i>Market</a>
+        <a href="analisa.html" class="nav-hover-link" style="display:inline-flex;align-items:center;gap:0.4rem;"><i
+            data-lucide="bar-chart-2" style="width:1rem;height:1rem;"></i>Analisa</a>
+        <a href="about.html" class="nav-hover-link" style="display:inline-flex;align-items:center;gap:0.4rem;"><i
+            data-lucide="users" style="width:1rem;height:1rem;"></i>About Us</a>
+        <a href="news.html" class="nav-hover-link" style="display:inline-flex;align-items:center;gap:0.4rem;"><i
+            data-lucide="newspaper" style="width:1rem;height:1rem;"></i>Berita</a>
+      </div>
+      <div id="nav-actions" class="flex items-center gap-4">
+        <button id="nav-btn" style="padding:0.75rem 2rem;font-size:1rem;" onclick="window.location.href='auth.html'"
+          class="bg-amber hover:bg-yellow-500 text-slate-900 rounded-full font-bold shadow-[0_0_15px_rgba(245,158,11,0.4)]">
+          Coba App <i class="fa-solid fa-arrow-right ml-1"></i>
+        </button>
+        <button id="mobile-menu-btn"
+          class="md:hidden flex flex-col justify-center items-center w-10 h-10 rounded-xl glass-card border border-white/10"
+          aria-label="Toggle menu">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+  <div id="mobile-menu-dropdown">
+    <div class="mobile-nav-inner">
+      <a href="home.html" class="nav-active"><i class="fa-solid fa-house"></i> Home</a>
+      <a href="market.html"><i class="fa-solid fa-chart-line"></i> Market</a>
+      <a href="analisa.html"><i class="fa-solid fa-bar-chart"></i> Analisa</a>
+      <a href="news.html"><i class="fa-solid fa-newspaper"></i> Berita</a>
+      <a href="about.html"><i class="fa-solid fa-users"></i> About Us</a>
+    </div>
+  </div>
+  <div id="mobile-menu-overlay"></div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      const navActions = document.getElementById("nav-actions");
+
+      if (currentUser && navActions) {
+        navActions.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-semibold text-gray-300 hidden md:block">Halo, ${currentUser.name.split(' ')[0]}</span>
+            <div class="w-10 h-10 rounded-full bg-tech-blue flex items-center justify-center text-white font-bold border-2 border-white/10 shadow-sm cursor-pointer hover:bg-blue-600 transition" onclick="logout()" title="Logout">
+              ${currentUser.name.charAt(0).toUpperCase()}
+            </div>
+          </div>
+        `;
+      }
+    });
+
+    function logout() {
+      if (confirm('Apakah Anda yakin ingin keluar?')) {
+        localStorage.removeItem('currentUser');
+        window.location.reload();
+      }
+    }
+  </script>
+
+  <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 px-6 overflow-hidden">
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-tech-blue-glow rounded-full blur-[100px] -z-10"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-glow rounded-full blur-[120px] -z-10"></div>
+
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center section-fade-up">
+      <div class="space-y-8 z-10">
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-card text-xs font-semibold text-emerald border-emerald/30">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Live Market Data
+        </div>
+        <h1 class="text-5xl lg:text-7xl font-extrabold leading-tight">
+          Investasi Kripto Pakai
+          <span class="slot-machine-container text-emerald-400 font-bold">
+            <span class="slot-machine-text">
+              <span>Strategi</span>
+              <span>Mindset</span>
+              <span>Logika</span>
+              <span aria-hidden="true">Strategi</span>
+            </span>
+          </span>,<br />Bukan
+          Emosi.
+        </h1>
+        <p class="text-lg text-gray-400 leading-relaxed max-w-lg">
+          Bandingkan aset kripto dalam hitungan detik. AI kami membaca ribuan
+          <strong class="font-bold text-white">whitepaper</strong> dan sentimen berita menjadi ringkasan sejelas membaca
+          lampu lalu lintas.
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <button onclick="checkAuthAndRedirect('analisa.html')"
+            class="hero-hover-btn bg-tech-blue hover:bg-blue-800 text-white px-8 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(30,58,138,0.5)]">
+            Analisa Data
+          </button>
+          <button onclick="window.location.href='auth.html'"
+            class="hero-hover-btn glass-card hover:bg-white/10 text-white px-8 py-4 rounded-xl font-bold transition-all border border-white/20 flex items-center gap-2">
+            <i class="fa-solid fa-play text-emerald"></i> Cara Kerja
+          </button>
+        </div>
+        <div class="pt-4 flex items-center gap-4 text-sm text-gray-500 font-medium">
+          <i class="fa-solid fa-shield-halved text-gray-400"></i> Mendukung
+          SDG 8 & 9
+        </div>
+      </div>
+
+      <script>
+        function checkAuthAndRedirect(url) {
+          const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+          if (currentUser) {
+            window.location.href = url;
+          } else {
+            showToast('Silakan login terlebih dahulu untuk mengakses fitur ini.', 'warning');
+            window.location.href = 'auth.html';
+          }
+        }
+      </script>
+
+      <div class="relative z-10 floating flex justify-center mt-10 lg:mt-0">
+        <div
+          class="glass-card w-[280px] sm:w-[310px] h-[580px] sm:h-[620px] rounded-[3rem] border-[12px] border-black bg-slate-950/80 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden flex flex-col">
+          <div
+            class="absolute top-2 left-1/2 -translate-x-1/2 w-28 h-6 bg-black rounded-full z-20 flex justify-between items-center px-4 shadow-sm border border-gray-800">
+            <div class="w-1.5 h-1.5 rounded-full bg-[#0a0a0a] border border-[#2a2a2a]"></div>
+            <div class="w-1.5 h-1.5 rounded-full bg-emerald-500/40 blur-[1px]"></div>
+          </div>
+
+          <div class="p-5 pt-12 flex-1 overflow-y-auto overflow-x-hidden relative scrollbar-hide">
+            <div class="flex justify-between items-center mb-6">
+              <div class="text-sm font-semibold text-gray-400">AI Match-Up</div>
+              <i class="fa-solid fa-ellipsis text-gray-400"></i>
+            </div>
+
+            <div id="hero-top-gainer-card"
+              class="bg-gradient-to-br from-[#1E3A8A] to-[#0F172A] rounded-2xl p-5 mb-6 border border-white/10 relative overflow-hidden shadow-lg shadow-blue-900/20">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
+              <div id="hero-top-gainer-content">
+                <p class="text-xs text-gray-300 mb-1">Pemenang Analisis AI</p>
+                <div class="py-6 flex flex-col items-center justify-center text-center">
+                  <div
+                    class="inline-block animate-spin rounded-full h-7 w-7 border-t-2 border-b-2 border-emerald-400 mb-4">
+                  </div>
+                  <p class="text-sm text-gray-400">Mencari koin paling naik...</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="pb-8">
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Peringkat Koin</p>
+                <span class="text-[10px] text-gray-500 font-medium">Top 10 • 24 Jam</span>
+              </div>
+              <div id="hero-ranking-list" class="max-h-[250px] overflow-hidden">
+                <div class="py-10 flex flex-col items-center justify-center text-center">
+                  <div
+                    class="inline-block animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-tech-blue mb-3">
+                  </div>
+                  <p class="text-xs text-gray-500">Menyusun peringkat koin...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="w-full flex justify-center pb-2 pt-4 bg-gradient-to-t from-black/80 to-transparent absolute bottom-0 pointer-events-none">
+            <div class="w-32 h-1 bg-white/30 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="market-data" class="py-24 px-6 relative overflow-hidden">
+    <div class="absolute top-1/4 right-1/4 w-[450px] h-[450px] bg-emerald-500/8 rounded-full blur-[130px] -z-10"></div>
+    <div class="absolute bottom-1/3 left-1/3 w-[400px] h-[400px] bg-blue-600/6 rounded-full blur-[110px] -z-10"></div>
+
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-14 gap-8 section-fade-up">
+        <div class="space-y-4">
+          <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-900/30 border border-emerald-700/30 text-xs font-bold text-emerald-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            UPDATE REAL-TIME
+          </div>
+          <h2 class="text-3xl lg:text-5xl font-extrabold leading-tight">
+            Live Market <span class="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Analysis</span>
+          </h2>
+          <p class="text-gray-400 max-w-lg text-base lg:text-lg leading-relaxed">
+            Data real-time dari pasar kripto global. Klik kartu untuk eksplorasi lengkap.
+          </p>
+          <div class="flex flex-wrap items-center gap-3 pt-1">
+            <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-gray-400 bg-white/5 px-3 py-1.5 rounded-full border border-white/8">
+              <i class="fa-solid fa-coins text-emerald-400 text-[9px]"></i> 50+ Koin
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-gray-400 bg-white/5 px-3 py-1.5 rounded-full border border-white/8">
+              <i class="fa-solid fa-bolt text-amber-400 text-[9px]"></i> Auto-Refresh
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-gray-400 bg-white/5 px-3 py-1.5 rounded-full border border-white/8">
+              <i class="fa-solid fa-globe text-blue-400 text-[9px]"></i> Data Global
+            </span>
+          </div>
+        </div>
+
+        <div class="relative w-full md:w-96 group">
+          <div class="absolute -inset-0.5 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 blur-sm"></div>
+          <div class="relative">
+            <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5 group-focus-within:text-emerald-400 transition-colors"></i>
+            <input type="text" id="crypto-search" placeholder="Cari koin atau simbol..."
+              class="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-emerald/40 focus:bg-white/8 transition-all duration-300" />
+          </div>
+        </div>
+      </div>
+
+      <div class="section-fade-up">
+        <div class="relative w-full overflow-hidden" id="market-slideshow-wrapper" style="padding: 0 20px;">
+          <div id="crypto-table-body" class="relative w-full" style="min-height: 580px;">
+            <div class="py-20 text-center w-full">
+              <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-emerald-500 mb-4">
+              </div>
+              <p class="text-gray-500">Memuat data pasar...</p>
+            </div>
+          </div>
+
+          <button id="btn-prev-market"
+            class="market-nav-btn absolute left-0 md:left-2 top-1/2 -translate-y-1/2 z-20 w-11 h-11 md:w-12 md:h-12 rounded-full glass-card flex items-center justify-center transition-all text-white border border-white/10 shadow-lg"><i
+              class="fa-solid fa-chevron-left text-sm"></i></button>
+          <button id="btn-next-market"
+            class="market-nav-btn absolute right-0 md:right-2 top-1/2 -translate-y-1/2 z-20 w-11 h-11 md:w-12 md:h-12 rounded-full glass-card flex items-center justify-center transition-all text-white border border-white/10 shadow-lg"><i
+              class="fa-solid fa-chevron-right text-sm"></i></button>
+        </div>
+
+        <div id="market-dots" class="flex justify-center gap-2 mt-8"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="news" class="py-20 px-6 bg-black/20 overflow-hidden">
+    <div class="max-w-7xl mx-auto">
+
+      <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 section-fade-up">
+        <div>
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-900/40 border border-blue-700/30 text-xs font-bold text-blue-400 mb-3">
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+            LIVE UPDATES
+          </div>
+          <h2 class="text-3xl lg:text-4xl font-bold mb-2">Crypto <span class="text-tech-blue">News & Updates</span></h2>
+          <p class="text-gray-400 max-w-lg">Berita dan artikel terkini dari pasar cryptocurrency global, diperbarui
+            setiap saat.</p>
+        </div>
+        <a href="news.html"
+          class="group flex items-center gap-2 px-5 py-2.5 rounded-full glass-card border border-white/10 text-sm font-bold text-gray-300 hover:text-white hover:border-tech-blue/50 transition-all duration-300 shrink-0">
+          Lihat Semua Berita
+          <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+        </a>
+      </div>
+
+      <div id="news-layout-wrapper" class="section-fade-up">
+        <div id="news-loader" class="col-span-full py-20 flex flex-col items-center justify-center">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-tech-blue mb-4"></div>
+          <p class="text-gray-500">Memuat berita terbaru...</p>
+        </div>
+
+        <div id="news-main-grid" class="hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5">
+            <div id="news-featured" class="lg:col-span-7"></div>
+            <div id="news-side-stack" class="lg:col-span-5 flex flex-col gap-5"></div>
+          </div>
+
+          <div class="relative">
+            <div
+              class="absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-black/20 to-transparent z-10 pointer-events-none">
+            </div>
+            <div
+              class="absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-black/20 to-transparent z-10 pointer-events-none">
+            </div>
+            <div id="news-ticker-track" class="flex gap-4 overflow-x-auto scrollbar-hide pb-1"
+              style="scroll-behavior: auto;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="fitur" class="py-24 overflow-hidden relative">
+    <div class="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-blue-600/8 rounded-full blur-[120px] -z-10"></div>
+    <div class="absolute bottom-1/4 right-1/5 w-[400px] h-[400px] bg-emerald-500/8 rounded-full blur-[100px] -z-10"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-purple-600/5 rounded-full blur-[140px] -z-10"></div>
+
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-20 section-fade-up">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-900/30 border border-blue-700/30 text-xs font-bold text-blue-400 mb-5">
+          <i class="fa-solid fa-cubes text-[10px]"></i>
+          FITUR UNGGULAN
+        </div>
+        <h2 class="text-3xl lg:text-5xl font-extrabold mb-5 leading-tight">
+          Kenapa Memilih <span class="bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">CoinSight AI</span>?
+        </h2>
+        <p class="text-gray-400 max-w-2xl mx-auto text-base lg:text-lg leading-relaxed">
+          Dirancang layaknya e-wallet pintar, kami memberikan data paling
+          krusial tanpa membuat Anda pusing.
+        </p>
+      </div>
+    </div>
+
+    <div class="fitur-marquee-wrapper">
+      <div class="fitur-marquee-row">
+        <div class="fitur-marquee-track fitur-marquee-left">
+          <div class="fitur-marquee-card" style="--card-accent: #3b82f6; --card-glow: rgba(59,130,246,0.15);">
+            <div class="fitur-marquee-num" style="color: rgba(59,130,246,0.15);">01</div>
+            <div class="fitur-marquee-icon" style="background: rgba(30,58,138,0.4); color: #60a5fa;">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="fitur-marquee-content">
+              <h3>Live Market Data & Sparklines</h3>
+              <p>Pantau pergerakan harga, kapitalisasi pasar, dan volume 24 jam secara real-time dengan grafik sparkline instan.</p>
+            </div>
+            <div class="fitur-card-shine"></div>
+          </div>
+
+          <div class="fitur-marquee-card" style="--card-accent: #10b981; --card-glow: rgba(16,185,129,0.15);">
+            <div class="fitur-marquee-num" style="color: rgba(16,185,129,0.15);">02</div>
+            <div class="fitur-marquee-icon" style="background: rgba(6,78,59,0.4); color: #34d399;">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <div class="fitur-marquee-content">
+              <h3>Advanced Search & Deep Dive</h3>
+              <p>Temukan koin spesifik dengan cepat, buka modal detail interaktif dengan integrasi chart TradingView lengkap.</p>
+            </div>
+            <div class="fitur-card-shine"></div>
+          </div>
+
+          <div class="fitur-marquee-card" style="--card-accent: #f59e0b; --card-glow: rgba(245,158,11,0.15);">
+            <div class="fitur-marquee-num" style="color: rgba(245,158,11,0.15);">03</div>
+            <div class="fitur-marquee-badge">COMING SOON</div>
+            <div class="fitur-marquee-icon" style="background: rgba(120,53,15,0.4); color: #fbbf24;">
+              <i class="fa-solid fa-code-compare"></i>
+            </div>
+            <div class="fitur-marquee-content">
+              <h3>AI Coin Match-Up</h3>
+              <p>Adu 2 aset kripto dan AI membedah kelebihan, kelemahan, serta sentimen terkini secara instan.</p>
+            </div>
+            <div class="fitur-card-shine"></div>
+          </div>
+
+          <div class="fitur-marquee-card" style="--card-accent: #3b82f6; --card-glow: rgba(59,130,246,0.15);">
+            <div class="fitur-marquee-num" style="color: rgba(59,130,246,0.15);">01</div>
+            <div class="fitur-marquee-icon" style="background: rgba(30,58,138,0.4); color: #60a5fa;">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="fitur-marquee-content">
+              <h3>Live Market Data & Sparklines</h3>
+              <p>Pantau pergerakan harga, kapitalisasi pasar, dan volume 24 jam secara real-time dengan grafik sparkline instan.</p>
+            </div>
+            <div class="fitur-card-shine"></div>
+          </div>
+
+          <div class="fitur-marquee-card" style="--card-accent: #10b981; --card-glow: rgba(16,185,129,0.15);">
+            <div class="fitur-marquee-num" style="color: rgba(16,185,129,0.15);">02</div>
+            <div class="fitur-marquee-icon" style="background: rgba(6,78,59,0.4); color: #34d399;">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <div class="fitur-marquee-content">
+              <h3>Advanced Search & Deep Dive</h3>
+              <p>Temukan koin spesifik dengan cepat, buka modal detail interaktif dengan integrasi chart TradingView lengkap.</p>
+            </div>
+            <div class="fitur-card-shine"></div>
+          </div>
+
+          <div class="fitur-marquee-card" style="--card-accent: #f59e0b; --card-glow: rgba(245,158,11,0.15);">
+            <div class="fitur-marquee-num" style="color: rgba(245,158,11,0.15);">03</div>
+            <div class="fitur-marquee-badge">COMING SOON</div>
+            <div class="fitur-marquee-icon" style="background: rgba(120,53,15,0.4); color: #fbbf24;">
+              <i class="fa-solid fa-code-compare"></i>
+            </div>
+            <div class="fitur-marquee-content">
+              <h3>AI Coin Match-Up</h3>
+              <p>Adu 2 aset kripto dan AI membedah kelebihan, kelemahan, serta sentimen terkini secara instan.</p>
+            </div>
+            <div class="fitur-card-shine"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fitur-marquee-divider">
+        <div class="fitur-marquee-divider-line"></div>
+      </div>
+
+      <div class="fitur-marquee-row">
+        <div class="fitur-marquee-track fitur-marquee-right">
+          <div class="fitur-marquee-card" style="--card-accent: #ef4444; --card-glow: rgba(239,68,68,0.15);">
+            <div class="fitur-marquee-num" style="color: rgba(239,68,68,0.15);">04</div>
+            <div class="fitur-marquee-badge fitur-badge-red">COMING SOON</div>
+            <div class="fitur-marquee-icon" style="background: rgba(127,29,29,0.4); color: #f87171;">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="fitur-marquee-content">
+              <h3>Scam & Risk Radar</h3>
+              <p>AI menganalisis riwayat developer, likuiditas, dan pola harga untuk memberikan Trust Score (0-100%).</p>
+            </div>
+            <div class="fitur-card-shine"></div>
+          </div>
+
+          <div class="fitur-marquee-card" style="--card-accent: #8b5cf6; --card-glow: rgba(139,92,246,0.15);">
+            <div class="fitur-marquee-num" style="color: rgba(139,92,246,0.15);">05</div>
+            <div class="fitur-marquee-badge fitur-badge-purple">COMING SOON</div>
+            <div class="fitur-marquee-icon" style="background: rgba(76,29,149,0.4); color: #a78bfa;">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="fitur-marquee-content">
+              <h3>Smart Portfolio Tracker</h3>
+              <p>Lacak portofolio kripto Anda dengan analisis profit/loss real-time dan rekomendasi rebalancing dari AI.</p>
+            </div>
+            <div class="fitur-card-shine"></div>
+          </div>
+
+          <div class="fitur-marquee-card" style="--card-accent: #06b6d4; --card-glow: rgba(6,182,212,0.15);">
+            <div class="fitur-marquee-num" style="color: rgba(6,182,212,0.15);">06</div>
+            <div class="fitur-marquee-icon" style="background: rgba(22,78,99,0.4); color: #22d3ee;">
+              <i class="fa-solid fa-newspaper"></i>
+            </div>
+            <div class="fitur-marquee-content">
+              <h3>AI News Aggregator</h3>
+              <p>Kumpulkan berita dari ratusan sumber global, difilter dan diringkas AI agar Anda tak ketinggalan info penting.</p>
+            </div>
+            <div class="fitur-card-shine"></div>
+          </div>
+
+          <div class="fitur-marquee-card" style="--card-accent: #ef4444; --card-glow: rgba(239,68,68,0.15);">
+            <div class="fitur-marquee-num" style="color: rgba(239,68,68,0.15);">04</div>
+            <div class="fitur-marquee-badge fitur-badge-red">COMING SOON</div>
+            <div class="fitur-marquee-icon" style="background: rgba(127,29,29,0.4); color: #f87171;">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="fitur-marquee-content">
+              <h3>Scam & Risk Radar</h3>
+              <p>AI menganalisis riwayat developer, likuiditas, dan pola harga untuk memberikan Trust Score (0-100%).</p>
+            </div>
+            <div class="fitur-card-shine"></div>
+          </div>
+
+          <div class="fitur-marquee-card" style="--card-accent: #8b5cf6; --card-glow: rgba(139,92,246,0.15);">
+            <div class="fitur-marquee-num" style="color: rgba(139,92,246,0.15);">05</div>
+            <div class="fitur-marquee-badge fitur-badge-purple">COMING SOON</div>
+            <div class="fitur-marquee-icon" style="background: rgba(76,29,149,0.4); color: #a78bfa;">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="fitur-marquee-content">
+              <h3>Smart Portfolio Tracker</h3>
+              <p>Lacak portofolio kripto Anda dengan analisis profit/loss real-time dan rekomendasi rebalancing dari AI.</p>
+            </div>
+            <div class="fitur-card-shine"></div>
+          </div>
+
+          <div class="fitur-marquee-card" style="--card-accent: #06b6d4; --card-glow: rgba(6,182,212,0.15);">
+            <div class="fitur-marquee-num" style="color: rgba(6,182,212,0.15);">06</div>
+            <div class="fitur-marquee-icon" style="background: rgba(22,78,99,0.4); color: #22d3ee;">
+              <i class="fa-solid fa-newspaper"></i>
+            </div>
+            <div class="fitur-marquee-content">
+              <h3>AI News Aggregator</h3>
+              <p>Kumpulkan berita dari ratusan sumber global, difilter dan diringkas AI agar Anda tak ketinggalan info penting.</p>
+            </div>
+            <div class="fitur-card-shine"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="reviews" class="py-20 px-6 bg-slate-900/50 relative overflow-hidden">
+    <!-- Background Effects -->
+    <div class="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[80px] -z-10"></div>
+    <div class="absolute bottom-0 left-0 w-64 h-64 bg-tech-blue/10 rounded-full blur-[80px] -z-10"></div>
+
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 section-fade-up">
+        <div>
+          <h2 class="text-3xl lg:text-4xl font-bold mb-3">Apa Kata <span class="text-amber">Pengguna?</span></h2>
+          <p class="text-gray-400 max-w-2xl">Pendapat mereka yang telah menggunakan CoinSight AI untuk menganalisis dan
+            memahami pasar kripto dengan lebih baik.</p>
+        </div>
+        <div class="glass-card p-4 rounded-2xl flex items-center gap-6 border border-white/10">
+          <div class="text-center">
+            <div class="text-3xl font-black text-amber flex items-center justify-center gap-1">
+              4.8 <i class="fa-solid fa-star text-lg"></i>
+            </div>
+            <div class="text-xs text-gray-400 mt-1">Rata-rata Rating</div>
+          </div>
+          <div class="w-px h-10 bg-white/10"></div>
+          <div class="text-center">
+            <div id="total-reviews" class="text-3xl font-black text-white">0</div>
+            <div class="text-xs text-gray-400 mt-1">Total Review</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Review Form (Hidden if not logged in) -->
+      <div id="add-review-container"
+        class="mb-12 glass-card p-6 rounded-3xl border border-white/10 section-fade-up hidden">
+        <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i
+            class="fa-solid fa-pen-to-square text-tech-blue"></i> Tulis Review Anda</h3>
+        <form id="review-form" class="space-y-4">
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Rating</label>
+            <div class="flex gap-2 text-2xl text-gray-600" id="star-rating-input">
+              <i class="fa-solid fa-star cursor-pointer hover:text-amber transition-colors" data-rating="1"></i>
+              <i class="fa-solid fa-star cursor-pointer hover:text-amber transition-colors" data-rating="2"></i>
+              <i class="fa-solid fa-star cursor-pointer hover:text-amber transition-colors" data-rating="3"></i>
+              <i class="fa-solid fa-star cursor-pointer hover:text-amber transition-colors" data-rating="4"></i>
+              <i class="fa-solid fa-star cursor-pointer hover:text-amber transition-colors" data-rating="5"></i>
+            </div>
+            <input type="hidden" id="selected-rating" required min="1" max="5">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Komentar</label>
+            <textarea id="review-text" required rows="3"
+              class="w-full bg-slate-800/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-tech-blue transition-colors resize-none"
+              placeholder="Bagaimana pengalaman Anda menggunakan CoinSight AI?"></textarea>
+          </div>
+          <button type="submit"
+            class="bg-tech-blue hover:bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold transition-all text-sm flex items-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i> Kirim Review
+          </button>
+        </form>
+      </div>
+
+      <!-- Login Prompt for Reviews -->
+      <div id="login-prompt-review"
+        class="mb-12 glass-card p-6 rounded-3xl border border-white/10 text-center section-fade-up">
+        <p class="text-gray-400 mb-4">Ingin membagikan pengalaman Anda? Silakan login terlebih dahulu.</p>
+        <button onclick="window.location.href='auth.html'"
+          class="bg-emerald/20 text-emerald hover:bg-emerald/30 border border-emerald/50 px-6 py-2 rounded-xl font-semibold transition-all">
+          Login untuk Mereview
+        </button>
+      </div>
+
+      <!-- Review Cards Carousel -->
+      <div class="section-fade-up">
+        <div class="flex justify-end gap-2 mb-4">
+          <button id="btn-prev-review"
+            class="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-white/10 transition-colors text-white hover:text-amber"><i
+              class="fa-solid fa-chevron-left"></i></button>
+          <button id="btn-next-review"
+            class="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-white/10 transition-colors text-white hover:text-amber"><i
+              class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <div class="relative w-full">
+          <div id="reviews-carousel" class="flex gap-6 overflow-x-auto scrollbar-hide pb-4">
+            <!-- Reviews will be loaded here via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-black/50 py-8 border-t border-white/10 mt-10">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-chart-pie text-tech-blue text-xl"></i>
+        <span class="font-bold text-lg">CoinSight AI</span>
+      </div>
+      <p class="text-gray-500 text-sm">
+        © 2026 Project Innovate (Jovan, Deco, Daniel). All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <script src="navbar.js"></script>
+  <script src="script.js"></script>
+  <script src="transitions.js"></script>
+</body>
+
+</html>

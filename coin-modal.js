@@ -184,97 +184,218 @@
                 var detailContent = document.createElement("div");
                 detailContent.className = "p-8 w-full h-full flex flex-col relative";
 
-                var percentColor = coin.price_change_percentage_24h >= 0 ? 'text-emerald' : 'text-red-500';
                 var percentSign = coin.price_change_percentage_24h >= 0 ? '+' : '';
-                var athColor = coin.ath_change_percentage >= 0 ? 'text-emerald' : 'text-red-500';
                 var athSign = coin.ath_change_percentage >= 0 ? '+' : '';
-                var atlColor = coin.atl_change_percentage >= 0 ? 'text-emerald' : 'text-red-500';
                 var atlSign = coin.atl_change_percentage >= 0 ? '+' : '';
                 var isFav = favoriteCoins.includes(coin.id);
                 var starIconClass = isFav ? 'fa-solid text-amber' : 'fa-regular text-gray-400';
 
+                // Computed values for redesigned overview
+                var modalIsUp      = coin.price_change_percentage_24h >= 0;
+                var modalAccent    = modalIsUp ? '#10b981' : '#ef4444';
+                var modalAccentRgb = modalIsUp ? '16,185,129' : '239,68,68';
+                var modalAccentDim = modalIsUp ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)';
+                var modal24hPct    = (coin.low_24h && coin.high_24h && coin.high_24h > coin.low_24h)
+                    ? Math.max(2, Math.min(98, Math.round(((coin.current_price - coin.low_24h) / (coin.high_24h - coin.low_24h)) * 100)))
+                    : 50;
+                var modalSupplyPct = (coin.max_supply && coin.circulating_supply)
+                    ? Math.round((coin.circulating_supply / coin.max_supply) * 100) : null;
+                var athProximity   = Math.max(2, Math.min(98, 100 + (coin.ath_change_percentage || 0)));
+                var athValueColor  = coin.ath_change_percentage >= 0 ? '#10b981' : '#ef4444';
+                var atlValueColor  = coin.atl_change_percentage >= 0 ? '#10b981' : '#ef4444';
+                var athDateStr     = coin.ath_date ? new Date(coin.ath_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+                var atlDateStr     = coin.atl_date ? new Date(coin.atl_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+
                 detailContent.innerHTML = `
-                    <div class="text-gray-400 text-sm mb-4">Market > <span class="text-white">${coin.name}</span></div>
-                    
-                    <div class="flex justify-between items-start mb-6 pb-2">
-                        <div class="flex items-center gap-4" style="visibility: hidden;">
-                            <div style="width:48px;height:48px"></div>
+                    <!-- Breadcrumb -->
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+                        <span style="font-size:12px;color:#475569;font-weight:600;">Market</span>
+                        <i class="fa-solid fa-chevron-right" style="font-size:8px;color:#334155;"></i>
+                        <span style="font-size:12px;color:#f1f5f9;font-weight:700;">${coin.name}</span>
+                        <span style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:2px 9px;font-size:9px;text-transform:uppercase;font-weight:800;color:#64748b;letter-spacing:0.1em;">${coin.symbol}</span>
+                        <span style="background:${modalAccentDim};border:1px solid ${modalAccent}40;border-radius:6px;padding:2px 9px;font-size:9px;font-weight:800;color:${modalAccent};letter-spacing:0.06em;">${modalIsUp ? 'BULLISH' : 'BEARISH'} 24H</span>
+                    </div>
+
+                    <!-- Header row: invisible logo placeholder + action buttons -->
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+                        <div style="display:flex;align-items:center;gap:16px;visibility:hidden;">
+                            <div style="width:48px;height:48px;"></div>
                             <div>
-                                <h2 class="text-3xl font-bold text-white">${coin.name} <span class="text-gray-400 text-xl uppercase">${coin.symbol}</span></h2>
+                                <h2 style="font-size:1.875rem;font-weight:700;color:white;">${coin.name} <span style="color:#94a3b8;font-size:1.25rem;text-transform:uppercase;">${coin.symbol}</span></h2>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <button id="share-btn" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors text-gray-400 hover:text-white cursor-pointer">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <button id="share-btn" style="width:40px;height:40px;border-radius:9999px;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#64748b;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.color='white';" onmouseout="this.style.background='transparent';this.style.color='#64748b';">
                                 <i class="fa-solid fa-arrow-up-from-bracket"></i>
                             </button>
-                            <button id="favorite-btn" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors hover:text-amber cursor-pointer">
+                            <button id="favorite-btn" style="width:40px;height:40px;border-radius:9999px;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)';" onmouseout="this.style.background='transparent';">
                                 <i class="${starIconClass} fa-star"></i>
                             </button>
-                            <button id="close-detail-btn" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer ml-2">
-                                <i class="fa-solid fa-xmark text-white"></i>
+                            <button id="close-detail-btn" style="width:40px;height:40px;border-radius:9999px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;transition:all 0.2s;margin-left:8px;" onmouseover="this.style.background='rgba(255,255,255,0.15)';" onmouseout="this.style.background='rgba(255,255,255,0.07)';">
+                                <i class="fa-solid fa-xmark"></i>
                             </button>
                         </div>
                     </div>
-                    
-                    <div id="detail-body" class="flex-1 overflow-y-auto pr-2 opacity-0" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
-                        <div class="flex flex-col pb-8">
-                            <!-- Chart & Data (Full Width Now) -->
-                            <div class="mb-4 lg:-mt-16 flex justify-between items-end">
+
+                    <!-- Scrollable body -->
+                    <div id="detail-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;opacity:0;padding-right:4px;">
+                        <div style="display:flex;flex-direction:column;padding-bottom:40px;gap:0;">
+
+                            <!-- ── PRICE OVERVIEW CARD ───────────────────────────── -->
+                            <div style="margin-bottom:20px;margin-top:0;padding:22px 26px 20px;background:linear-gradient(135deg,rgba(${modalAccentRgb},0.07) 0%,transparent 70%);border:1px solid rgba(${modalAccentRgb},0.18);border-radius:20px;position:relative;overflow:hidden;">
+                                <div style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:8rem;font-weight:900;color:rgba(255,255,255,0.022);letter-spacing:-5px;user-select:none;pointer-events:none;font-family:ui-monospace,monospace;line-height:1;">${(coin.symbol||'').toUpperCase()}</div>
+                                <!-- Price + change badge -->
+                                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;position:relative;flex-wrap:wrap;gap:12px;">
+                                    <div>
+                                        <p style="font-size:10px;color:#475569;text-transform:uppercase;font-weight:700;letter-spacing:0.12em;margin-bottom:8px;">Harga Saat Ini</p>
+                                        <h3 style="font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;color:#f8fafc;line-height:1;letter-spacing:-0.03em;">${formatCurrency(coin.current_price)}</h3>
+                                    </div>
+                                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding-top:6px;">
+                                        <div style="display:inline-flex;align-items:center;gap:7px;background:${modalAccentDim};border:1px solid ${modalAccent}50;border-radius:14px;padding:9px 16px;">
+                                            <i class="fa-solid fa-caret-${modalIsUp ? 'up' : 'down'}" style="font-size:15px;color:${modalAccent};"></i>
+                                            <span style="font-size:17px;font-weight:900;color:${modalAccent};">${percentSign}${(coin.price_change_percentage_24h||0).toFixed(2)}%</span>
+                                        </div>
+                                        <span style="font-size:10px;color:#475569;font-weight:600;">vs 24 jam lalu</span>
+                                    </div>
+                                </div>
+                                <!-- 24H range bar with thumb -->
                                 <div>
-                                    <h3 class="text-4xl lg:text-5xl font-bold text-white mb-2">${formatCurrency(coin.current_price)}</h3>
-                                    <p class="font-bold text-lg ${percentColor}">
-                                        ${percentSign}${(coin.price_change_percentage_24h || 0).toFixed(2)}%
-                                    </p>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                                        <span style="font-size:10px;color:#f87171;font-family:ui-monospace,monospace;font-weight:700;">${formatCurrency(coin.low_24h || 0)}</span>
+                                        <span style="font-size:9px;color:#475569;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;">24H Range</span>
+                                        <span style="font-size:10px;color:#34d399;font-family:ui-monospace,monospace;font-weight:700;">${formatCurrency(coin.high_24h || 0)}</span>
+                                    </div>
+                                    <div style="position:relative;height:8px;border-radius:9999px;background:rgba(255,255,255,0.07);">
+                                        <div style="position:absolute;top:0;left:0;height:100%;border-radius:9999px;width:${modal24hPct}%;background:linear-gradient(to right,${modalAccent}40,${modalAccent});"></div>
+                                        <div style="position:absolute;top:50%;left:${modal24hPct}%;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:9999px;background:${modalAccent};border:3px solid #0f172a;box-shadow:0 0 12px ${modalAccent};"></div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="w-full shrink-0 mb-8 relative rounded-xl overflow-hidden border border-white/10" style="height:400px;" id="tv_chart_container_${coin.symbol}">
+                            <!-- ── TRADINGVIEW CHART ─────────────────────────────── -->
+                            <div style="width:100%;flex-shrink:0;margin-bottom:24px;position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);height:400px;" id="tv_chart_container_${coin.symbol}"></div>
+
+                            <!-- ── MARKET OVERVIEW ──────────────────────────────── -->
+                            <div style="margin-bottom:24px;">
+                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                                    <div style="width:3px;height:20px;border-radius:9999px;background:${modalAccent};"></div>
+                                    <h3 style="font-size:15px;font-weight:800;color:#f1f5f9;letter-spacing:-0.01em;">Market Overview</h3>
+                                    <div style="flex:1;height:1px;background:rgba(255,255,255,0.06);"></div>
+                                    <span style="font-size:9px;color:#334155;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">${coin.name}</span>
+                                </div>
+                                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+                                    <!-- Market Cap -->
+                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                                            <div style="width:34px;height:34px;border-radius:10px;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-chart-pie" style="font-size:13px;color:#60a5fa;"></i></div>
+                                            <span style="font-size:8px;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:0.1em;">Mkt Cap</span>
+                                        </div>
+                                        <p style="font-size:19px;font-weight:900;color:#f1f5f9;line-height:1;">${formatCompact(coin.market_cap)}</p>
+                                        <p style="font-size:10px;color:#475569;margin-top:5px;">Kapitalisasi Pasar</p>
+                                    </div>
+                                    <!-- Rank -->
+                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                                            <div style="width:34px;height:34px;border-radius:10px;background:rgba(245,158,11,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-trophy" style="font-size:13px;color:#f59e0b;"></i></div>
+                                            <span style="font-size:8px;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:0.1em;">Rank</span>
+                                        </div>
+                                        <p style="font-size:19px;font-weight:900;color:#f1f5f9;line-height:1;">#${coin.market_cap_rank || '-'}</p>
+                                        <p style="font-size:10px;color:#475569;margin-top:5px;">Peringkat Global</p>
+                                    </div>
+                                    <!-- Volume 24H -->
+                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                                            <div style="width:34px;height:34px;border-radius:10px;background:rgba(168,85,247,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-fire" style="font-size:13px;color:#a855f7;"></i></div>
+                                            <span style="font-size:8px;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:0.1em;">Volume 24H</span>
+                                        </div>
+                                        <p style="font-size:19px;font-weight:900;color:#f1f5f9;line-height:1;">${formatCompact(coin.total_volume)}</p>
+                                        <p style="font-size:10px;color:#475569;margin-top:5px;">Total Perdagangan</p>
+                                    </div>
+                                    <!-- Circulating Supply -->
+                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                                            <div style="width:34px;height:34px;border-radius:10px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-circle-dot" style="font-size:13px;color:#10b981;"></i></div>
+                                            <span style="font-size:8px;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:0.1em;">Beredar</span>
+                                        </div>
+                                        <p style="font-size:17px;font-weight:900;color:#f1f5f9;line-height:1;">${formatCompact(coin.circulating_supply)}</p>
+                                        <p style="font-size:10px;color:#475569;margin-top:5px;">${(coin.symbol||'').toUpperCase()} · ${modalSupplyPct !== null ? modalSupplyPct + '% of max' : 'No max supply'}</p>
+                                        ${modalSupplyPct !== null ? '<div style="margin-top:8px;height:4px;border-radius:9999px;background:rgba(255,255,255,0.07);overflow:hidden;"><div style="height:100%;width:' + modalSupplyPct + '%;background:linear-gradient(to right,rgba(16,185,129,0.5),#10b981);border-radius:9999px;"></div></div>' : ''}
+                                    </div>
+                                </div>
                             </div>
 
-                            <h3 class="text-xl font-bold text-white mb-6">Market data</h3>
-                            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-y-8 gap-x-4 border-t border-white/10 pt-6">
-                                <div>
-                                    <p class="text-sm text-gray-400 mb-1">Market cap</p>
-                                    <p class="text-lg font-semibold text-white">${formatCompact(coin.market_cap)}</p>
+                            <!-- ── HISTORICAL RECORDS ────────────────────────────── -->
+                            <div style="margin-bottom:24px;">
+                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                                    <div style="width:3px;height:20px;border-radius:9999px;background:linear-gradient(to bottom,#10b981,#ef4444);"></div>
+                                    <h3 style="font-size:15px;font-weight:800;color:#f1f5f9;letter-spacing:-0.01em;">Harga Historis</h3>
+                                    <div style="flex:1;height:1px;background:rgba(255,255,255,0.06);"></div>
                                 </div>
-                                <div>
-                                    <p class="text-sm text-gray-400 mb-1">Rank</p>
-                                    <p class="text-lg font-semibold text-white">#${coin.market_cap_rank || '-'}</p>
+                                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px;">
+                                    <!-- ATH Card -->
+                                    <div style="background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.22);border-radius:14px;padding:18px;position:relative;overflow:hidden;">
+                                        <div style="position:absolute;top:-8px;right:-4px;font-size:4.5rem;font-weight:900;color:rgba(16,185,129,0.05);user-select:none;line-height:1;font-family:ui-monospace,monospace;pointer-events:none;">ATH</div>
+                                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                                            <div style="width:32px;height:32px;border-radius:10px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-arrow-trend-up" style="font-size:12px;color:#10b981;"></i></div>
+                                            <div>
+                                                <p style="font-size:9px;font-weight:800;color:#10b981;text-transform:uppercase;letter-spacing:0.1em;">Record Tertinggi</p>
+                                                <p style="font-size:9px;color:#475569;">${athDateStr}</p>
+                                            </div>
+                                        </div>
+                                        <p style="font-size:20px;font-weight:900;color:#f1f5f9;margin-bottom:6px;">${formatCurrency(coin.ath)}</p>
+                                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+                                            <span style="font-size:12px;font-weight:800;color:${athValueColor};">${athSign}${(coin.ath_change_percentage||0).toFixed(2)}%</span>
+                                            <span style="font-size:10px;color:#475569;">dari ATH</span>
+                                        </div>
+                                        <div style="height:5px;border-radius:9999px;background:rgba(255,255,255,0.07);">
+                                            <div style="height:100%;width:${athProximity}%;background:linear-gradient(to right,rgba(16,185,129,0.4),#10b981);border-radius:9999px;"></div>
+                                        </div>
+                                    </div>
+                                    <!-- ATL Card -->
+                                    <div style="background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.22);border-radius:14px;padding:18px;position:relative;overflow:hidden;">
+                                        <div style="position:absolute;top:-8px;right:-4px;font-size:4.5rem;font-weight:900;color:rgba(239,68,68,0.05);user-select:none;line-height:1;font-family:ui-monospace,monospace;pointer-events:none;">ATL</div>
+                                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                                            <div style="width:32px;height:32px;border-radius:10px;background:rgba(239,68,68,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-arrow-trend-down" style="font-size:12px;color:#ef4444;"></i></div>
+                                            <div>
+                                                <p style="font-size:9px;font-weight:800;color:#ef4444;text-transform:uppercase;letter-spacing:0.1em;">Record Terendah</p>
+                                                <p style="font-size:9px;color:#475569;">${atlDateStr}</p>
+                                            </div>
+                                        </div>
+                                        <p style="font-size:20px;font-weight:900;color:#f1f5f9;margin-bottom:6px;">${formatCurrency(coin.atl)}</p>
+                                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+                                            <span style="font-size:12px;font-weight:800;color:${atlValueColor};">${atlSign}${(coin.atl_change_percentage||0).toFixed(2)}%</span>
+                                            <span style="font-size:10px;color:#475569;">dari ATL</span>
+                                        </div>
+                                        <p style="font-size:10px;color:#475569;">Terendah sepanjang masa</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="text-sm text-gray-400 mb-1">24H volume</p>
-                                    <p class="text-lg font-semibold text-white">${formatCompact(coin.total_volume)}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-400 mb-1">Circulating supply</p>
-                                    <p class="text-lg font-semibold text-white">${formatCompact(coin.circulating_supply)} <span class="text-xs text-gray-500 uppercase">${coin.symbol}</span></p>
-                                    ${coin.max_supply ? '<p class="text-[10px] text-gray-500 mt-0.5">' + Math.round((coin.circulating_supply / coin.max_supply) * 100) + '% of total</p>' : ''}
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-400 mb-1">All-time high</p>
-                                    <p class="text-lg font-semibold text-white">${formatCurrency(coin.ath)}</p>
-                                    <p class="text-sm font-bold ${athColor}">${athSign}${(coin.ath_change_percentage || 0).toFixed(2)}%</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-400 mb-1">All-time low</p>
-                                    <p class="text-lg font-semibold text-white">${formatCurrency(coin.atl)}</p>
-                                    <p class="text-sm font-bold ${atlColor}">${atlSign}${(coin.atl_change_percentage || 0).toFixed(2)}%</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-400 mb-1">Total supply</p>
-                                    <p class="text-lg font-semibold text-white">${coin.total_supply ? formatCompact(coin.total_supply) : '-'}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-400 mb-1">Max supply</p>
-                                    <p class="text-lg font-semibold text-white">${coin.max_supply ? formatCompact(coin.max_supply) : '∞'}</p>
+                                <!-- Total + Max Supply -->
+                                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;">
+                                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                                            <div style="width:30px;height:30px;border-radius:9px;background:rgba(99,102,241,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-database" style="font-size:12px;color:#818cf8;"></i></div>
+                                            <p style="font-size:9px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.1em;">Total Supply</p>
+                                        </div>
+                                        <p style="font-size:18px;font-weight:900;color:#f1f5f9;">${coin.total_supply ? formatCompact(coin.total_supply) : '-'}</p>
+                                    </div>
+                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;">
+                                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                                            <div style="width:30px;height:30px;border-radius:9px;background:rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-infinity" style="font-size:12px;color:#a78bfa;"></i></div>
+                                            <p style="font-size:9px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.1em;">Max Supply</p>
+                                        </div>
+                                        <p style="font-size:18px;font-weight:900;color:#f1f5f9;">${coin.max_supply ? formatCompact(coin.max_supply) : '∞'}</p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Related News Section -->
-                            <div class="mt-12 border-t border-white/10 pt-8 pb-4">
-                                <div class="flex justify-between items-center mb-6">
-                                    <h3 class="text-xl font-bold text-white"><i class="fa-regular fa-newspaper text-tech-blue mr-2"></i>Berita <span class="text-tech-blue">${coin.name}</span> Terbaru</h3>
-                                    <span class="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded">Powered by CoinDesk</span>
+                            <!-- ── RELATED NEWS ──────────────────────────────────── -->
+                            <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:32px;padding-bottom:16px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:8px;">
+                                    <div style="display:flex;align-items:center;gap:10px;">
+                                        <div style="width:3px;height:20px;border-radius:9999px;background:#3b82f6;"></div>
+                                        <h3 style="font-size:15px;font-weight:800;color:#f1f5f9;">Berita <span style="color:#60a5fa;">${coin.name}</span> Terbaru</h3>
+                                    </div>
+                                    <span style="font-size:9px;color:#475569;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:4px 10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;">Powered by CoinDesk</span>
                                 </div>
                                 <div id="coin-news-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div class="col-span-full py-8 flex flex-col items-center justify-center">
@@ -283,6 +404,7 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 `;
@@ -334,7 +456,7 @@
                         })
                         .catch(function (err) {
                             console.error("News fetch error:", err);
-                            coinNewsContainer.innerHTML = '<div class="col-span-full text-center text-red-400 py-6 text-sm bg-white/5 rounded-xl border border-white/10">Pastikan Backend eksternal Anda (212.227.65.132:11930) sudah di-update dengan endpoint /api/coin-news.</div>';
+                            coinNewsContainer.innerHTML = '<div class="col-span-full text-center text-red-400 py-6 text-sm bg-white/5 rounded-xl border border-white/10">Terjadi kesalahan pada backend server kami. Harap coba lagi nanti.</div>';
                         });
                 }
 

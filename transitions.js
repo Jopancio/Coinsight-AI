@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
     "use strict";
 
     var TRANSITION_KEY = "page-transitioning";
@@ -74,20 +74,11 @@
     }
 
     function animateExit(nextHref) {
-        var loader = createLoader();
-        loader.style.opacity = "0";
-        loader.style.transition = "none";
-
         document.body.style.transition = "opacity " + FADE_DURATION_MS + "ms ease";
         document.body.style.opacity = "0";
 
         setTimeout(function () {
-            loader.style.transition = "opacity " + FADE_DURATION_MS + "ms ease";
-            loader.style.opacity = "1";
-
-            setTimeout(function () {
-                window.location.href = nextHref;
-            }, FADE_DURATION_MS);
+            window.location.href = nextHref;
         }, FADE_DURATION_MS);
     }
 

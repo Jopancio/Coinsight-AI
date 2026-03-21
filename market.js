@@ -326,7 +326,7 @@ lucide.createIcons();
     function renderCards(coins, appendFrom) {
         if (!container) return;
         appendFrom = appendFrom || 0;
-        container.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6";
+        container.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5";
 
         if (appendFrom === 0) {
             if (coins.length === 0) {
@@ -340,55 +340,75 @@ lucide.createIcons();
         coins.slice(appendFrom).forEach(function (coin, i) {
             var index = appendFrom + i;
             var card = document.createElement("div");
-            card.className = "glass-card rounded-3xl border border-white/10 group flex flex-col cursor-pointer relative overflow-hidden hover:-translate-y-2 transition-all";
-            card.onclick   = function () {
-                if (window.openCoinDetail) window.openCoinDetail(card, coin);
-            };
 
             var priceChange    = coin.price_change_percentage_24h || 0;
-            var changeClass    = priceChange >= 0 ? "text-emerald"      : "text-red-500";
-            var badgeBgClass   = priceChange >= 0 ? "bg-emerald-500/20" : "bg-red-500/20";
-            var changeIcon     = priceChange >= 0 ? "fa-caret-up"       : "fa-caret-down";
-            var bearishBullish = priceChange >= 0 ? "BULLISH 24H"       : "BEARISH 24H";
+            var isUp           = priceChange >= 0;
+            var accentColor    = isUp ? "#10b981" : "#ef4444";
+            var changeClass    = isUp ? "text-emerald" : "text-red-400";
+            var changeIcon     = isUp ? "fa-caret-up"  : "fa-caret-down";
+            var bearishBullish = isUp ? "BULLISH" : "BEARISH";
             var coinName       = coin.name   || "";
             var coinSymbol     = (coin.symbol || "").toUpperCase();
             var imgId          = "mcard-" + (coin.id || index);
 
+            card.className = "all-coin-card group";
+            card.setAttribute("data-trend", isUp ? "up" : "down");
+            card.onclick = function () {
+                if (window.openCoinDetail) window.openCoinDetail(card, coin);
+            };
+
             card.innerHTML =
-                '<div style="height:80px;width:100%;position:relative;overflow:hidden;">' +
-                '<div style="position:absolute;inset:0;display:flex;align-items:flex-end;">' + generateChartSVG(coin, 280, 80) + '</div>' +
+                // Top accent strip
+                '<div class="all-coin-card-strip" style="background:linear-gradient(90deg,' + accentColor + ' 0%,' + accentColor + '40 60%,transparent 100%);"></div>' +
+                // Chart header
+                '<div class="all-coin-card-chart">' +
+                '<div style="position:absolute;inset:0;background:linear-gradient(180deg,' + accentColor + '14 0%,transparent 100%);pointer-events:none;"></div>' +
+                '<div style="position:absolute;inset:0;display:flex;align-items:flex-end;">' + generateChartSVG(coin, 280, 68) + '</div>' +
+                '<span class="all-coin-ghost-rank">' + (index + 1) + '</span>' +
                 '</div>' +
-                '<div class="p-5 flex flex-col flex-1">' +
-                '<div class="flex justify-between items-start mb-3">' +
-                '<div class="bg-white/10 backdrop-blur-md text-gray-300 text-xs font-bold px-3 py-1.5 rounded-full border border-white/10">#' + (index + 1) + '</div>' +
-                '<span class="' + changeClass + ' ' + badgeBgClass + ' text-[10px] font-bold px-3 py-1 rounded-full border border-current">' + bearishBullish + '</span>' +
+                // Card body
+                '<div class="p-4 flex flex-col flex-1 gap-3">' +
+                // Rank + badge row
+                '<div class="flex justify-between items-center">' +
+                '<div class="all-coin-rank-badge">' +
+                '<span class="all-coin-rank-hash">#</span>' +
+                '<span class="all-coin-rank-num">' + (index + 1) + '</span>' +
                 '</div>' +
-                '<div class="flex items-center gap-3 mb-4">' +
-                '<div id="' + imgId + '-wrap" class="coin-logo-wrap" style="flex-shrink:0;">' +
-                '<img id="' + imgId + '" src="' + (coin.image || "") + '" alt="' + coinName + '" class="w-10 h-10 rounded-full" style="display:block;" onerror="this.parentElement.innerHTML=\'<div style=&quot;width:2.5rem;height:2.5rem;border-radius:9999px;background:linear-gradient(135deg,#1e3a8a,#10b981);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.875rem;color:#fff;&quot;>' + coinName.charAt(0) + '</div>\'" />' +
+                '<span class="all-coin-trend-badge" style="color:' + accentColor + ';background:' + (isUp ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)') + ';border:1px solid ' + (isUp ? 'rgba(16,185,129,0.22)' : 'rgba(239,68,68,0.22)') + ';">' +
+                '<i class="fa-solid ' + changeIcon + '" style="font-size:0.5rem;"></i>' + bearishBullish +
+                '</span>' +
                 '</div>' +
-                '<div>' +
+                // Coin identity row
+                '<div class="flex items-center gap-2.5">' +
+                '<div style="position:relative;flex-shrink:0;width:2.5rem;height:2.5rem;">' +
+                '<div style="position:absolute;inset:-3px;border-radius:9999px;background:radial-gradient(' + accentColor + '38 0%,transparent 68%);pointer-events:none;"></div>' +
+                '<img id="' + imgId + '" src="' + (coin.image || "") + '" alt="' + coinName + '" style="width:2.5rem;height:2.5rem;border-radius:9999px;display:block;position:relative;" onerror="this.parentElement.innerHTML=\'<div style=&quot;width:2.5rem;height:2.5rem;border-radius:9999px;background:linear-gradient(135deg,#1e3a8a,#10b981);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.875rem;color:#fff;&quot;>' + coinName.charAt(0) + '</div>\'" />' +
+                '</div>' +
+                '<div class="min-w-0">' +
                 '<h3 class="coin-name-text text-white font-bold leading-tight">' + coinName + '</h3>' +
-                '<p class="coin-symbol-text text-gray-400 text-[10px] uppercase font-semibold">' + coinSymbol + '</p>' +
+                '<p class="coin-symbol-text text-[10px] uppercase font-semibold tracking-wider" style="color:#6b7280;margin-top:1px;">' + coinSymbol + '</p>' +
                 '</div>' +
                 '</div>' +
-                '<h2 class="text-2xl font-extrabold text-white mb-2">' + formatCurrency(coin.current_price) + '</h2>' +
-                '<div class="grid grid-cols-3 gap-2 mb-4">' +
-                '<div class="bg-white/5 p-2 rounded-lg text-center">' +
-                '<p class="text-[9px] text-gray-500 mb-0.5 uppercase font-bold">24 Jam</p>' +
-                '<p class="text-xs font-bold ' + changeClass + '"><i class="fa-solid ' + changeIcon + ' mr-0.5 text-[9px]"></i>' + Math.abs(priceChange).toFixed(2) + '%</p>' +
+                // Price
+                '<p class="all-coin-price">' + formatCurrency(coin.current_price) + '</p>' +
+                // Stats grid
+                '<div class="all-coin-stats-grid">' +
+                '<div class="all-coin-stat-box">' +
+                '<p class="all-coin-stat-label">24H</p>' +
+                '<p class="all-coin-stat-val ' + changeClass + '"><i class="fa-solid ' + changeIcon + '" style="font-size:0.5rem;margin-right:1px;"></i>' + Math.abs(priceChange).toFixed(2) + '%</p>' +
                 '</div>' +
-                '<div class="bg-white/5 p-2 rounded-lg text-center">' +
-                '<p class="text-[9px] text-gray-500 mb-0.5 uppercase font-bold">Mkt Cap</p>' +
-                '<p class="text-xs text-white font-bold">' + formatCompact(coin.market_cap) + '</p>' +
+                '<div class="all-coin-stat-box">' +
+                '<p class="all-coin-stat-label">Mkt Cap</p>' +
+                '<p class="all-coin-stat-val">' + formatCompact(coin.market_cap) + '</p>' +
                 '</div>' +
-                '<div class="bg-white/5 p-2 rounded-lg text-center">' +
-                '<p class="text-[9px] text-gray-500 mb-0.5 uppercase font-bold">Volume</p>' +
-                '<p class="text-xs text-white font-bold">' + formatCompact(coin.total_volume) + '</p>' +
+                '<div class="all-coin-stat-box">' +
+                '<p class="all-coin-stat-label">Volume</p>' +
+                '<p class="all-coin-stat-val">' + formatCompact(coin.total_volume) + '</p>' +
                 '</div>' +
                 '</div>' +
-                '<div class="flex items-center gap-2 text-sm font-bold text-white group-hover:text-amber transition-colors mt-auto">' +
-                'Lihat Analisis <i class="fa-solid fa-arrow-right-long transition-transform group-hover:translate-x-2"></i>' +
+                // CTA
+                '<div class="all-coin-cta">' +
+                '<span>Lihat Analisis</span><i class="fa-solid fa-arrow-right-long"></i>' +
                 '</div>' +
                 '</div>';
 
@@ -402,7 +422,7 @@ lucide.createIcons();
     function renderBars(coins, appendFrom, appendFrom) {
         if (!container) return;
         appendFrom = appendFrom || 0;
-        container.className = "flex flex-col gap-3";
+        container.className = "flex flex-col gap-2";
 
         if (appendFrom === 0) {
             if (coins.length === 0) {
@@ -416,38 +436,48 @@ lucide.createIcons();
         coins.slice(appendFrom).forEach(function (coin, i) {
             var index = appendFrom + i;
             var bar = document.createElement("div");
-            bar.className = "glass-card rounded-2xl border border-white/10 p-4 flex items-center gap-4 cursor-pointer hover:bg-white/10 transition-all group";
-            bar.onclick   = function () {
-                if (window.openCoinDetail) window.openCoinDetail(bar, coin);
-            };
 
             var priceChange = coin.price_change_percentage_24h || 0;
-            var changeClass = priceChange >= 0 ? "text-emerald" : "text-red-500";
-            var changeIcon  = priceChange >= 0 ? "fa-caret-up"  : "fa-caret-down";
+            var isUp        = priceChange >= 0;
+            var accentColor = isUp ? "#10b981" : "#ef4444";
+            var changeClass = isUp ? "text-emerald" : "text-red-400";
+            var changeIcon  = isUp ? "fa-caret-up"  : "fa-caret-down";
             var coinName    = coin.name   || "";
             var coinSymbol  = (coin.symbol || "").toUpperCase();
             var barImgId    = "mbar-" + (coin.id || index);
 
+            bar.className = "all-coin-bar group";
+            bar.onclick   = function () {
+                if (window.openCoinDetail) window.openCoinDetail(bar, coin);
+            };
+
             bar.innerHTML =
-                '<div class="w-8 text-center text-gray-500 text-sm font-bold shrink-0">' + (index + 1) + '</div>' +
-                '<div id="' + barImgId + '-wrap" class="coin-logo-wrap shrink-0">' +
-                '<img id="' + barImgId + '" src="' + (coin.image || "") + '" alt="' + coinName + '" class="w-10 h-10 rounded-full" style="display:block;" onerror="this.parentElement.innerHTML=\'<div style=&quot;width:2.5rem;height:2.5rem;border-radius:9999px;background:linear-gradient(135deg,#1e3a8a,#10b981);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.875rem;color:#fff;&quot;>' + coinName.charAt(0) + '</div>\'" />' +
+                // Left accent strip
+                '<div class="all-coin-bar-strip" style="background:' + accentColor + ';opacity:0.7;"></div>' +
+                // Rank
+                '<div class="all-coin-bar-rank' + (index < 3 ? ' top-rank' : '') + '">' + (index + 1) + '</div>' +
+                // Coin image with glow ring
+                '<div style="position:relative;flex-shrink:0;">' +
+                '<div style="position:absolute;inset:-2px;border-radius:9999px;background:radial-gradient(' + accentColor + '30 0%,transparent 70%);pointer-events:none;"></div>' +
+                '<img id="' + barImgId + '" src="' + (coin.image || "") + '" alt="' + coinName + '" class="w-9 h-9 rounded-full" style="display:block;position:relative;" onerror="this.parentElement.innerHTML=\'<div style=&quot;width:2.25rem;height:2.25rem;border-radius:9999px;background:linear-gradient(135deg,#1e3a8a,#10b981);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;color:#fff;&quot;>' + coinName.charAt(0) + '</div>\'" />' +
                 '</div>' +
+                // Name + symbol + meta
                 '<div class="min-w-0 flex-1">' +
                 '<div class="flex items-center gap-2">' +
                 '<h3 class="coin-name-text text-white font-bold text-sm truncate">' + coinName + '</h3>' +
-                '<span class="coin-symbol-text bg-white/10 px-2 py-0.5 rounded text-[10px] font-mono uppercase text-gray-400">' + coinSymbol + '</span>' +
+                '<span class="coin-symbol-text all-coin-bar-symbol">' + coinSymbol + '</span>' +
                 '</div>' +
-                '<p class="text-gray-500 text-xs mt-0.5">Mkt Cap: ' + formatCompact(coin.market_cap) + ' · Vol: ' + formatCompact(coin.total_volume) + '</p>' +
+                '<p class="all-coin-bar-meta">Cap: ' + formatCompact(coin.market_cap) + ' · Vol: ' + formatCompact(coin.total_volume) + '</p>' +
                 '</div>' +
-                '<div class="w-24 h-10 shrink-0 hidden md:block">' + generateChartSVG(coin, 96, 40) + '</div>' +
-                '<div class="text-right shrink-0 min-w-[100px]">' +
-                '<p class="text-white font-bold text-sm">' + formatCurrency(coin.current_price) + '</p>' +
-                '<p class="text-xs font-bold ' + changeClass + '"><i class="fa-solid ' + changeIcon + ' mr-0.5 text-[9px]"></i>' + Math.abs(priceChange).toFixed(2) + '%</p>' +
+                // Sparkline
+                '<div style="width:5rem;height:2rem;flex-shrink:0;" class="hidden md:block">' + generateChartSVG(coin, 80, 32) + '</div>' +
+                // Price + change
+                '<div class="all-coin-bar-price-wrap">' +
+                '<p class="all-coin-bar-price">' + formatCurrency(coin.current_price) + '</p>' +
+                '<p class="all-coin-bar-change ' + changeClass + '"><i class="fa-solid ' + changeIcon + '" style="font-size:0.5rem;margin-right:2px;"></i>' + Math.abs(priceChange).toFixed(2) + '%</p>' +
                 '</div>' +
-                '<div class="shrink-0 text-gray-500 group-hover:text-amber transition-colors">' +
-                '<i class="fa-solid fa-chevron-right text-xs"></i>' +
-                '</div>';
+                // Arrow
+                '<i class="fa-solid fa-chevron-right all-coin-bar-arrow"></i>';
 
             container.appendChild(bar);
             newEls.push(bar);
@@ -537,10 +567,16 @@ lucide.createIcons();
         else renderBars(coinsToShow, appendFrom);
         lastRenderedCount = coinsToShow.length;
         renderShowMoreBtn(displayCoins.length, visibleCount);
+
+        var countLabel = document.getElementById("coins-count-label");
+        if (countLabel && allCoins.length > 0) {
+            var shown = Math.min(visibleCount, displayCoins.length);
+            countLabel.textContent = shown + " dari " + displayCoins.length + " koin ditampilkan";
+        }
     }
 
-    var activeViewCls   = "px-5 py-3 rounded-full font-semibold text-sm transition-all bg-emerald text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]";
-    var inactiveViewCls = "px-5 py-3 rounded-full font-semibold text-sm transition-all glass-card text-gray-300 hover:bg-white/10 border border-white/10";
+    var activeViewCls   = "all-coins-view-btn active";
+    var inactiveViewCls = "all-coins-view-btn";
 
     if (cardBtn) {
         cardBtn.onclick = function () {
@@ -562,7 +598,7 @@ lucide.createIcons();
     }
 
     var activeFilterCls   = "market-tab active-tab px-4 py-2 rounded-full text-xs font-bold transition-all bg-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.3)]";
-    var inactiveFilterCls = "market-tab px-4 py-2 rounded-full text-xs font-bold transition-all glass-card text-gray-300 border border-white/10 hover:bg-white/10";
+    var inactiveFilterCls = "market-tab px-4 py-2 rounded-full text-xs font-bold transition-all glass-card text-gray-400 border border-white/10 hover:bg-white/10";
 
     filterTabs.forEach(function (tab) {
         tab.addEventListener("click", function () {

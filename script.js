@@ -1143,7 +1143,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
                         })
                         .catch(function (err) {
                             console.error("News fetch error:", err);
-                            coinNewsContainer.innerHTML = '<div class="col-span-full text-center text-red-400 py-6 text-sm bg-white/5 rounded-xl border border-white/10">Pastikan Backend eksternal Anda (212.227.65.132:11930) sudah di-update dengan endpoint /api/coin-news.</div>';
+                            coinNewsContainer.innerHTML = '<div class="col-span-full text-center text-red-400 py-6 text-sm bg-white/5 rounded-xl border border-white/10">Terjadi kesalahan pada server kami. Harap coba lagi nanti.</div>';
                         });
                 }
 
@@ -2220,28 +2220,75 @@ function initReviews() {
 function createReviewCard(review) {
     let starsHtml = '';
     for (let i = 1; i <= 5; i++) {
-        starsHtml += `<i class="fa-solid fa-star ${i <= review.rating ? 'text-amber' : 'text-gray-600'}"></i>`;
+        starsHtml += `<i class="fa-solid fa-star text-xs ${i <= review.rating ? 'text-amber-400' : 'text-gray-700'}"></i>`;
     }
 
     const card = document.createElement('div');
-    card.className = "min-w-[320px] md:min-w-[380px] glass-card p-6 rounded-3xl border border-white/10 hover:-translate-y-1 transition-transform review-card shrink-0";
-    const colors = ['bg-tech-blue', 'bg-emerald', 'bg-amber', 'bg-purple-500', 'bg-pink-500'];
-    const avatarColor = colors[review.name.length % colors.length];
+    card.className = "review-card shrink-0 min-w-[300px] md:min-w-[360px] max-w-[360px] group relative rounded-3xl overflow-hidden cursor-default transition-all duration-300 hover:-translate-y-2";
+
+    const avatarGradients = [
+        'from-blue-600 to-blue-800',
+        'from-emerald-500 to-teal-700',
+        'from-amber-500 to-orange-600',
+        'from-purple-500 to-purple-800',
+        'from-pink-500 to-rose-700'
+    ];
+    const topBarColors = [
+        'from-blue-500 via-blue-400 to-cyan-400',
+        'from-emerald-500 via-teal-400 to-cyan-400',
+        'from-amber-500 via-yellow-400 to-orange-400',
+        'from-purple-500 via-violet-400 to-pink-400',
+        'from-pink-500 via-rose-400 to-red-400'
+    ];
+    const glowColors = ['bg-blue-500/8', 'bg-emerald-500/8', 'bg-amber-500/8', 'bg-purple-500/8', 'bg-pink-500/8'];
+    const idx = review.name.length % avatarGradients.length;
+
+    const ratingLabels = ['', 'Buruk', 'Kurang', 'Cukup', 'Bagus', 'Luar Biasa!'];
 
     card.innerHTML = `
-    <div class="flex items-center gap-4 mb-4">
-      <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold text-white shadow-md ${avatarColor}">
-        ${review.avatar}
-      </div>
-      <div>
-        <h4 class="font-bold text-white">${review.name}</h4>
-        <div class="flex gap-1 text-sm">
-          ${starsHtml}
+      <!-- Card BG -->
+      <div class="absolute inset-0 bg-slate-900 rounded-3xl border border-white/8 group-hover:border-white/15 transition-colors duration-300"></div>
+      <!-- Top accent bar -->
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${topBarColors[idx]} opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <!-- Ambient glow on hover -->
+      <div class="absolute inset-0 ${glowColors[idx]} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+
+      <div class="relative z-10 p-6">
+        <!-- Quote Icon + Stars row -->
+        <div class="flex items-center justify-between mb-5">
+          <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/8 transition-colors">
+            <i class="fa-solid fa-quote-left text-gray-500 text-sm group-hover:text-gray-400 transition-colors"></i>
+          </div>
+          <div class="flex items-center gap-1">
+            ${starsHtml}
+            <span class="text-[10px] font-bold text-gray-600 ml-1.5">${ratingLabels[review.rating] || ''}</span>
+          </div>
+        </div>
+
+        <!-- Comment -->
+        <p class="text-gray-300 text-sm leading-relaxed mb-6 line-clamp-3 group-hover:text-gray-200 transition-colors">"${review.comment}"</p>
+
+        <!-- Divider -->
+        <div class="w-full h-px bg-white/6 mb-5"></div>
+
+        <!-- Author Row -->
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br ${avatarGradients[idx]} flex items-center justify-center text-white font-black text-base shadow-md shrink-0 border border-white/10">
+            ${review.avatar}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="font-bold text-white text-sm truncate">${review.name}</div>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i>
+              <span class="text-[10px] text-emerald-400 font-semibold">Verified User</span>
+            </div>
+          </div>
+          <div class="shrink-0 w-8 h-8 rounded-xl bg-white/4 border border-white/8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
+            <i class="fa-solid fa-thumbs-up text-gray-500 text-xs"></i>
+          </div>
         </div>
       </div>
-    </div>
-    <p class="text-gray-400 text-sm leading-relaxed">"${review.comment}"</p>
-  `;
+    `;
     return card;
 }
 
@@ -2384,13 +2431,39 @@ function setupReviewForm(reviews) {
             const rating = parseInt(e.target.dataset.rating);
             ratingInput.value = rating;
 
+            const ratingLabels = ['', 'Buruk 😞', 'Kurang 😐', 'Cukup 🙂', 'Bagus 😊', 'Luar Biasa! 🤩'];
+            const labelEl = document.getElementById('rating-label');
+            if (labelEl) labelEl.textContent = ratingLabels[rating] || '';
+
             starIcons.forEach(s => {
                 if (parseInt(s.dataset.rating) <= rating) {
-                    s.classList.remove('text-gray-600');
-                    s.classList.add('text-amber');
+                    s.classList.remove('text-gray-700');
+                    s.classList.add('text-amber-400');
                 } else {
-                    s.classList.remove('text-amber');
-                    s.classList.add('text-gray-600');
+                    s.classList.remove('text-amber-400');
+                    s.classList.add('text-gray-700');
+                }
+            });
+        });
+
+        star.addEventListener('mouseenter', (e) => {
+            const hoverRating = parseInt(e.target.dataset.rating);
+            starIcons.forEach(s => {
+                if (parseInt(s.dataset.rating) <= hoverRating) {
+                    s.classList.add('text-amber-300');
+                }
+            });
+        });
+
+        star.addEventListener('mouseleave', () => {
+            const currentRating = parseInt(ratingInput.value) || 0;
+            starIcons.forEach(s => {
+                s.classList.remove('text-amber-300');
+                if (parseInt(s.dataset.rating) <= currentRating) {
+                    s.classList.add('text-amber-400');
+                } else {
+                    s.classList.remove('text-amber-400');
+                    s.classList.add('text-gray-700');
                 }
             });
         });
@@ -2425,9 +2498,11 @@ function setupReviewForm(reviews) {
 
         form.reset();
         ratingInput.value = '';
+        const labelEl = document.getElementById('rating-label');
+        if (labelEl) labelEl.textContent = '';
         starIcons.forEach(s => {
-            s.classList.remove('text-amber');
-            s.classList.add('text-gray-600');
+            s.classList.remove('text-amber-400', 'text-amber-300');
+            s.classList.add('text-gray-700');
         });
 
         renderReviews(reviews);

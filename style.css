@@ -409,7 +409,287 @@ body {
   box-shadow: 0 0 30px rgba(16, 185, 129, 0.1), 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
-/* ── Mobile Hamburger Menu ── */
+/* ── All Coins Section ── */
+
+/* Search Input */
+.all-coins-search {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+.all-coins-search:focus {
+  border-color: rgba(16, 185, 129, 0.45);
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.08);
+}
+
+/* View Toggle Segmented Control */
+.all-coins-view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+}
+.all-coins-view-btn {
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  transition: all 0.2s;
+  color: #9ca3af;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+.all-coins-view-btn:hover:not(.active) {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+.all-coins-view-btn.active {
+  background: #10b981;
+  color: #fff;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
+}
+
+/* Coin Card */
+.all-coin-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 1.375rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+}
+.all-coin-card:hover {
+  transform: translateY(-5px);
+}
+.all-coin-card[data-trend="up"]:hover {
+  border-color: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 8px 40px rgba(16, 185, 129, 0.12), 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+.all-coin-card[data-trend="down"]:hover {
+  border-color: rgba(239, 68, 68, 0.3);
+  box-shadow: 0 8px 40px rgba(239, 68, 68, 0.1), 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Top accent strip */
+.all-coin-card-strip {
+  height: 2.5px;
+  flex-shrink: 0;
+}
+
+/* Chart area */
+.all-coin-card-chart {
+  position: relative;
+  height: 68px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* Ghost rank number in chart */
+.all-coin-ghost-rank {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.045);
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+  letter-spacing: -0.04em;
+}
+
+/* Rank badge */
+.all-coin-rank-badge {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 9999px;
+  padding: 3px 10px;
+}
+.all-coin-rank-hash {
+  font-size: 0.6rem;
+  color: #6b7280;
+  font-weight: 800;
+}
+.all-coin-rank-num {
+  font-size: 0.75rem;
+  color: #d1d5db;
+  font-weight: 700;
+}
+
+/* Trend badge */
+.all-coin-trend-badge {
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Price */
+.all-coin-price {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+/* Stats grid */
+.all-coin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.3rem;
+}
+.all-coin-stat-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.25rem;
+  text-align: center;
+}
+.all-coin-stat-label {
+  font-size: 0.55rem;
+  color: #6b7280;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+.all-coin-stat-val {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #e5e7eb;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* CTA row */
+.all-coin-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #6b7280;
+  margin-top: auto;
+  padding-top: 0.125rem;
+  transition: color 0.2s;
+}
+.all-coin-cta i {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.all-coin-card:hover .all-coin-cta {
+  color: #f59e0b;
+}
+.all-coin-card:hover .all-coin-cta i {
+  transform: translateX(5px);
+}
+
+/* ── Bar Row ── */
+.all-coin-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 0.875rem;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.all-coin-bar:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateX(3px);
+}
+
+/* Left accent strip inside bar */
+.all-coin-bar-strip {
+  position: absolute;
+  left: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 2.5px;
+  border-radius: 0 2px 2px 0;
+  transition: opacity 0.25s;
+}
+.all-coin-bar:hover .all-coin-bar-strip {
+  opacity: 1 !important;
+}
+
+.all-coin-bar-rank {
+  width: 1.75rem;
+  flex-shrink: 0;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #4b5563;
+}
+.all-coin-bar-rank.top-rank {
+  color: #f59e0b;
+}
+.all-coin-bar-symbol {
+  background: rgba(255, 255, 255, 0.07);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.6rem;
+  font-family: monospace;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+.all-coin-bar-meta {
+  color: #4b5563;
+  font-size: 0.7rem;
+  margin-top: 2px;
+}
+.all-coin-bar-price-wrap {
+  text-align: right;
+  flex-shrink: 0;
+  min-width: 88px;
+}
+.all-coin-bar-price {
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+.all-coin-bar-change {
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-top: 1px;
+}
+.all-coin-bar-arrow {
+  font-size: 0.6rem;
+  color: #374151;
+  flex-shrink: 0;
+  transition: color 0.2s, transform 0.2s;
+}
+.all-coin-bar:hover .all-coin-bar-arrow {
+  color: #f59e0b;
+  transform: translateX(2px);
+}
+
+
 #mobile-menu-btn {
   display: none;
   width: 2.5rem;
@@ -1011,6 +1291,83 @@ body {
   background: rgba(59, 130, 246, 0.18);
   border-color: rgba(59, 130, 246, 0.5);
   color: #60a5fa;
+}
+
+/* Centered pill bar container */
+#news-filter-pills > div {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 9999px;
+  padding: 0.35rem 0.5rem;
+}
+
+/* ══════════════════════════════════════════
+   NEWS PAGE — new layout components
+══════════════════════════════════════════ */
+
+/* Hero section */
+.news-hero {
+  padding-top: 6rem;
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Quick search tag buttons */
+.news-quick-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: #9ca3af;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.news-quick-tag:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+/* Coin section header row */
+.news-coin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid;
+}
+
+/* Carousel nav buttons */
+.news-carousel-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #9ca3af;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.news-carousel-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: scale(1.08);
 }
 
 /* Marquee viewport — hides the inner moving strip */

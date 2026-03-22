@@ -579,7 +579,7 @@
     </div>
   </section>
 
-  <section id="reviews" class="py-28 px-6 relative overflow-hidden">
+  <section id="reviews" class="py-14 px-4 relative overflow-hidden">
     <!-- Background ambient glows -->
     <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent pointer-events-none"></div>
     <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"></div>
@@ -590,7 +590,7 @@
     <div class="max-w-7xl mx-auto">
 
       <!-- Section Header + Stats Row -->
-      <div class="section-fade-up mb-16">
+      <div class="section-fade-up mb-10">
         <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10">
 
           <!-- Left: Title -->
@@ -600,7 +600,7 @@
               <span class="text-amber-400">Testimoni Pengguna</span>
               <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse ml-1"></span>
             </div>
-            <h2 class="text-4xl lg:text-6xl font-black leading-[1.1] mb-4">
+            <h2 class="text-3xl lg:text-5xl font-black leading-[1.1] mb-3">
               Apa Kata
               <span class="bg-gradient-to-r from-amber-400 via-yellow-400 to-orange-400 bg-clip-text text-transparent"> Pengguna Kami?</span>
             </h2>
@@ -612,10 +612,10 @@
           <!-- Right: Stats Cards Row -->
           <div class="flex items-stretch gap-4 shrink-0 flex-wrap lg:flex-nowrap">
             <!-- Average Rating -->
-            <div class="glass-card px-6 py-5 rounded-2xl border border-amber-500/20 text-center min-w-[130px] relative overflow-hidden group hover:border-amber-500/40 transition-all duration-300">
-              <div class="absolute inset-0 bg-amber-500/3 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"></div>
-              <div class="text-4xl font-black bg-gradient-to-b from-amber-300 to-amber-500 bg-clip-text text-transparent leading-none mb-2">4.8</div>
-              <div class="flex justify-center gap-0.5 mb-2">
+            <div class="glass-card px-4 py-3 rounded-xl border border-amber-500/20 text-center min-w-[110px] relative overflow-hidden group hover:border-amber-500/40 transition-all duration-300">
+              <div class="absolute inset-0 bg-amber-500/3 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+              <div class="text-3xl font-black bg-gradient-to-b from-amber-300 to-amber-500 bg-clip-text text-transparent leading-none mb-1.5">4.8</div>
+              <div class="flex justify-center gap-0.5 mb-1.5">
                 <i class="fa-solid fa-star text-amber text-xs"></i>
                 <i class="fa-solid fa-star text-amber text-xs"></i>
                 <i class="fa-solid fa-star text-amber text-xs"></i>
@@ -625,9 +625,9 @@
               <div class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Rata-rata</div>
             </div>
             <!-- Total Reviews -->
-            <div class="glass-card px-6 py-5 rounded-2xl border border-white/10 text-center min-w-[130px] relative overflow-hidden group hover:border-white/20 transition-all duration-300">
-              <div class="absolute inset-0 bg-white/2 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"></div>
-              <div id="total-reviews" class="text-4xl font-black text-white leading-none mb-2">0</div>
+            <div class="glass-card px-4 py-3 rounded-xl border border-white/10 text-center min-w-[110px] relative overflow-hidden group hover:border-white/20 transition-all duration-300">
+              <div class="absolute inset-0 bg-white/2 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+              <div id="total-reviews" class="text-3xl font-black text-white leading-none mb-1.5">0</div>
               <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald/10 border border-emerald/20 mb-1.5">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 <span class="text-[9px] text-emerald-400 font-bold uppercase">Live</span>
@@ -635,9 +635,9 @@
               <div class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Total Review</div>
             </div>
             <!-- Satisfaction -->
-            <div class="glass-card px-6 py-5 rounded-2xl border border-emerald-500/20 text-center min-w-[130px] relative overflow-hidden group hover:border-emerald-500/40 transition-all duration-300">
-              <div class="absolute inset-0 bg-emerald-500/3 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"></div>
-              <div class="text-4xl font-black bg-gradient-to-b from-emerald-300 to-emerald-500 bg-clip-text text-transparent leading-none mb-2">98<span class="text-2xl">%</span></div>
+            <div class="glass-card px-4 py-3 rounded-xl border border-emerald-500/20 text-center min-w-[110px] relative overflow-hidden group hover:border-emerald-500/40 transition-all duration-300">
+              <div class="absolute inset-0 bg-emerald-500/3 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+              <div class="text-3xl font-black bg-gradient-to-b from-emerald-300 to-emerald-500 bg-clip-text text-transparent leading-none mb-1.5">98<span class="text-xl">%</span></div>
               <div class="flex justify-center mb-2">
                 <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
               </div>
@@ -648,7 +648,7 @@
       </div>
 
       <!-- Add Review Form (Hidden if not logged in) -->
-      <div id="add-review-container" class="mb-12 section-fade-up hidden">
+      <div id="add-review-container" class="mb-8 section-fade-up hidden">
         <div class="relative rounded-3xl overflow-hidden">
           <!-- Gradient border effect -->
           <div class="absolute inset-0 bg-gradient-to-r from-tech-blue/30 via-purple-500/20 to-tech-blue/30 rounded-3xl"></div>
@@ -658,10 +658,10 @@
           <!-- Ambient glow -->
           <div class="absolute -top-16 left-1/2 -translate-x-1/2 w-64 h-32 bg-tech-blue/15 rounded-full blur-3xl pointer-events-none"></div>
 
-          <div class="relative z-10 p-8 lg:p-10">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5 mb-8">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-tech-blue to-blue-800 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/25">
-                <i class="fa-solid fa-pen-nib text-white text-lg"></i>
+          <div class="relative z-10 p-5 lg:p-7">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-5">
+              <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-tech-blue to-blue-800 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/25">
+                <i class="fa-solid fa-pen-nib text-white text-sm"></i>
               </div>
               <div class="flex-1">
                 <h3 class="font-black text-white text-xl mb-1">Bagikan Pengalaman Anda</h3>
@@ -669,7 +669,7 @@
               </div>
             </div>
 
-            <form id="review-form" class="space-y-6">
+            <form id="review-form" class="space-y-4">
               <!-- Star Rating -->
               <div class="bg-white/3 rounded-2xl p-5 border border-white/8">
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Berikan Rating Anda</label>
@@ -708,24 +708,24 @@
       </div>
 
       <!-- Login Prompt for Reviews -->
-      <div id="login-prompt-review" class="mb-12 section-fade-up">
+      <div id="login-prompt-review" class="mb-8 section-fade-up">
         <div class="relative rounded-3xl overflow-hidden group cursor-pointer" onclick="window.location.href='auth.html'">
           <div class="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
-          <div class="glass-card p-7 rounded-3xl border border-dashed border-amber-500/20 group-hover:border-amber-500/40 transition-all duration-300 flex flex-col sm:flex-row items-center gap-7 justify-between">
-            <div class="flex items-center gap-5">
-              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <i class="fa-solid fa-comment-dots text-amber-400 text-2xl drop-shadow-sm"></i>
+          <div class="glass-card p-4 sm:p-5 rounded-2xl border border-dashed border-amber-500/20 group-hover:border-amber-500/40 transition-all duration-300 flex flex-col sm:flex-row items-center gap-4 justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-comment-dots text-amber-400 text-xl drop-shadow-sm"></i>
               </div>
               <div>
                 <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold text-amber-400 uppercase tracking-wider mb-2">
                   <i class="fa-solid fa-lock text-[8px]"></i> Login Required
                 </div>
-                <h4 class="font-black text-white text-lg mb-1">Punya Pengalaman? Bagikan!</h4>
+                <h4 class="font-black text-white text-base mb-1">Punya Pengalaman? Bagikan!</h4>
                 <p class="text-gray-400 text-sm leading-relaxed">Login dan jadilah bagian dari komunitas trader yang lebih cerdas.</p>
               </div>
             </div>
             <button onclick="window.location.href='auth.html'"
-              class="shrink-0 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-yellow-400 hover:to-amber-400 text-slate-900 px-7 py-3.5 rounded-xl font-black transition-all text-sm flex items-center gap-2.5 shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap">
+              class="shrink-0 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-yellow-400 hover:to-amber-400 text-slate-900 px-5 py-2.5 rounded-xl font-black transition-all text-sm flex items-center gap-2 shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap">
               <i class="fa-solid fa-arrow-right-to-bracket"></i> Login & Tulis Review
             </button>
           </div>
@@ -758,7 +758,7 @@
         <div class="relative">
           <div class="absolute left-0 top-0 bottom-4 w-16 bg-gradient-to-r from-[#0f172a] to-transparent z-10 pointer-events-none rounded-l-3xl"></div>
           <div class="absolute right-0 top-0 bottom-4 w-16 bg-gradient-to-l from-[#0f172a] to-transparent z-10 pointer-events-none rounded-r-3xl"></div>
-          <div id="reviews-carousel" class="flex gap-5 overflow-x-auto scrollbar-hide pb-4">
+          <div id="reviews-carousel" class="flex gap-3 overflow-x-auto scrollbar-hide pb-3">
             <!-- Reviews will be loaded here via JS -->
           </div>
         </div>

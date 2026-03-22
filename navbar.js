@@ -93,6 +93,9 @@
         if (isScrolled) return;
         isScrolled = true;
 
+        var isMob = window.innerWidth < 768;
+        if (isMob) return; // on mobile keep full-width bar, no pill animation
+
         if (navTween) navTween.kill();
         navTween = gsap.timeline({ defaults: { duration: 0.6, ease: "expo.out", overwrite: "auto" } });
 
@@ -108,6 +111,9 @@
     function navToExpanded() {
         if (!isScrolled) return;
         isScrolled = false;
+
+        var isMob = window.innerWidth < 768;
+        if (isMob) return; // on mobile CSS handles the state, no GSAP override needed
 
         if (navTween) navTween.kill();
         navTween = gsap.timeline({ defaults: { duration: 0.6, ease: "expo.out", overwrite: "auto" } });
@@ -136,7 +142,7 @@
         }
     });
 
-    if (window.scrollY > 50) {
+    if (window.scrollY > 50 && window.innerWidth >= 768) {
         gsap.set(nav, { width: "56rem", maxWidth: "90%", top: "1rem", borderRadius: "9999px", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)" });
         gsap.set(navContainer, { padding: "0.75rem 1.5rem" });
         gsap.set(logoIcon, { width: "2rem", height: "2rem", fontSize: "1.25rem" });

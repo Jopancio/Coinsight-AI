@@ -115,11 +115,14 @@
         if (rowElement) rowElement.style.opacity = "0";
         document.body.appendChild(detailCard);
 
+        // Entry state: card starts blurred so it dissolves into view
+        gsap.set(detailCard, { filter: "blur(12px)", transformOrigin: "center center" });
+
         gsap.to(overlay, {
-            backgroundColor: "rgba(0,0,0,0.8)",
-            backdropFilter: "blur(8px)",
-            duration: 0.6,
-            ease: "power3.inOut"
+            backgroundColor: "rgba(0,0,0,0.88)",
+            backdropFilter: "blur(12px)",
+            duration: 0.5,
+            ease: "expo.out"
         });
 
 
@@ -144,31 +147,40 @@
         var finalSymbolLeft = finalNameLeft + finalNameWidth + 12;
         var finalSymbolTop = finalNameTop + 6;
 
+        // Spring into position for a lively feel
         gsap.to(animImgWrap, {
             top: finalImgTop,
             left: finalImgLeft,
             width: finalImgSize,
             height: finalImgSize,
-            duration: 0.6,
-            ease: "power3.inOut"
+            duration: 0.68,
+            ease: "back.out(1.5)"
         });
 
+        // Name fades + slides in slightly after card starts expanding
+        gsap.set(animName, { opacity: 0 });
         gsap.to(animName, {
             top: finalNameTop,
             left: finalNameLeft,
             fontSize: "30px",
-            duration: 0.6,
-            ease: "power3.inOut"
+            opacity: 1,
+            duration: 0.55,
+            ease: "expo.out",
+            delay: 0.07
         });
 
+        // Symbol follows name
+        gsap.set(animSymbol, { opacity: 0 });
         gsap.to(animSymbol, {
             top: finalSymbolTop,
             left: finalSymbolLeft,
             fontSize: "20px",
             backgroundColor: "rgba(255,255,255,0)",
             padding: "0px 0px",
-            duration: 0.6,
-            ease: "power3.inOut"
+            opacity: 1,
+            duration: 0.5,
+            ease: "expo.out",
+            delay: 0.12
         });
 
         gsap.to(detailCard, {
@@ -177,9 +189,10 @@
             width: targetWidth,
             height: targetHeight,
             borderRadius: "2rem",
-            boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1)",
-            duration: 0.6,
-            ease: "power3.inOut",
+            filter: "blur(0px)",
+            boxShadow: "0 32px 64px -16px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.1)",
+            duration: 0.58,
+            ease: "expo.out",
             onComplete: function () {
                 var detailContent = document.createElement("div");
                 detailContent.className = "p-8 w-full h-full flex flex-col relative";
@@ -239,21 +252,21 @@
 
                     <!-- Scrollable body -->
                     <div id="detail-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;opacity:0;padding-right:4px;">
-                        <div style="display:flex;flex-direction:column;padding-bottom:40px;gap:0;">
+                        <div style="display:flex;flex-direction:column;padding-bottom:${isMobile ? '20px' : '40px'};gap:0;">
 
                             <!-- ── PRICE OVERVIEW CARD ───────────────────────────── -->
-                            <div style="margin-bottom:20px;margin-top:0;padding:22px 26px 20px;background:linear-gradient(135deg,rgba(${modalAccentRgb},0.07) 0%,transparent 70%);border:1px solid rgba(${modalAccentRgb},0.18);border-radius:20px;position:relative;overflow:hidden;">
+                            <div style="margin-bottom:20px;margin-top:0;padding:${isMobile ? '14px 16px 14px' : '22px 26px 20px'};background:linear-gradient(135deg,rgba(${modalAccentRgb},0.07) 0%,transparent 70%);border:1px solid rgba(${modalAccentRgb},0.18);border-radius:20px;position:relative;overflow:hidden;">
                                 <div style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:8rem;font-weight:900;color:rgba(255,255,255,0.022);letter-spacing:-5px;user-select:none;pointer-events:none;font-family:ui-monospace,monospace;line-height:1;">${(coin.symbol||'').toUpperCase()}</div>
                                 <!-- Price + change badge -->
-                                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;position:relative;flex-wrap:wrap;gap:12px;">
+                                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:${isMobile ? '12px' : '20px'};position:relative;flex-wrap:wrap;gap:12px;">
                                     <div>
                                         <p style="font-size:10px;color:#475569;text-transform:uppercase;font-weight:700;letter-spacing:0.12em;margin-bottom:8px;">Harga Saat Ini</p>
-                                        <h3 style="font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;color:#f8fafc;line-height:1;letter-spacing:-0.03em;">${formatCurrency(coin.current_price)}</h3>
+                                        <h3 style="font-size:${isMobile ? 'clamp(1.0rem,5vw,1.4rem)' : 'clamp(1.8rem,4vw,2.8rem)'};font-weight:900;color:#f8fafc;line-height:1;letter-spacing:-0.03em;">${formatCurrency(coin.current_price)}</h3>
                                     </div>
                                     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding-top:6px;">
-                                        <div style="display:inline-flex;align-items:center;gap:7px;background:${modalAccentDim};border:1px solid ${modalAccent}50;border-radius:14px;padding:9px 16px;">
-                                            <i class="fa-solid fa-caret-${modalIsUp ? 'up' : 'down'}" style="font-size:15px;color:${modalAccent};"></i>
-                                            <span style="font-size:17px;font-weight:900;color:${modalAccent};">${percentSign}${(coin.price_change_percentage_24h||0).toFixed(2)}%</span>
+                                        <div style="display:inline-flex;align-items:center;gap:7px;background:${modalAccentDim};border:1px solid ${modalAccent}50;border-radius:14px;padding:${isMobile ? '5px 10px' : '9px 16px'};">
+                                            <i class="fa-solid fa-caret-${modalIsUp ? 'up' : 'down'}" style="font-size:${isMobile ? '12px' : '15px'};color:${modalAccent};"></i>
+                                            <span style="font-size:${isMobile ? '13px' : '17px'};font-weight:900;color:${modalAccent};">${percentSign}${(coin.price_change_percentage_24h||0).toFixed(2)}%</span>
                                         </div>
                                         <span style="font-size:10px;color:#475569;font-weight:600;">vs 24 jam lalu</span>
                                     </div>
@@ -273,11 +286,11 @@
                             </div>
 
                             <!-- ── TRADINGVIEW CHART ─────────────────────────────── -->
-                            <div style="width:100%;flex-shrink:0;margin-bottom:24px;position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);height:400px;" id="tv_chart_container_${coin.symbol}"></div>
+                            <div style="width:100%;flex-shrink:0;margin-bottom:24px;position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);height:${isMobile ? '220px' : '400px'};" id="tv_chart_container_${coin.symbol}"></div>
 
                             <!-- ── MARKET OVERVIEW ──────────────────────────────── -->
-                            <div style="margin-bottom:24px;">
-                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                            <div style="margin-bottom:${isMobile ? '16px' : '24px'};">
+                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:${isMobile ? '10px' : '16px'};">
                                     <div style="width:3px;height:20px;border-radius:9999px;background:${modalAccent};"></div>
                                     <h3 style="font-size:15px;font-weight:800;color:#f1f5f9;letter-spacing:-0.01em;">Market Overview</h3>
                                     <div style="flex:1;height:1px;background:rgba(255,255,255,0.06);"></div>
@@ -285,39 +298,39 @@
                                 </div>
                                 <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
                                     <!-- Market Cap -->
-                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
-                                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                                            <div style="width:34px;height:34px;border-radius:10px;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-chart-pie" style="font-size:13px;color:#60a5fa;"></i></div>
+                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:${isMobile ? '10px 12px' : '16px'};transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${isMobile ? '8px' : '12px'};">
+                                            <div style="width:${isMobile ? '28px' : '34px'};height:${isMobile ? '28px' : '34px'};border-radius:10px;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-chart-pie" style="font-size:${isMobile ? '11px' : '13px'};color:#60a5fa;"></i></div>
                                             <span style="font-size:8px;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:0.1em;">Mkt Cap</span>
                                         </div>
-                                        <p style="font-size:19px;font-weight:900;color:#f1f5f9;line-height:1;">${formatCompact(coin.market_cap)}</p>
+                                        <p style="font-size:${isMobile ? '14px' : '19px'};font-weight:900;color:#f1f5f9;line-height:1;">${formatCompact(coin.market_cap)}</p>
                                         <p style="font-size:10px;color:#475569;margin-top:5px;">Kapitalisasi Pasar</p>
                                     </div>
                                     <!-- Rank -->
-                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
-                                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                                            <div style="width:34px;height:34px;border-radius:10px;background:rgba(245,158,11,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-trophy" style="font-size:13px;color:#f59e0b;"></i></div>
+                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:${isMobile ? '10px 12px' : '16px'};transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${isMobile ? '8px' : '12px'};">
+                                            <div style="width:${isMobile ? '28px' : '34px'};height:${isMobile ? '28px' : '34px'};border-radius:10px;background:rgba(245,158,11,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-trophy" style="font-size:${isMobile ? '11px' : '13px'};color:#f59e0b;"></i></div>
                                             <span style="font-size:8px;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:0.1em;">Rank</span>
                                         </div>
-                                        <p style="font-size:19px;font-weight:900;color:#f1f5f9;line-height:1;">#${coin.market_cap_rank || '-'}</p>
+                                        <p style="font-size:${isMobile ? '14px' : '19px'};font-weight:900;color:#f1f5f9;line-height:1;">#${coin.market_cap_rank || '-'}</p>
                                         <p style="font-size:10px;color:#475569;margin-top:5px;">Peringkat Global</p>
                                     </div>
                                     <!-- Volume 24H -->
-                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
-                                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                                            <div style="width:34px;height:34px;border-radius:10px;background:rgba(168,85,247,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-fire" style="font-size:13px;color:#a855f7;"></i></div>
+                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:${isMobile ? '10px 12px' : '16px'};transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${isMobile ? '8px' : '12px'};">
+                                            <div style="width:${isMobile ? '28px' : '34px'};height:${isMobile ? '28px' : '34px'};border-radius:10px;background:rgba(168,85,247,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-fire" style="font-size:${isMobile ? '11px' : '13px'};color:#a855f7;"></i></div>
                                             <span style="font-size:8px;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:0.1em;">Volume 24H</span>
                                         </div>
-                                        <p style="font-size:19px;font-weight:900;color:#f1f5f9;line-height:1;">${formatCompact(coin.total_volume)}</p>
+                                        <p style="font-size:${isMobile ? '14px' : '19px'};font-weight:900;color:#f1f5f9;line-height:1;">${formatCompact(coin.total_volume)}</p>
                                         <p style="font-size:10px;color:#475569;margin-top:5px;">Total Perdagangan</p>
                                     </div>
                                     <!-- Circulating Supply -->
-                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
-                                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                                            <div style="width:34px;height:34px;border-radius:10px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-circle-dot" style="font-size:13px;color:#10b981;"></i></div>
+                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:${isMobile ? '10px 12px' : '16px'};transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+                                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${isMobile ? '8px' : '12px'};">
+                                            <div style="width:${isMobile ? '28px' : '34px'};height:${isMobile ? '28px' : '34px'};border-radius:10px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-circle-dot" style="font-size:${isMobile ? '11px' : '13px'};color:#10b981;"></i></div>
                                             <span style="font-size:8px;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:0.1em;">Beredar</span>
                                         </div>
-                                        <p style="font-size:17px;font-weight:900;color:#f1f5f9;line-height:1;">${formatCompact(coin.circulating_supply)}</p>
+                                        <p style="font-size:${isMobile ? '14px' : '17px'};font-weight:900;color:#f1f5f9;line-height:1;">${formatCompact(coin.circulating_supply)}</p>
                                         <p style="font-size:10px;color:#475569;margin-top:5px;">${(coin.symbol||'').toUpperCase()} · ${modalSupplyPct !== null ? modalSupplyPct + '% of max' : 'No max supply'}</p>
                                         ${modalSupplyPct !== null ? '<div style="margin-top:8px;height:4px;border-radius:9999px;background:rgba(255,255,255,0.07);overflow:hidden;"><div style="height:100%;width:' + modalSupplyPct + '%;background:linear-gradient(to right,rgba(16,185,129,0.5),#10b981);border-radius:9999px;"></div></div>' : ''}
                                     </div>
@@ -325,25 +338,25 @@
                             </div>
 
                             <!-- ── HISTORICAL RECORDS ────────────────────────────── -->
-                            <div style="margin-bottom:24px;">
-                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                            <div style="margin-bottom:${isMobile ? '16px' : '24px'};">
+                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:${isMobile ? '10px' : '16px'};">
                                     <div style="width:3px;height:20px;border-radius:9999px;background:linear-gradient(to bottom,#10b981,#ef4444);"></div>
                                     <h3 style="font-size:15px;font-weight:800;color:#f1f5f9;letter-spacing:-0.01em;">Harga Historis</h3>
                                     <div style="flex:1;height:1px;background:rgba(255,255,255,0.06);"></div>
                                 </div>
                                 <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px;">
                                     <!-- ATH Card -->
-                                    <div style="background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.22);border-radius:14px;padding:18px;position:relative;overflow:hidden;">
+                                    <div style="background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.22);border-radius:14px;padding:${isMobile ? '12px' : '18px'};position:relative;overflow:hidden;">
                                         <div style="position:absolute;top:-8px;right:-4px;font-size:4.5rem;font-weight:900;color:rgba(16,185,129,0.05);user-select:none;line-height:1;font-family:ui-monospace,monospace;pointer-events:none;">ATH</div>
-                                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-                                            <div style="width:32px;height:32px;border-radius:10px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-arrow-trend-up" style="font-size:12px;color:#10b981;"></i></div>
+                                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:${isMobile ? '8px' : '12px'};">
+                                            <div style="width:${isMobile ? '26px' : '32px'};height:${isMobile ? '26px' : '32px'};border-radius:10px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-arrow-trend-up" style="font-size:${isMobile ? '10px' : '12px'};color:#10b981;"></i></div>
                                             <div>
                                                 <p style="font-size:9px;font-weight:800;color:#10b981;text-transform:uppercase;letter-spacing:0.1em;">Record Tertinggi</p>
                                                 <p style="font-size:9px;color:#475569;">${athDateStr}</p>
                                             </div>
                                         </div>
-                                        <p style="font-size:20px;font-weight:900;color:#f1f5f9;margin-bottom:6px;">${formatCurrency(coin.ath)}</p>
-                                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+                                        <p style="font-size:${isMobile ? '15px' : '20px'};font-weight:900;color:#f1f5f9;margin-bottom:${isMobile ? '4px' : '6px'};">${formatCurrency(coin.ath)}</p>
+                                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:${isMobile ? '6px' : '10px'};">
                                             <span style="font-size:12px;font-weight:800;color:${athValueColor};">${athSign}${(coin.ath_change_percentage||0).toFixed(2)}%</span>
                                             <span style="font-size:10px;color:#475569;">dari ATH</span>
                                         </div>
@@ -352,17 +365,17 @@
                                         </div>
                                     </div>
                                     <!-- ATL Card -->
-                                    <div style="background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.22);border-radius:14px;padding:18px;position:relative;overflow:hidden;">
+                                    <div style="background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.22);border-radius:14px;padding:${isMobile ? '12px' : '18px'};position:relative;overflow:hidden;">
                                         <div style="position:absolute;top:-8px;right:-4px;font-size:4.5rem;font-weight:900;color:rgba(239,68,68,0.05);user-select:none;line-height:1;font-family:ui-monospace,monospace;pointer-events:none;">ATL</div>
-                                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-                                            <div style="width:32px;height:32px;border-radius:10px;background:rgba(239,68,68,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-arrow-trend-down" style="font-size:12px;color:#ef4444;"></i></div>
+                                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:${isMobile ? '8px' : '12px'};">
+                                            <div style="width:${isMobile ? '26px' : '32px'};height:${isMobile ? '26px' : '32px'};border-radius:10px;background:rgba(239,68,68,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-arrow-trend-down" style="font-size:${isMobile ? '10px' : '12px'};color:#ef4444;"></i></div>
                                             <div>
                                                 <p style="font-size:9px;font-weight:800;color:#ef4444;text-transform:uppercase;letter-spacing:0.1em;">Record Terendah</p>
                                                 <p style="font-size:9px;color:#475569;">${atlDateStr}</p>
                                             </div>
                                         </div>
-                                        <p style="font-size:20px;font-weight:900;color:#f1f5f9;margin-bottom:6px;">${formatCurrency(coin.atl)}</p>
-                                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+                                        <p style="font-size:${isMobile ? '15px' : '20px'};font-weight:900;color:#f1f5f9;margin-bottom:${isMobile ? '4px' : '6px'};">${formatCurrency(coin.atl)}</p>
+                                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:${isMobile ? '6px' : '10px'};">
                                             <span style="font-size:12px;font-weight:800;color:${atlValueColor};">${atlSign}${(coin.atl_change_percentage||0).toFixed(2)}%</span>
                                             <span style="font-size:10px;color:#475569;">dari ATL</span>
                                         </div>
@@ -370,27 +383,27 @@
                                     </div>
                                 </div>
                                 <!-- Total + Max Supply -->
-                                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
-                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;">
-                                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-                                            <div style="width:30px;height:30px;border-radius:9px;background:rgba(99,102,241,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-database" style="font-size:12px;color:#818cf8;"></i></div>
+                                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:${isMobile ? '8px' : '10px'};">
+                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:${isMobile ? '10px 12px' : '16px'};">
+                                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:${isMobile ? '6px' : '10px'};">
+                                            <div style="width:${isMobile ? '24px' : '30px'};height:${isMobile ? '24px' : '30px'};border-radius:9px;background:rgba(99,102,241,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-database" style="font-size:${isMobile ? '10px' : '12px'};color:#818cf8;"></i></div>
                                             <p style="font-size:9px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.1em;">Total Supply</p>
                                         </div>
-                                        <p style="font-size:18px;font-weight:900;color:#f1f5f9;">${coin.total_supply ? formatCompact(coin.total_supply) : '-'}</p>
+                                        <p style="font-size:${isMobile ? '14px' : '18px'};font-weight:900;color:#f1f5f9;">${coin.total_supply ? formatCompact(coin.total_supply) : '-'}</p>
                                     </div>
-                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;">
-                                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-                                            <div style="width:30px;height:30px;border-radius:9px;background:rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-infinity" style="font-size:12px;color:#a78bfa;"></i></div>
+                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:${isMobile ? '10px 12px' : '16px'};">
+                                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:${isMobile ? '6px' : '10px'};">
+                                            <div style="width:${isMobile ? '24px' : '30px'};height:${isMobile ? '24px' : '30px'};border-radius:9px;background:rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-infinity" style="font-size:${isMobile ? '10px' : '12px'};color:#a78bfa;"></i></div>
                                             <p style="font-size:9px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.1em;">Max Supply</p>
                                         </div>
-                                        <p style="font-size:18px;font-weight:900;color:#f1f5f9;">${coin.max_supply ? formatCompact(coin.max_supply) : '∞'}</p>
+                                        <p style="font-size:${isMobile ? '14px' : '18px'};font-weight:900;color:#f1f5f9;">${coin.max_supply ? formatCompact(coin.max_supply) : '∞'}</p>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- ── RELATED NEWS ──────────────────────────────────── -->
-                            <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:32px;padding-bottom:16px;">
-                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:8px;">
+                            <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:${isMobile ? '18px' : '32px'};padding-bottom:16px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${isMobile ? '14px' : '20px'};flex-wrap:wrap;gap:8px;">
                                     <div style="display:flex;align-items:center;gap:10px;">
                                         <div style="width:3px;height:20px;border-radius:9999px;background:#3b82f6;"></div>
                                         <h3 style="font-size:15px;font-weight:800;color:#f1f5f9;">Berita <span style="color:#60a5fa;">${coin.name}</span> Terbaru</h3>
@@ -502,8 +515,17 @@
                     }
                 };
 
-                gsap.to(document.getElementById("detail-body"), {
-                    opacity: 1, duration: 0.3, onComplete: function () {
+                var _db = document.getElementById("detail-body");
+                var _iw = _db && _db.firstElementChild;
+                var _secs = _iw ? Array.from(_iw.children) : [];
+                gsap.set(_db, { opacity: 1 });
+                if (_secs.length > 0) {
+                    gsap.fromTo(_secs,
+                        { opacity: 0, y: 24, filter: "blur(5px)" },
+                        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.52, ease: "expo.out", stagger: 0.07 }
+                    );
+                }
+                gsap.to(_db, { opacity: 1, duration: 0.01, onComplete: function () {
                         var detailBody = document.getElementById("detail-body");
                         var tvContainer = document.getElementById("tv_chart_container_" + coin.symbol);
 
@@ -588,13 +610,18 @@
                     url.searchParams.delete('coin');
                     window.history.pushState({}, '', url);
 
-                    gsap.to(document.getElementById("detail-body"), { opacity: 0, duration: 0.2 });
-                    gsap.to(document.getElementById("close-detail-btn"), { opacity: 0, duration: 0.2 });
+                    gsap.to(document.getElementById("detail-body"), { opacity: 0, y: -10, duration: 0.15, ease: "power2.in", overwrite: true });
+                    gsap.to(document.getElementById("close-detail-btn"), { opacity: 0, scale: 0.75, duration: 0.12, ease: "power2.in" });
 
                     var currentRow = rowElement && rowElement.isConnected ? rowElement : document.getElementById("row-" + coin.id);
                     var currentRect = currentRow ? currentRow.getBoundingClientRect() : { top: window.innerHeight / 2, left: window.innerWidth / 2, width: 0, height: 0 };
 
-                    var cWrapEl = currentRow ? (currentRow.querySelector(".coin-logo-wrap") || currentRow.querySelector("td > div > div:first-child")) : null;
+                    var cWrapEl = currentRow ? (
+                        currentRow.querySelector(".coin-logo-wrap") ||
+                        currentRow.querySelector("td > div > div:first-child") ||
+                        (currentRow.querySelector("img[id^='mcard-']") ? currentRow.querySelector("img[id^='mcard-']").parentElement : null) ||
+                        (currentRow.querySelector("img[id^='mbar-']") ? currentRow.querySelector("img[id^='mbar-']").parentElement : null)
+                    ) : null;
                     var cNameEl = currentRow ? (currentRow.querySelector(".coin-name-text") || currentRow.querySelector("span.font-bold")) : null;
                     var cSymbolEl = currentRow ? (currentRow.querySelector(".coin-symbol-text") || currentRow.querySelector("span.font-mono")) : null;
 
@@ -602,44 +629,30 @@
                     var origNameRect = cNameEl ? cNameEl.getBoundingClientRect() : currentRect;
                     var origSymbolRect = cSymbolEl ? cSymbolEl.getBoundingClientRect() : currentRect;
 
+                    // Logo flies back to its origin card — shared-element return
                     gsap.to(animImgWrap, {
                         top: origImgRect.top,
                         left: origImgRect.left,
                         width: origImgRect.width,
                         height: origImgRect.height,
                         opacity: currentRow ? 1 : 0,
-                        duration: 0.6,
-                        ease: "power3.inOut"
+                        duration: 0.48,
+                        ease: "power3.out"
                     });
 
-                    gsap.to(animName, {
-                        top: origNameRect.top,
-                        left: origNameRect.left,
-                        fontSize: "16px",
-                        opacity: currentRow ? 1 : 0,
-                        duration: 0.6,
-                        ease: "power3.inOut"
-                    });
-
-                    gsap.to(animSymbol, {
-                        top: origSymbolRect.top,
-                        left: origSymbolRect.left,
-                        fontSize: "12px",
-                        padding: "4px 8px",
-                        backgroundColor: "rgba(255,255,255,0.1)",
-                        opacity: currentRow ? 1 : 0,
-                        duration: 0.6,
-                        ease: "power3.inOut"
-                    });
+                    // Name & symbol fade out in place — cleaner than flying back
+                    gsap.to(animName, { opacity: 0, duration: 0.2, ease: "power2.in" });
+                    gsap.to(animSymbol, { opacity: 0, duration: 0.16, ease: "power2.in" });
 
                     gsap.to(overlay, {
                         backgroundColor: "rgba(0,0,0,0)",
                         backdropFilter: "blur(0px)",
-                        duration: 0.6,
-                        ease: "power3.inOut",
+                        duration: 0.42,
+                        ease: "power3.out",
                         onComplete: () => overlay.remove()
                     });
 
+                    // Card blurs and collapses back — dissolve-out effect
                     gsap.to(detailCard, {
                         top: currentRect.top,
                         left: currentRect.left,
@@ -647,9 +660,10 @@
                         height: currentRow ? currentRect.height : 0,
                         borderRadius: "0.5rem",
                         boxShadow: "none",
-                        opacity: currentRow ? 1 : 0,
-                        duration: 0.6,
-                        ease: "power3.inOut",
+                        filter: "blur(10px)",
+                        opacity: currentRow ? 0.5 : 0,
+                        duration: 0.45,
+                        ease: "power3.out",
                         onComplete: () => {
                             detailCard.remove();
                             animImgWrap.remove();

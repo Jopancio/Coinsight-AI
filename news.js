@@ -104,43 +104,43 @@ lucide.createIcons();
         card.target = "_blank";
 
         if (isTopNews) {
-            card.className = "glass-card rounded-2xl overflow-hidden hover:-translate-y-2 transition-all duration-500 group flex flex-col h-full border-[3px] border-amber/20 bg-black/40 hover:border-amber/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.2)]";
+            card.className = "glass-card rounded-xl overflow-hidden hover:-translate-y-1 transition-all duration-500 group flex flex-col h-full border-[2px] border-amber/20 bg-black/40 hover:border-amber/50 hover:shadow-[0_0_24px_rgba(245,158,11,0.18)]";
             card.innerHTML = `
-                <div class="h-44 overflow-hidden relative shrink-0">
+                <div class="h-32 overflow-hidden relative shrink-0">
                     <div class="absolute inset-0 bg-amber/10 group-hover:bg-transparent transition-colors z-10"></div>
                     <img src="${coverUrl}" alt="News Cover" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
-                    <div class="absolute top-3 left-3 z-20 bg-amber text-black px-2 py-0.5 rounded-full text-xs font-bold shadow-lg">
+                    <div class="absolute top-2 left-2 z-20 bg-amber text-black px-2 py-0.5 rounded-full text-[10px] font-bold shadow-md">
                         TOP STORY
                     </div>
                 </div>
-                <div class="p-4 flex-1 flex flex-col">
-                    <div class="flex items-center gap-2 mb-2 flex-wrap">
-                        <span class="text-xs font-bold text-amber uppercase tracking-wider bg-amber/10 px-2 py-0.5 rounded">${source}</span>
-                        <p class="text-xs text-gray-400 font-mono"><i class="fa-regular fa-clock mr-1"></i> ${date}</p>
+                <div class="p-3 flex-1 flex flex-col">
+                    <div class="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                        <span class="text-[10px] font-bold text-amber uppercase tracking-wider bg-amber/10 px-1.5 py-0.5 rounded">${source}</span>
+                        <p class="text-[10px] text-gray-400 font-mono"><i class="fa-regular fa-clock mr-0.5"></i>${date}</p>
                     </div>
-                    <h3 class="text-base font-bold text-white mb-2 line-clamp-2 group-hover:text-amber transition-colors">${title}</h3>
-                    <p class="text-xs text-gray-400 line-clamp-3 mb-3 flex-1">${subtitle}</p>
-                    <div class="flex items-center gap-2 text-xs font-bold text-white mt-auto group-hover:text-amber transition-colors">
-                        Baca Selengkapnya <i class="fa-solid fa-arrow-right-long transition-transform group-hover:translate-x-2"></i>
+                    <h3 class="text-sm font-bold text-white mb-1 line-clamp-2 group-hover:text-amber transition-colors leading-snug">${title}</h3>
+                    <p class="text-[11px] text-gray-400 line-clamp-2 mb-2 flex-1 leading-relaxed">${subtitle}</p>
+                    <div class="flex items-center gap-1.5 text-[11px] font-bold text-white mt-auto group-hover:text-amber transition-colors">
+                        Baca Selengkapnya <i class="fa-solid fa-arrow-right-long transition-transform group-hover:translate-x-1 text-[9px]"></i>
                     </div>
                 </div>
             `;
         } else {
-            card.className = "glass-card rounded-2xl overflow-hidden hover:-translate-y-2 transition-all duration-500 group flex flex-col h-full bg-white/5 border border-white/10";
+            card.className = "glass-card rounded-xl overflow-hidden hover:-translate-y-1 transition-all duration-500 group flex flex-col h-full bg-white/5 border border-white/10";
             card.innerHTML = `
-                <div class="h-36 overflow-hidden relative">
+                <div class="h-28 overflow-hidden relative">
                     <div class="absolute inset-0 bg-tech-blue/20 group-hover:bg-transparent transition-colors z-10"></div>
                     <img src="${coverUrl}" alt="News Cover" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
-                    <div class="absolute top-2 left-2 z-20 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-full text-xs font-bold text-white border border-white/10">
+                    <div class="absolute top-2 left-2 z-20 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-full text-[10px] font-bold text-white border border-white/10">
                         ${source}
                     </div>
                 </div>
-                <div class="p-4 flex-1 flex flex-col">
-                    <p class="text-xs text-emerald mb-1.5 font-mono"><i class="fa-regular fa-clock mr-1"></i> ${date}</p>
-                    <h3 class="text-sm font-bold text-white mb-1.5 line-clamp-2 group-hover:text-tech-blue transition-colors">${title}</h3>
-                    <p class="text-xs text-gray-400 line-clamp-3 mb-3 flex-1">${subtitle}</p>
-                    <div class="flex items-center gap-2 text-xs font-semibold text-white mt-auto group-hover:text-emerald transition-colors">
-                        Baca Artikel <i class="fa-solid fa-arrow-right-long transition-transform group-hover:translate-x-2"></i>
+                <div class="p-3 flex-1 flex flex-col">
+                    <p class="text-[10px] text-emerald mb-1 font-mono"><i class="fa-regular fa-clock mr-0.5"></i>${date}</p>
+                    <h3 class="text-sm font-bold text-white mb-1 line-clamp-2 group-hover:text-tech-blue transition-colors leading-snug">${title}</h3>
+                    <p class="text-[11px] text-gray-400 line-clamp-2 mb-2 flex-1 leading-relaxed">${subtitle}</p>
+                    <div class="flex items-center gap-1.5 text-[11px] font-semibold text-white mt-auto group-hover:text-emerald transition-colors">
+                        Baca Artikel <i class="fa-solid fa-arrow-right-long transition-transform group-hover:translate-x-1 text-[9px]"></i>
                     </div>
                 </div>
             `;

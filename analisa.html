@@ -422,6 +422,96 @@
 
             </div>
         </section>
+
+        <!-- ── AI Comparative Analysis Panel ───────────────────── -->
+        <section class="px-4 md:px-6 pb-6" id="aiCompareSection" style="display:none">
+            <div class="max-w-6xl mx-auto">
+                <div class="glass-card rounded-3xl border border-emerald-500/20 overflow-hidden">
+                    <div class="h-1 w-full" style="background:linear-gradient(90deg,#10b981,#3b82f6,#8b5cf6)"></div>
+                    <div class="p-6 md:p-8">
+
+                        <!-- Header -->
+                        <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-2xl flex items-center justify-center"
+                                    style="background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(59,130,246,0.2));border:1px solid rgba(16,185,129,0.3)">
+                                    <i class="fa-solid fa-brain text-emerald-400 text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-white font-extrabold text-xl leading-tight">AI Analisis Perbandingan</h3>
+                                    <p class="text-gray-500 text-[11px] mt-0.5">Powered by Gemini 2.0 Flash &mdash; CoinSight Analysis Engine</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button id="btnCopyAnalysis" onclick="copyAnalysis()"
+                                    class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:scale-105 active:scale-95"
+                                    style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#9CA3AF">
+                                    <i class="fa-regular fa-copy text-xs"></i>
+                                    Salin Analisis
+                                </button>
+                                <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                                    style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);color:#10B981">
+                                    <span class="w-1.5 h-1.5 rounded-full" style="background:#10B981;animation:errorPulse 2s ease-in-out infinite;display:inline-block"></span>
+                                    AI Generated
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Coin compare pills -->
+                        <div id="aiCoinPills" class="flex items-center gap-3 mb-6 flex-wrap">
+                            <!-- Filled by JS -->
+                        </div>
+
+                        <!-- Loading skeleton -->
+                        <div id="aiLoadingSkeleton" class="hidden">
+                            <div class="space-y-3 animate-pulse">
+                                <div class="h-4 rounded-lg bg-white/10 w-3/4"></div>
+                                <div class="h-4 rounded-lg bg-white/8 w-full"></div>
+                                <div class="h-4 rounded-lg bg-white/8 w-5/6"></div>
+                                <div class="h-4 rounded-lg bg-white/6 w-2/3 mt-4"></div>
+                                <div class="h-4 rounded-lg bg-white/8 w-full"></div>
+                                <div class="h-4 rounded-lg bg-white/8 w-4/5"></div>
+                                <div class="h-4 rounded-lg bg-white/6 w-full"></div>
+                                <div class="h-4 rounded-lg bg-white/8 w-3/4"></div>
+                            </div>
+                            <p class="text-center text-gray-500 text-sm mt-6 flex items-center justify-center gap-2">
+                                <span class="w-4 h-4 rounded-full border-2 border-emerald-400 border-t-transparent inline-block" style="animation:spin 0.9s linear infinite"></span>
+                                Gemini sedang menganalisis kedua aset...
+                            </p>
+                        </div>
+
+                        <!-- Error state -->
+                        <div id="aiErrorMsg" class="hidden rounded-2xl p-5 text-sm" style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);color:#FCA5A5"></div>
+
+                        <!-- AI Markdown Output -->
+                        <div id="aiMarkdownOutput" class="ai-analysis-body hidden"></div>
+
+                        <!-- News section -->
+                        <div id="aiNewsSection" class="hidden mt-8">
+                            <div class="flex items-center gap-2 mb-4">
+                                <i class="fa-solid fa-newspaper text-blue-400 text-sm"></i>
+                                <h4 class="text-white font-bold text-sm">Berita Terkait</h4>
+                            </div>
+                            <div id="aiNewsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                        </div>
+
+                        <!-- Disclaimer -->
+                        <div class="mt-8 rounded-2xl p-4 flex items-start gap-3"
+                            style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.15)">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-400 text-sm mt-0.5 flex-shrink-0"></i>
+                            <p class="text-gray-500 text-[12px] leading-relaxed">
+                                <span class="font-bold text-amber-400/80">Disclaimer:</span> Analisis ini bersifat edukatif dan dihasilkan oleh AI (Gemini 2.0 Flash) berdasarkan data pasar terkini.
+                                Ini <strong class="text-white/60">bukan</strong> merupakan saran investasi atau <em>financial advice</em> dalam bentuk apapun.
+                                Selalu lakukan riset mandiri (DYOR) dan konsultasikan dengan profesional keuangan.
+                                Investasi aset kripto mengandung risiko kehilangan seluruh modal.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <footer class="bg-black/50 py-8 border-t border-white/10 mt-10">
@@ -442,6 +532,25 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* AI Analysis markdown body styles */
+        .ai-analysis-body { color: #D1D5DB; line-height: 1.75; font-size: 0.9rem; }
+        .ai-analysis-body h2 { font-size: 1.1rem; font-weight: 800; color: #F9FAFB; margin: 1.5rem 0 0.6rem; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.07); }
+        .ai-analysis-body h3 { font-size: 0.95rem; font-weight: 700; color: #E5E7EB; margin: 1rem 0 0.4rem; }
+        .ai-analysis-body p { margin: 0.5rem 0; }
+        .ai-analysis-body ul, .ai-analysis-body ol { margin: 0.5rem 0 0.5rem 1.25rem; }
+        .ai-analysis-body li { margin: 0.25rem 0; }
+        .ai-analysis-body strong { color: #F9FAFB; font-weight: 700; }
+        .ai-analysis-body em { color: #9CA3AF; font-style: italic; }
+        .ai-analysis-body hr { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 1.25rem 0; }
+        .ai-analysis-body table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; font-size: 0.82rem; }
+        .ai-analysis-body th { background: rgba(255,255,255,0.06); color: #9CA3AF; font-weight: 700; text-align: left; padding: 0.5rem 0.75rem; border: 1px solid rgba(255,255,255,0.08); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+        .ai-analysis-body td { padding: 0.45rem 0.75rem; border: 1px solid rgba(255,255,255,0.06); vertical-align: top; }
+        .ai-analysis-body tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+        .ai-analysis-body blockquote { border-left: 3px solid rgba(16,185,129,0.4); padding-left: 1rem; margin: 0.75rem 0; color: #9CA3AF; font-style: italic; }
+        .ai-news-card { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07); border-radius: 1rem; padding: 1rem; transition: border-color 0.2s; }
+        .ai-news-card:hover { border-color: rgba(59,130,246,0.3); }
+        .ai-news-card a { text-decoration: none; }
     </style>
 
     <script>
@@ -598,6 +707,9 @@
                 updateInsights(vol1, vol2, dd1, dd2, fngScore, sentiment.value_classification, name1, name2);
                 updateAlert(medianRisk, vol1, vol2, fngScore, name1, name2);
 
+                // Trigger AI comparative analysis
+                runAiCompare(id1, id2);
+
             } catch (error) {
                 console.error(error);
                 document.getElementById("alertText").textContent =
@@ -738,6 +850,253 @@
             } else {
                 alertText.textContent =
                     "High Speculation Flag: " + name2 + " displays severe volatility (" + ratio + "x higher than " + name1 + ") coupled with overwhelming market greed. Combining these assets pushes the portfolio into highly speculative territory, contradicting SDG 12 principles of responsible financial behavior.";
+            }
+        }
+
+        // ── Markdown to HTML renderer ─────────────────────────────
+        function markdownToHtml(md) {
+            if (!md) return "";
+            var lines = md.split("\n");
+            var html = "";
+            var inUl = false, inOl = false, inTable = false, tableHeader = false;
+
+            function closeList() {
+                if (inUl) { html += "</ul>"; inUl = false; }
+                if (inOl) { html += "</ol>"; inOl = false; }
+            }
+            function closeTable() {
+                if (inTable) { html += "</tbody></table>"; inTable = false; tableHeader = false; }
+            }
+
+            lines.forEach(function (line) {
+                // Horizontal rule
+                if (/^---+$/.test(line.trim())) {
+                    closeList(); closeTable();
+                    html += "<hr>"; return;
+                }
+                // H2
+                if (/^## /.test(line)) {
+                    closeList(); closeTable();
+                    html += "<h2>" + inlineMarkdown(line.replace(/^## /, "")) + "</h2>"; return;
+                }
+                // H3
+                if (/^### /.test(line)) {
+                    closeList(); closeTable();
+                    html += "<h3>" + inlineMarkdown(line.replace(/^### /, "")) + "</h3>"; return;
+                }
+                // H4 (treat as strong paragraph)
+                if (/^#### /.test(line)) {
+                    closeList(); closeTable();
+                    html += "<p><strong>" + inlineMarkdown(line.replace(/^#### /, "")) + "</strong></p>"; return;
+                }
+                // Unordered list
+                if (/^[\*\-] /.test(line)) {
+                    closeTable();
+                    if (!inUl) { closeList(); html += "<ul>"; inUl = true; }
+                    html += "<li>" + inlineMarkdown(line.replace(/^[\*\-] /, "")) + "</li>"; return;
+                }
+                // Ordered list
+                if (/^\d+\. /.test(line)) {
+                    closeTable();
+                    if (!inOl) { closeList(); html += "<ol>"; inOl = true; }
+                    html += "<li>" + inlineMarkdown(line.replace(/^\d+\. /, "")) + "</li>"; return;
+                }
+                // Table row (| col | col |)
+                if (/^\|/.test(line)) {
+                    closeList();
+                    if (!inTable) {
+                        html += '<table><thead><tr>';
+                        inTable = true; tableHeader = true;
+                    }
+                    // Separator row detection
+                    if (/^\|[\s\-:|]+\|/.test(line)) {
+                        html += '</tr></thead><tbody>';
+                        tableHeader = false;
+                    } else {
+                        var cells = line.split("|").filter(function (c, i, a) { return i > 0 && i < a.length - 1; });
+                        var tag = tableHeader ? "th" : "td";
+                        if (!tableHeader && html.indexOf("</thead>") === -1) {
+                            // still building header
+                            cells.forEach(function (c) { html += "<th>" + inlineMarkdown(c.trim()) + "</th>"; });
+                        } else {
+                            cells.forEach(function (c) { html += "<" + tag + ">" + inlineMarkdown(c.trim()) + "</" + tag + ">"; });
+                            html += "</tr><tr>";
+                        }
+                    }
+                    return;
+                }
+                // Blockquote
+                if (/^> /.test(line)) {
+                    closeList(); closeTable();
+                    html += "<blockquote>" + inlineMarkdown(line.replace(/^> /, "")) + "</blockquote>"; return;
+                }
+                // Empty line
+                if (line.trim() === "") {
+                    closeList(); closeTable(); return;
+                }
+                // Normal paragraph
+                closeList(); closeTable();
+                html += "<p>" + inlineMarkdown(line) + "</p>";
+            });
+            closeList(); closeTable();
+            return html;
+        }
+
+        function inlineMarkdown(text) {
+            return text
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+                .replace(/__(.+?)__/g, "<strong>$1</strong>")
+                .replace(/\*(.+?)\*/g, "<em>$1</em>")
+                .replace(/_(.+?)_/g, "<em>$1</em>")
+                .replace(/`(.+?)`/g, '<code style="background:rgba(255,255,255,0.08);padding:0.1em 0.35em;border-radius:4px;font-size:0.85em;">$1</code>');
+        }
+
+        // ── Copy AI analysis to clipboard ────────────────────────
+        function copyAnalysis() {
+            var raw = document.getElementById("aiMarkdownOutput").getAttribute("data-raw") || "";
+            if (!raw) return;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(raw).then(function () {
+                    var btn = document.getElementById("btnCopyAnalysis");
+                    var orig = btn.innerHTML;
+                    btn.innerHTML = '<i class="fa-solid fa-check text-emerald-400 text-xs"></i> Tersalin!';
+                    setTimeout(function () { btn.innerHTML = orig; }, 2000);
+                });
+            }
+        }
+
+        // ── Render news cards ────────────────────────────────────
+        function renderAiNews(newsArr) {
+            if (!newsArr || newsArr.length === 0) return;
+            var grid = document.getElementById("aiNewsGrid");
+            grid.innerHTML = newsArr.slice(0, 6).map(function (n) {
+                var date = n.date || "";
+                var title = n.title ? (n.title.length > 80 ? n.title.substring(0, 80) + "…" : n.title) : "Tanpa Judul";
+                var body = n.body ? (n.body.length > 110 ? n.body.substring(0, 110) + "…" : n.body) : "";
+                var source = n.source || "CoinDesk";
+                var url = n.url || "#";
+                return '<div class="ai-news-card">' +
+                    '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' +
+                    '<div class="flex items-center justify-between mb-2">' +
+                    '<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background:rgba(59,130,246,0.12);color:#60A5FA">' + source + '</span>' +
+                    '<span class="text-gray-600 text-[10px]">' + date + '</span>' +
+                    '</div>' +
+                    '<p class="text-sm font-semibold text-gray-200 mb-1 leading-snug">' + title + '</p>' +
+                    (body ? '<p class="text-gray-500 text-[12px] leading-relaxed">' + body + '</p>' : '') +
+                    '</a></div>';
+            }).join("");
+            document.getElementById("aiNewsSection").classList.remove("hidden");
+        }
+
+        // ── Update insight cards with API data ───────────────────
+        function updateInsightsFromApi(coin1, coin2) {
+            var v1 = coin1.volatility30d || 0;
+            var v2 = coin2.volatility30d || 0;
+            var dd1 = coin1.maxDrawdown30d || 0;
+            var dd2 = coin2.maxDrawdown30d || 0;
+            var name1 = coin1.name;
+            var name2 = coin2.name;
+
+            var ratio = v1 > 0 ? (v2 / v1).toFixed(1) : "N/A";
+            document.getElementById("insightVolRatio").textContent = (v1 > 0 ? ratio + "x" : "N/A");
+            document.getElementById("insightVolText").textContent =
+                name2 + " memiliki volatilitas 30d sebesar " + v2.toFixed(2) + "% dibandingkan " + name1 + " (" + v1.toFixed(2) + "%). " +
+                (v1 > 0 && v2 > v1 ? "Ini menandakan pergerakan harga yang lebih liar — risiko spekulatif lebih tinggi." : "Keduanya menunjukkan profil risiko yang serupa.");
+
+            document.getElementById("insightDrawdown").textContent = dd2.toFixed(1) + "%";
+            document.getElementById("insightDrawdownVs").textContent = "vs " + dd1.toFixed(1) + "%";
+            document.getElementById("insightDrawdownText").textContent =
+                "Dalam 30 hari terakhir, penurunan terdalam " + name2 + " mencapai " + Math.abs(dd2).toFixed(1) + "% — " +
+                (Math.abs(dd2) > Math.abs(dd1) ? "lebih dalam dari " + name1 + " (" + Math.abs(dd1).toFixed(1) + "%)." : "lebih dangkal dari " + name1 + " (" + Math.abs(dd1).toFixed(1) + "%).");
+        }
+
+        // ── Main AI compare flow ─────────────────────────────────
+        async function runAiCompare(id1, id2) {
+            var section = document.getElementById("aiCompareSection");
+            var skeleton = document.getElementById("aiLoadingSkeleton");
+            var output = document.getElementById("aiMarkdownOutput");
+            var errorDiv = document.getElementById("aiErrorMsg");
+            var newsSection = document.getElementById("aiNewsSection");
+
+            // Reset state
+            output.classList.add("hidden");
+            output.innerHTML = "";
+            output.removeAttribute("data-raw");
+            errorDiv.classList.add("hidden");
+            newsSection.classList.add("hidden");
+            skeleton.classList.remove("hidden");
+            section.style.display = "block";
+
+            // Scroll to section
+            section.scrollIntoView({ behavior: "smooth", block: "start" });
+
+            // Coin pills
+            var pills = document.getElementById("aiCoinPills");
+            var n1 = document.getElementById("primaryName").textContent.trim();
+            var n2 = document.getElementById("compName").textContent.trim();
+            var s1 = document.getElementById("primarySymbol").textContent.replace(/[()]/g, "").trim();
+            var s2 = document.getElementById("compSymbol").textContent.replace(/[()]/g, "").trim();
+            var img1 = document.getElementById("primaryImg").src;
+            var img2 = document.getElementById("compImg").src;
+
+            function pillHtml(img, name, sym, color) {
+                return '<div class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-semibold" style="background:rgba(255,255,255,0.05);border:1px solid ' + color + '/20;color:' + color + '">' +
+                    (img ? '<img src="' + img + '" class="w-5 h-5 rounded-full" />' : '') +
+                    name + ' <span style="color:#6B7280">(' + sym + ')</span></div>';
+            }
+            pills.innerHTML =
+                pillHtml(img1, n1, s1, "#3B82F6") +
+                '<span class="text-gray-600 text-sm font-bold px-1">vs</span>' +
+                pillHtml(img2, n2, s2, "#F59E0B");
+
+            try {
+                var res = await fetch(API_BASE + "/ai-compare", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ coinId1: id1, coinId2: id2 })
+                });
+
+                if (res.status === 429) {
+                    throw new Error("Terlalu banyak permintaan. Tunggu 60 detik lalu coba lagi.");
+                }
+                if (!res.ok) {
+                    var errData = await res.json().catch(function () { return {}; });
+                    throw new Error(errData.error || "server error " + res.status);
+                }
+
+                var data = await res.json();
+                if (!data.success || !data.analysis) {
+                    throw new Error("Respons AI tidak valid dari server.");
+                }
+
+                skeleton.classList.add("hidden");
+
+                // Update insight cards with accurate API data
+                if (data.coin1 && data.coin2) {
+                    updateInsightsFromApi(data.coin1, data.coin2);
+                }
+
+                // Render AI markdown
+                output.setAttribute("data-raw", data.analysis);
+                output.innerHTML = markdownToHtml(data.analysis);
+                output.classList.remove("hidden");
+
+                // Render news
+                if (data.news && data.news.length > 0) {
+                    renderAiNews(data.news);
+                }
+
+                // Animate in
+                gsap.fromTo(output, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" });
+
+            } catch (err) {
+                skeleton.classList.add("hidden");
+                errorDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation mr-2"></i>' +
+                    'Gagal mendapatkan analisis AI: <strong>' + (err.message || "Unknown error") + '</strong>' +
+                    '<br><span style="opacity:0.6;font-size:0.85em">Cek koneksi internet, atau tunggu beberapa saat jika terkena rate limit API.</span>';
+                errorDiv.classList.remove("hidden");
+                console.error("AI compare error:", err);
             }
         }
     </script>

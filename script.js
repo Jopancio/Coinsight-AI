@@ -802,11 +802,14 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
         if (rowElement) rowElement.style.opacity = "0";
         document.body.appendChild(detailCard);
 
+        // Entry state: card starts blurred so it dissolves into view
+        gsap.set(detailCard, { filter: "blur(12px)", transformOrigin: "center center" });
+
         gsap.to(overlay, {
-            backgroundColor: "rgba(0,0,0,0.8)",
-            backdropFilter: "blur(8px)",
-            duration: 0.6,
-            ease: "power3.inOut"
+            backgroundColor: "rgba(0,0,0,0.88)",
+            backdropFilter: "blur(12px)",
+            duration: 0.5,
+            ease: "expo.out"
         });
 
 
@@ -831,31 +834,40 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
         var finalSymbolLeft = finalNameLeft + finalNameWidth + 12;
         var finalSymbolTop = finalNameTop + 6;
 
+        // Spring into position for a lively feel
         gsap.to(animImgWrap, {
             top: finalImgTop,
             left: finalImgLeft,
             width: finalImgSize,
             height: finalImgSize,
-            duration: 0.6,
-            ease: "power3.inOut"
+            duration: 0.68,
+            ease: "back.out(1.5)"
         });
 
+        // Name fades + slides in slightly after card starts expanding
+        gsap.set(animName, { opacity: 0 });
         gsap.to(animName, {
             top: finalNameTop,
             left: finalNameLeft,
             fontSize: "30px",
-            duration: 0.6,
-            ease: "power3.inOut"
+            opacity: 1,
+            duration: 0.55,
+            ease: "expo.out",
+            delay: 0.07
         });
 
+        // Symbol follows name
+        gsap.set(animSymbol, { opacity: 0 });
         gsap.to(animSymbol, {
             top: finalSymbolTop,
             left: finalSymbolLeft,
             fontSize: "20px",
             backgroundColor: "rgba(255,255,255,0)",
             padding: "0px 0px",
-            duration: 0.6,
-            ease: "power3.inOut"
+            opacity: 1,
+            duration: 0.5,
+            ease: "expo.out",
+            delay: 0.12
         });
 
         gsap.to(detailCard, {
@@ -864,9 +876,10 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
             width: targetWidth,
             height: targetHeight,
             borderRadius: "2rem",
-            boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1)",
-            duration: 0.6,
-            ease: "power3.inOut",
+            filter: "blur(0px)",
+            boxShadow: "0 32px 64px -16px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.1)",
+            duration: 0.58,
+            ease: "expo.out",
             onComplete: function () {
                 var detailContent = document.createElement("div");
                 detailContent.className = "p-8 w-full h-full flex flex-col relative";
@@ -1189,8 +1202,17 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
                     }
                 };
 
-                gsap.to(document.getElementById("detail-body"), {
-                    opacity: 1, duration: 0.3, onComplete: function () {
+                var _db = document.getElementById("detail-body");
+                var _iw = _db && _db.firstElementChild;
+                var _secs = _iw ? Array.from(_iw.children) : [];
+                gsap.set(_db, { opacity: 1 });
+                if (_secs.length > 0) {
+                    gsap.fromTo(_secs,
+                        { opacity: 0, y: 24, filter: "blur(5px)" },
+                        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.52, ease: "expo.out", stagger: 0.07 }
+                    );
+                }
+                gsap.to(_db, { opacity: 1, duration: 0.01, onComplete: function () {
                         var detailBody = document.getElementById("detail-body");
                         var tvContainer = document.getElementById("tv_chart_container_" + coin.symbol);
 
@@ -1275,58 +1297,45 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
                     url.searchParams.delete('coin');
                     window.history.pushState({}, '', url);
 
-                    gsap.to(document.getElementById("detail-body"), { opacity: 0, duration: 0.2 });
-                    gsap.to(document.getElementById("close-detail-btn"), { opacity: 0, duration: 0.2 });
+                    gsap.to(document.getElementById("detail-body"), { opacity: 0, y: -10, duration: 0.15, ease: "power2.in", overwrite: true });
+                    gsap.to(document.getElementById("close-detail-btn"), { opacity: 0, scale: 0.75, duration: 0.12, ease: "power2.in" });
 
-                    var currentRow = document.getElementById("row-" + coin.id);
+                    var currentRow = rowElement && rowElement.isConnected ? rowElement : document.getElementById("row-" + coin.id);
                     var currentRect = currentRow ? currentRow.getBoundingClientRect() : { top: window.innerHeight / 2, left: window.innerWidth / 2, width: 0, height: 0 };
 
-                    var cWrapEl = currentRow ? (currentRow.querySelector(".coin-logo-wrap") || currentRow.querySelector("td > div > div:first-child")) : null;
+                    var cWrapEl = currentRow ? (
+                        currentRow.querySelector(".coin-logo-wrap") ||
+                        currentRow.querySelector("td > div > div:first-child")
+                    ) : null;
                     var cNameEl = currentRow ? (currentRow.querySelector(".coin-name-text") || currentRow.querySelector("span.font-bold")) : null;
                     var cSymbolEl = currentRow ? (currentRow.querySelector(".coin-symbol-text") || currentRow.querySelector("span.font-mono")) : null;
 
                     var origImgRect = cWrapEl ? cWrapEl.getBoundingClientRect() : currentRect;
-                    var origNameRect = cNameEl ? cNameEl.getBoundingClientRect() : currentRect;
-                    var origSymbolRect = cSymbolEl ? cSymbolEl.getBoundingClientRect() : currentRect;
 
+                    // Logo flies back to its origin card — shared-element return
                     gsap.to(animImgWrap, {
                         top: origImgRect.top,
                         left: origImgRect.left,
                         width: origImgRect.width,
                         height: origImgRect.height,
                         opacity: currentRow ? 1 : 0,
-                        duration: 0.6,
-                        ease: "power3.inOut"
+                        duration: 0.48,
+                        ease: "power3.out"
                     });
 
-                    gsap.to(animName, {
-                        top: origNameRect.top,
-                        left: origNameRect.left,
-                        fontSize: "16px",
-                        opacity: currentRow ? 1 : 0,
-                        duration: 0.6,
-                        ease: "power3.inOut"
-                    });
-
-                    gsap.to(animSymbol, {
-                        top: origSymbolRect.top,
-                        left: origSymbolRect.left,
-                        fontSize: "12px",
-                        padding: "4px 8px",
-                        backgroundColor: "rgba(255,255,255,0.1)",
-                        opacity: currentRow ? 1 : 0,
-                        duration: 0.6,
-                        ease: "power3.inOut"
-                    });
+                    // Name & symbol fade out in place — cleaner than flying back
+                    gsap.to(animName, { opacity: 0, duration: 0.2, ease: "power2.in" });
+                    gsap.to(animSymbol, { opacity: 0, duration: 0.16, ease: "power2.in" });
 
                     gsap.to(overlay, {
                         backgroundColor: "rgba(0,0,0,0)",
                         backdropFilter: "blur(0px)",
-                        duration: 0.6,
-                        ease: "power3.inOut",
+                        duration: 0.42,
+                        ease: "power3.out",
                         onComplete: () => overlay.remove()
                     });
 
+                    // Card blurs and collapses back — dissolve-out effect
                     gsap.to(detailCard, {
                         top: currentRect.top,
                         left: currentRect.left,
@@ -1334,9 +1343,10 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
                         height: currentRow ? currentRect.height : 0,
                         borderRadius: "0.5rem",
                         boxShadow: "none",
-                        opacity: currentRow ? 1 : 0,
-                        duration: 0.6,
-                        ease: "power3.inOut",
+                        filter: "blur(10px)",
+                        opacity: currentRow ? 0.5 : 0,
+                        duration: 0.45,
+                        ease: "power3.out",
                         onComplete: () => {
                             detailCard.remove();
                             animImgWrap.remove();
@@ -2224,7 +2234,7 @@ function createReviewCard(review) {
     }
 
     const card = document.createElement('div');
-    card.className = "review-card shrink-0 min-w-[300px] md:min-w-[360px] max-w-[360px] group relative rounded-3xl overflow-hidden cursor-default transition-all duration-300 hover:-translate-y-2";
+    card.className = "review-card shrink-0 min-w-[240px] md:min-w-[280px] max-w-[280px] group relative rounded-2xl overflow-hidden cursor-default transition-all duration-300 hover:-translate-y-1";
 
     const avatarGradients = [
         'from-blue-600 to-blue-800',
@@ -2247,17 +2257,17 @@ function createReviewCard(review) {
 
     card.innerHTML = `
       <!-- Card BG -->
-      <div class="absolute inset-0 bg-slate-900 rounded-3xl border border-white/8 group-hover:border-white/15 transition-colors duration-300"></div>
+      <div class="absolute inset-0 bg-slate-900 rounded-2xl border border-white/8 group-hover:border-white/15 transition-colors duration-300"></div>
       <!-- Top accent bar -->
       <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${topBarColors[idx]} opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
       <!-- Ambient glow on hover -->
-      <div class="absolute inset-0 ${glowColors[idx]} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+      <div class="absolute inset-0 ${glowColors[idx]} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
 
-      <div class="relative z-10 p-6">
+      <div class="relative z-10 p-4">
         <!-- Quote Icon + Stars row -->
-        <div class="flex items-center justify-between mb-5">
-          <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/8 transition-colors">
-            <i class="fa-solid fa-quote-left text-gray-500 text-sm group-hover:text-gray-400 transition-colors"></i>
+        <div class="flex items-center justify-between mb-3">
+          <div class="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/8 transition-colors">
+            <i class="fa-solid fa-quote-left text-gray-500 text-xs group-hover:text-gray-400 transition-colors"></i>
           </div>
           <div class="flex items-center gap-1">
             ${starsHtml}
@@ -2266,14 +2276,14 @@ function createReviewCard(review) {
         </div>
 
         <!-- Comment -->
-        <p class="text-gray-300 text-sm leading-relaxed mb-6 line-clamp-3 group-hover:text-gray-200 transition-colors">"${review.comment}"</p>
+        <p class="text-gray-300 text-xs leading-relaxed mb-3 line-clamp-3 group-hover:text-gray-200 transition-colors">"${review.comment}"</p>
 
         <!-- Divider -->
-        <div class="w-full h-px bg-white/6 mb-5"></div>
+        <div class="w-full h-px bg-white/6 mb-3"></div>
 
         <!-- Author Row -->
-        <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br ${avatarGradients[idx]} flex items-center justify-center text-white font-black text-base shadow-md shrink-0 border border-white/10">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br ${avatarGradients[idx]} flex items-center justify-center text-white font-black text-sm shadow-md shrink-0 border border-white/10">
             ${review.avatar}
           </div>
           <div class="flex-1 min-w-0">
@@ -2283,8 +2293,8 @@ function createReviewCard(review) {
               <span class="text-[10px] text-emerald-400 font-semibold">Verified User</span>
             </div>
           </div>
-          <div class="shrink-0 w-8 h-8 rounded-xl bg-white/4 border border-white/8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
-            <i class="fa-solid fa-thumbs-up text-gray-500 text-xs"></i>
+          <div class="shrink-0 w-7 h-7 rounded-lg bg-white/4 border border-white/8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
+            <i class="fa-solid fa-thumbs-up text-gray-500 text-[10px]"></i>
           </div>
         </div>
       </div>

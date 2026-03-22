@@ -486,29 +486,17 @@ lucide.createIcons();
         animateIn(newEls, "bar");
     }
 
+    var isSwitchingView = false;
+
     function animateIn(els, type) {
+        // Skip when a view-switch transition is handling animation
+        if (isSwitchingView) return;
+
         var elsArr = Array.from(els);
-
-        elsArr.forEach(function (el) { gsap.set(el, { opacity: 0, x: 0, y: 0 }); });
-
-        requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-                var obs = new IntersectionObserver(function (entries, ob) {
-                    entries.forEach(function (entry) {
-                        if (entry.isIntersecting) {
-                            var idx = elsArr.indexOf(entry.target);
-                            gsap.fromTo(entry.target,
-                                type === "bar" ? { opacity: 0, x: -20 } : { opacity: 0, y: 30 },
-                                { opacity: 1, x: 0, y: 0, duration: 0.45, delay: (idx >= 0 ? idx : 0) * 0.04, ease: "power2.out", overwrite: "auto" }
-                            );
-                            ob.unobserve(entry.target);
-                        }
-                    });
-                }, { threshold: 0.01, rootMargin: "0px 0px 80px 0px" });
-
-                elsArr.forEach(function (el) { obs.observe(el); });
-            });
-        });
+        gsap.fromTo(elsArr,
+            type === "bar" ? { opacity: 0, x: -20, y: 0 } : { opacity: 0, y: 30, x: 0 },
+            { opacity: 1, x: 0, y: 0, duration: 0.45, stagger: 0.04, ease: "power2.out", overwrite: true }
+        );
     }
 
     function renderShowMoreBtn(total, visible) {
@@ -577,37 +565,167 @@ lucide.createIcons();
 
     var activeViewCls   = "all-coins-view-btn active";
     var inactiveViewCls = "all-coins-view-btn";
+    var viewSlider      = document.getElementById("view-slider");
+
+    function moveSlider(activeBtn) {
+        if (!viewSlider || !activeBtn) return;
+        var toggle = activeBtn.parentElement;
+        var toggleRect = toggle.getBoundingClientRect();
+        var btnRect = activeBtn.getBoundingClientRect();
+        viewSlider.style.width = btnRect.width + "px";
+        viewSlider.style.transform = "translateX(" + (btnRect.left - toggleRect.left - 3) + "px)";
+    }
+
+    // Init slider position
+    if (cardBtn) { requestAnimationFrame(function() { moveSlider(cardBtn); }); }
+
+    // GSAP Flip-inspired view-switch: stagger old items out, re-render, stagger new items in
+    function switchViewFlip(newView, activeBtn, inactiveBtn) {
+        activeBtn.className  = activeViewCls;
+        inactiveBtn.className = inactiveViewCls;
+        moveSlider(activeBtn);
+
+        if (!container) { currentView = newView; visibleCount = 10; render(); return; }
+        var oldEls = Array.from(container.children);
+
+        if (oldEls.length === 0) {
+            currentView = newView; visibleCount = 10; render(); return;
+        }
+
+        var goingToBar = newView === "bar";
+
+        // Disable CSS transitions on old elements so they don't fight GSAP
+        oldEls.forEach(function (el) { el.style.transition = "none"; });
+
+        // Kill any in-progress animations on old elements first
+        gsap.killTweensOf(oldEls);
+
+        // Phase 1: stagger-out old items
+        gsap.to(oldEls, {
+            opacity: 0,
+            y: goingToBar ? -18 : 18,
+            scale: 0.93,
+            filter: "blur(5px)",
+            duration: 0.22,
+            stagger: { each: 0.025, from: goingToBar ? "start" : "end" },
+            ease: "power2.in",
+            overwrite: true,
+            onComplete: function () {
+                // Phase 2: re-render new layout (animateIn is suppressed by isSwitchingView)
+                isSwitchingView = true;
+                currentView = newView;
+                visibleCount = 10;
+                render();
+                isSwitchingView = false;
+
+                // Phase 3: stagger-in new items from the opposite direction
+                var newEls = Array.from(container.children);
+                // Disable CSS transitions on new elements so they don't fight GSAP stagger
+                newEls.forEach(function (el) { el.style.transition = "none"; });
+                gsap.set(newEls, { opacity: 0, y: goingToBar ? 22 : -22, scale: 0.93, filter: "blur(6px)" });
+                gsap.to(newEls, {
+                    opacity: 1, y: 0, scale: 1, filter: "blur(0px)",
+                    duration: 0.42,
+                    stagger: { each: 0.03, from: goingToBar ? "start" : "end" },
+                    ease: "expo.out",
+                    onComplete: function () {
+                        // Restore CSS transitions after GSAP finishes
+                        newEls.forEach(function (el) { el.style.transition = ""; });
+                    }
+                });
+            }
+        });
+    }
 
     if (cardBtn) {
         cardBtn.onclick = function () {
-            currentView = "card";
-            visibleCount = 10;
-            cardBtn.className = activeViewCls;
-            barBtn.className  = inactiveViewCls;
-            render();
+            if (currentView === "card") return;
+            switchViewFlip("card", cardBtn, barBtn);
         };
     }
     if (barBtn) {
         barBtn.onclick = function () {
-            currentView = "bar";
-            visibleCount = 10;
-            barBtn.className  = activeViewCls;
-            cardBtn.className = inactiveViewCls;
-            render();
+            if (currentView === "bar") return;
+            switchViewFlip("bar", barBtn, cardBtn);
         };
     }
 
     var activeFilterCls   = "market-tab active-tab px-4 py-2 rounded-full text-xs font-bold transition-all bg-emerald text-white shadow-[0_0_12px_rgba(16,185,129,0.3)]";
     var inactiveFilterCls = "market-tab px-4 py-2 rounded-full text-xs font-bold transition-all glass-card text-gray-400 border border-white/10 hover:bg-white/10";
 
+    var filterOrder = ["all", "bullish", "bearish", "volume"];
+
+    function switchFilter(newFilter, clickedTab) {
+        var oldFilter = activeFilter;
+        if (oldFilter === newFilter) return;
+
+        // Update tab classes immediately for snappy UI feedback
+        filterTabs.forEach(function (t) {
+            t.className = (t === clickedTab) ? activeFilterCls : inactiveFilterCls;
+        });
+
+        if (!container || isSwitchingView) {
+            activeFilter = newFilter;
+            visibleCount = 10;
+            render();
+            return;
+        }
+
+        var oldEls = Array.from(container.children);
+        if (oldEls.length === 0) {
+            activeFilter = newFilter;
+            visibleCount = 10;
+            render();
+            return;
+        }
+
+        // Determine direction based on filter order for a spatial feel
+        var oldIdx = filterOrder.indexOf(oldFilter);
+        var newIdx = filterOrder.indexOf(newFilter);
+        var goingRight = newIdx > oldIdx;
+
+        // Kill lingering tweens and disable CSS transitions
+        gsap.killTweensOf(oldEls);
+        oldEls.forEach(function (el) { el.style.transition = "none"; });
+
+        // Phase 1: stagger-out existing items
+        gsap.to(oldEls, {
+            opacity: 0,
+            y: -14,
+            scale: 0.95,
+            filter: "blur(4px)",
+            duration: 0.18,
+            stagger: { each: 0.018, from: goingRight ? "start" : "end" },
+            ease: "power2.in",
+            overwrite: true,
+            onComplete: function () {
+                // Phase 2: apply new filter and re-render silently
+                isSwitchingView = true;
+                activeFilter = newFilter;
+                visibleCount = 10;
+                render();
+                isSwitchingView = false;
+
+                // Phase 3: stagger-in new items
+                var newEls = Array.from(container.children);
+                newEls.forEach(function (el) { el.style.transition = "none"; });
+                gsap.set(newEls, { opacity: 0, y: 18, scale: 0.95, filter: "blur(5px)" });
+                gsap.to(newEls, {
+                    opacity: 1, y: 0, scale: 1, filter: "blur(0px)",
+                    duration: 0.38,
+                    stagger: { each: 0.028, from: goingRight ? "start" : "end" },
+                    ease: "expo.out",
+                    onComplete: function () {
+                        newEls.forEach(function (el) { el.style.transition = ""; });
+                    }
+                });
+            }
+        });
+    }
+
     filterTabs.forEach(function (tab) {
         tab.addEventListener("click", function () {
-            activeFilter = tab.getAttribute("data-filter");
-            visibleCount = 10;
-            filterTabs.forEach(function (t) {
-                t.className = (t === tab) ? activeFilterCls : inactiveFilterCls;
-            });
-            render();
+            switchFilter(tab.getAttribute("data-filter"), tab);
         });
     });
 

@@ -105,7 +105,7 @@
   </script>
 
   <!-- ── Hero ───────────────────────────────────────────────────── -->
-  <section class="py-14 px-6 relative">
+  <section class="py-14 px-6 relative overflow-hidden">
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-emerald-glow rounded-full blur-[120px] -z-10 opacity-30"></div>
     <div class="max-w-7xl mx-auto text-center section-fade-up">
       <h1 class="text-4xl md:text-6xl font-bold mb-3">Live <span class="text-emerald">Market</span></h1>
@@ -223,7 +223,7 @@
   </section>
 
   <!-- ── All Coins — Tabbed ─────────────────────────────────────── -->
-  <section class="px-6 pb-20 relative">
+  <section class="px-6 pb-20 relative overflow-hidden">
     <div class="absolute bottom-0 left-1/3 w-[600px] h-80 bg-emerald-glow rounded-full blur-[160px] -z-10 opacity-10 pointer-events-none"></div>
     <div class="max-w-7xl mx-auto">
 
@@ -243,6 +243,7 @@
           </div>
           <!-- View toggle as segmented control -->
           <div class="all-coins-view-toggle">
+            <div class="all-coins-view-slider" id="view-slider"></div>
             <button id="view-card-btn" class="all-coins-view-btn active">
               <i class="fa-solid fa-grip mr-1.5"></i>Card
             </button>

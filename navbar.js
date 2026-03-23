@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
     var nav = document.getElementById("main-nav");
     var navContainer = document.getElementById("nav-container");
     var logoIcon = document.getElementById("logo-icon");
@@ -94,7 +94,7 @@
         isScrolled = true;
 
         var isMob = window.innerWidth < 768;
-        if (isMob) return; // on mobile keep full-width bar, no pill animation
+        if (isMob) return; 
 
         if (navTween) navTween.kill();
         navTween = gsap.timeline({ defaults: { duration: 0.6, ease: "expo.out", overwrite: "auto" } });
@@ -113,7 +113,7 @@
         isScrolled = false;
 
         var isMob = window.innerWidth < 768;
-        if (isMob) return; // on mobile CSS handles the state, no GSAP override needed
+        if (isMob) return; 
 
         if (navTween) navTween.kill();
         navTween = gsap.timeline({ defaults: { duration: 0.6, ease: "expo.out", overwrite: "auto" } });

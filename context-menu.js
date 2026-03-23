@@ -1,5 +1,5 @@
-(function () {
-  // Create context menu HTML
+﻿(function () {
+  
   const menu = document.createElement("div");
   menu.id = "custom-context-menu";
   menu.innerHTML = `
@@ -20,8 +20,7 @@
   `;
   document.body.appendChild(menu);
 
-  // Show menu on right-click
-  document.addEventListener("contextmenu", function (e) {
+document.addEventListener("contextmenu", function (e) {
     e.preventDefault();
     const isAlreadyVisible = menu.classList.contains("visible");
     const menuWidth = menu.offsetWidth;
@@ -33,38 +32,34 @@
     if (y + menuHeight > window.innerHeight) y = window.innerHeight - menuHeight - 8;
 
     if (!isAlreadyVisible) {
-      // First open: disable position transition, set position, then fade in
+      
       menu.style.transition = "none";
       menu.style.left = x + "px";
       menu.style.top = y + "px";
-      // Force reflow so the position applies instantly
+      
       void menu.offsetWidth;
       menu.style.transition = "";
       menu.classList.add("visible");
     } else {
-      // Already visible: smoothly slide to new position
+      
       menu.style.left = x + "px";
       menu.style.top = y + "px";
     }
   });
 
-  // Hide menu on click anywhere
-  document.addEventListener("click", function () {
+document.addEventListener("click", function () {
     menu.classList.remove("visible");
   });
 
-  // Hide menu on scroll
-  window.addEventListener("scroll", function () {
+window.addEventListener("scroll", function () {
     menu.classList.remove("visible");
   });
 
-  // Hide on Escape
-  document.addEventListener("keydown", function (e) {
+document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") menu.classList.remove("visible");
   });
 
-  // Button actions
-  document.getElementById("ctx-back").addEventListener("click", function () {
+document.getElementById("ctx-back").addEventListener("click", function () {
     history.back();
   });
   document.getElementById("ctx-forward").addEventListener("click", function () {

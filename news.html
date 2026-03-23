@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 
 <head>
@@ -103,23 +103,21 @@
     }
   </script>
 
-  <!-- ═══════════════════════════ HERO ═══════════════════════════ -->
-  <section class="news-hero relative overflow-hidden">
-    <!-- Ambient glows -->
+<section class="news-hero relative overflow-hidden">
+    
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-blue-600/10 rounded-full blur-[130px] pointer-events-none"></div>
     <div class="absolute bottom-0 left-1/4 w-[400px] h-[350px] bg-purple-600/8 rounded-full blur-[100px] pointer-events-none"></div>
     <div class="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-emerald-500/6 rounded-full blur-[90px] pointer-events-none"></div>
 
     <div class="max-w-7xl mx-auto px-6 py-20 md:py-28 relative z-10">
       <div class="text-center section-fade-up">
-        <!-- Badge -->
+        
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-900/40 border border-blue-500/30 text-xs font-bold text-blue-300 mb-6">
           <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
           LIVE CRYPTO NEWS
         </div>
 
-        <!-- Title -->
-        <h1 class="text-5xl md:text-7xl font-extrabold mb-5 leading-tight tracking-tight">
+<h1 class="text-5xl md:text-7xl font-extrabold mb-5 leading-tight tracking-tight">
           Portal Berita
           <span class="bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent block md:inline"> Kripto</span>
         </h1>
@@ -127,8 +125,7 @@
           Informasi, analisis, dan pergerakan pasar terbaru dari seluruh aset kripto favorit Anda — diperbarui secara real-time.
         </p>
 
-        <!-- Search Bar -->
-        <form id="search-form" class="relative max-w-2xl mx-auto group">
+<form id="search-form" class="relative max-w-2xl mx-auto group">
           <div class="absolute -inset-0.5 bg-gradient-to-r from-blue-500/30 via-cyan-500/20 to-emerald-500/30 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 blur-sm"></div>
           <div class="relative flex items-center glass-card rounded-2xl border border-white/10 overflow-hidden pr-2">
             <i class="fa-solid fa-magnifying-glass text-gray-500 pl-5 shrink-0"></i>
@@ -145,8 +142,7 @@
           </div>
         </form>
 
-        <!-- Quick coin tags -->
-        <div class="flex flex-wrap justify-center gap-2 mt-5">
+<div class="flex flex-wrap justify-center gap-2 mt-5">
           <span class="text-xs text-gray-500 self-center mr-1">Pencarian cepat:</span>
           <button onclick="document.getElementById('news-search-input').value='Bitcoin'; document.getElementById('search-form').dispatchEvent(new Event('submit'))" class="news-quick-tag">
             <i class="fa-brands fa-bitcoin text-amber text-[10px]"></i> Bitcoin
@@ -167,12 +163,10 @@
       </div>
     </div>
 
-    <!-- Decorative bottom fade -->
-    <div class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#0f172a] to-transparent pointer-events-none"></div>
+<div class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#0f172a] to-transparent pointer-events-none"></div>
   </section>
 
-  <!-- ═══════════════════════════ SEARCH RESULTS ═══════════════════════════ -->
-  <section id="search-results-section" class="py-12 px-6 hidden">
+<section id="search-results-section" class="py-12 px-6 hidden">
     <div class="max-w-7xl mx-auto">
       <div class="flex items-center justify-between mb-8">
         <div>
@@ -189,12 +183,10 @@
     </div>
   </section>
 
-  <!-- ═══════════════════════════ TOP COINS ═══════════════════════════ -->
-  <section id="top-news-section" class="py-8 px-4">
+<section id="top-news-section" class="py-8 px-4">
     <div class="max-w-7xl mx-auto space-y-12">
 
-      <!-- ── Bitcoin ── -->
-      <div class="section-fade-up">
+<div class="section-fade-up">
         <div class="news-coin-header border-amber/20 bg-gradient-to-r from-amber/5 to-transparent mb-6">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-amber/10 border border-amber/20 flex items-center justify-center">
@@ -223,8 +215,7 @@
         </div>
       </div>
 
-      <!-- ── Ethereum ── -->
-      <div class="section-fade-up">
+<div class="section-fade-up">
         <div class="news-coin-header border-blue-400/20 bg-gradient-to-r from-blue-500/5 to-transparent mb-6">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-400/20 flex items-center justify-center">
@@ -253,8 +244,7 @@
         </div>
       </div>
 
-      <!-- ── Solana ── -->
-      <div class="section-fade-up">
+<div class="section-fade-up">
         <div class="news-coin-header border-emerald-400/20 bg-gradient-to-r from-emerald-500/5 to-transparent mb-6">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-400/20 flex items-center justify-center">
@@ -286,13 +276,12 @@
     </div>
   </section>
 
-  <!-- ═══════════════════════════ ALL NEWS ═══════════════════════════ -->
-  <section id="all-news-section" class="py-10 px-4 relative overflow-hidden">
+<section id="all-news-section" class="py-10 px-4 relative overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent pointer-events-none"></div>
     <div class="absolute top-1/3 right-0 w-[350px] h-[350px] bg-blue-600/5 rounded-full blur-[100px] pointer-events-none"></div>
 
     <div class="max-w-7xl mx-auto relative z-10">
-      <!-- Section header -->
+      
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8 section-fade-up">
         <div>
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-900/30 border border-emerald-700/30 text-xs font-bold text-emerald-400 mb-3">
@@ -306,8 +295,7 @@
         <div class="h-px w-full sm:hidden bg-white/5"></div>
       </div>
 
-      <!-- Grid -->
-      <div id="all-news-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 section-fade-up">
+<div id="all-news-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 section-fade-up">
         <div class="col-span-full py-20 flex flex-col items-center justify-center">
           <div class="w-14 h-14 rounded-2xl bg-emerald-900/30 flex items-center justify-center mb-4">
             <div class="animate-spin rounded-full h-7 w-7 border-t-2 border-b-2 border-emerald-400"></div>

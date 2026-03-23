@@ -1,8 +1,7 @@
-
+﻿
 var debounce = (function (existing) {
-    // Reuse a globally shared debounce implementation if one already exists,
-    // otherwise define it here and attach it to window.debounce.
-    if (typeof existing === "function") {
+
+if (typeof existing === "function") {
         return existing;
     }
 
@@ -169,10 +168,10 @@ var cardObserver = new IntersectionObserver(
                     opacity: 1,
                     y: 0,
                     duration: 0.6,
-                    delay: (idx % 2) * 0.2, // Faster and simpler stagger
+                    delay: (idx % 2) * 0.2, 
                     ease: "power2.out"
                 });
-                observer.unobserve(entry.target); // Animate only once
+                observer.unobserve(entry.target); 
             }
         });
     },
@@ -281,8 +280,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
     var initialLoad = true;
     var favoriteCoins = JSON.parse(localStorage.getItem("coin_favorites") || "[]");
 
-
-    var API_BASE_URL = "https://skidibi-toilet.jovancion.workers.dev/api";
+var API_BASE_URL = "https://skidibi-toilet.jovancion.workers.dev/api";
     var heroTopGainerContent = document.getElementById("hero-top-gainer-content");
     var heroRankingList = document.getElementById("hero-ranking-list");
 
@@ -802,8 +800,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
         if (rowElement) rowElement.style.opacity = "0";
         document.body.appendChild(detailCard);
 
-        // Entry state: card starts blurred so it dissolves into view
-        gsap.set(detailCard, { filter: "blur(12px)", transformOrigin: "center center" });
+gsap.set(detailCard, { filter: "blur(12px)", transformOrigin: "center center" });
 
         gsap.to(overlay, {
             backgroundColor: "rgba(0,0,0,0.88)",
@@ -812,8 +809,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
             ease: "expo.out"
         });
 
-
-        var finalImgTop = targetTop + 68;
+var finalImgTop = targetTop + 68;
         var finalImgLeft = targetLeft + 32;
         var finalImgSize = 48;
 
@@ -834,8 +830,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
         var finalSymbolLeft = finalNameLeft + finalNameWidth + 12;
         var finalSymbolTop = finalNameTop + 6;
 
-        // Spring into position for a lively feel
-        gsap.to(animImgWrap, {
+gsap.to(animImgWrap, {
             top: finalImgTop,
             left: finalImgLeft,
             width: finalImgSize,
@@ -844,8 +839,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
             ease: "back.out(1.5)"
         });
 
-        // Name fades + slides in slightly after card starts expanding
-        gsap.set(animName, { opacity: 0 });
+gsap.set(animName, { opacity: 0 });
         gsap.to(animName, {
             top: finalNameTop,
             left: finalNameLeft,
@@ -856,8 +850,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
             delay: 0.07
         });
 
-        // Symbol follows name
-        gsap.set(animSymbol, { opacity: 0 });
+gsap.set(animSymbol, { opacity: 0 });
         gsap.to(animSymbol, {
             top: finalSymbolTop,
             left: finalSymbolLeft,
@@ -890,8 +883,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
                 var isFav = favoriteCoins.includes(coin.id);
                 var starIconClass = isFav ? 'fa-solid text-amber' : 'fa-regular text-gray-400';
 
-                // Computed values for redesigned overview
-                var modalIsUp      = coin.price_change_percentage_24h >= 0;
+var modalIsUp      = coin.price_change_percentage_24h >= 0;
                 var modalAccent    = modalIsUp ? '#10b981' : '#ef4444';
                 var modalAccentRgb = modalIsUp ? '16,185,129' : '239,68,68';
                 var modalAccentDim = modalIsUp ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)';
@@ -1110,8 +1102,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
                 `;
                 detailCard.appendChild(detailContent);
 
-
-                var coinNewsContainer = document.getElementById("coin-news-container");
+var coinNewsContainer = document.getElementById("coin-news-container");
                 if (coinNewsContainer) {
                     fetch(API_BASE_URL + "/coin-news?coin=" + encodeURIComponent(coin.name) + "&symbol=" + encodeURIComponent(coin.symbol))
                         .then(function (res) {
@@ -1312,8 +1303,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
 
                     var origImgRect = cWrapEl ? cWrapEl.getBoundingClientRect() : currentRect;
 
-                    // Logo flies back to its origin card — shared-element return
-                    gsap.to(animImgWrap, {
+gsap.to(animImgWrap, {
                         top: origImgRect.top,
                         left: origImgRect.left,
                         width: origImgRect.width,
@@ -1323,8 +1313,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
                         ease: "power3.out"
                     });
 
-                    // Name & symbol fade out in place — cleaner than flying back
-                    gsap.to(animName, { opacity: 0, duration: 0.2, ease: "power2.in" });
+gsap.to(animName, { opacity: 0, duration: 0.2, ease: "power2.in" });
                     gsap.to(animSymbol, { opacity: 0, duration: 0.16, ease: "power2.in" });
 
                     gsap.to(overlay, {
@@ -1335,8 +1324,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
                         onComplete: () => overlay.remove()
                     });
 
-                    // Card blurs and collapses back — dissolve-out effect
-                    gsap.to(detailCard, {
+gsap.to(detailCard, {
                         top: currentRect.top,
                         left: currentRect.left,
                         width: currentRow ? currentRect.width : 0,
@@ -1369,8 +1357,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
     function renderTable(coins) {
         if (!tableBody) return;
 
-        // Save current slide state before re-render
-        if (tableBody._currentSlide !== undefined) {
+if (tableBody._currentSlide !== undefined) {
             _currentSlideState = tableBody._currentSlide;
         }
 
@@ -1429,8 +1416,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
             var accentDim   = isUp ? "rgba(16,185,129,0.15)" : "rgba(239,68,68,0.15)";
             var accentRgb   = isUp ? "16,185,129"    : "239,68,68";
 
-            // Momentum signal label based on 24h % magnitude
-            var absPct = Math.abs(priceChange);
+var absPct = Math.abs(priceChange);
             var signalLabel, signalIcon, signalColor, signalBg;
             if (isUp) {
                 if (absPct >= 10) { signalLabel = "Strong Bull"; signalIcon = "fa-rocket";        signalColor = "#10b981"; signalBg = "rgba(16,185,129,0.15)"; }
@@ -1443,48 +1429,45 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
             }
 
             row.innerHTML =
-                // ── Chart area ─────────────────────────────────────────────────
+                
                 '<div style="height:120px;width:100%;position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(' + accentRgb + ',0.07) 0%,transparent 100%);border-top:2px solid ' + accentColor + '45;">'
-                // Big faded coin symbol watermark
+                
                 + '<div style="position:absolute;right:-6px;top:50%;transform:translateY(-50%);font-size:5rem;font-weight:900;line-height:1;color:rgba(255,255,255,0.025);letter-spacing:-3px;user-select:none;pointer-events:none;font-family:ui-monospace,monospace;">' + (coinSymbol || "").toUpperCase() + '</div>'
                 + '<div style="position:absolute;inset:0;display:flex;align-items:flex-end;">' + generateCardChartSVG(coin) + '</div>'
-                // Rank pill (top-left)
+                
                 + '<div style="position:absolute;top:10px;left:12px;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);border-radius:9999px;padding:3px 11px;font-size:10px;font-weight:800;color:#cbd5e1;letter-spacing:0.02em;">#' + (index + 1) + '</div>'
-                // Sentiment badge (top-right)
+                
                 + '<div style="position:absolute;top:10px;right:12px;background:' + accentDim + ';backdrop-filter:blur(10px);border:1px solid ' + accentColor + '50;border-radius:9999px;padding:3px 11px;font-size:9px;font-weight:800;color:' + accentColor + ';letter-spacing:0.05em;">' + bearishBullish + '</div>'
-                // LIVE label (bottom-left)
+                
                 + '<div style="position:absolute;bottom:9px;left:12px;display:flex;align-items:center;gap:5px;">'
                 + '<span style="width:6px;height:6px;border-radius:9999px;background:' + accentColor + ';box-shadow:0 0 7px ' + accentColor + ';display:inline-block;animation:pulse 2s cubic-bezier(0.4,0,0.6,1) infinite;"></span>'
                 + '<span style="font-size:8px;font-weight:800;color:rgba(255,255,255,0.45);letter-spacing:0.1em;">LIVE</span>'
                 + '</div>'
-                // Fav star (bottom-right)
+                
                 + (isFav ? '<span style="position:absolute;bottom:8px;right:12px;"><i class="fa-solid fa-star" style="font-size:11px;color:#f59e0b;filter:drop-shadow(0 0 6px rgba(245,158,11,0.9));"></i></span>' : '')
                 + '</div>'
 
-                // ── Card body ───────────────────────────────────────────────────
-                + '<div style="padding:16px 17px 15px;display:flex;flex-direction:column;flex:1;">'
++ '<div style="padding:16px 17px 15px;display:flex;flex-direction:column;flex:1;">'
 
-                // Row 1 — Logo ring + Name/Symbol + Signal chip
-                + '<div style="display:flex;align-items:center;gap:11px;margin-bottom:13px;">'
-                // Colored conic-gradient ring around logo
++ '<div style="display:flex;align-items:center;gap:11px;margin-bottom:13px;">'
+                
                 + '<div class="coin-logo-wrap" id="' + imgId + '-wrap" style="flex-shrink:0;padding:2.5px;border-radius:9999px;background:conic-gradient(' + accentColor + ' 0%,' + accentColor + '30 100%);box-shadow:0 0 12px ' + accentColor + '35;">'
                 + '<div style="background:#0f172a;border-radius:9999px;padding:2px;">'
                 + '<img id="' + imgId + '" src="' + (coin.image || "") + '" alt="' + coinName + '" style="width:34px;height:34px;border-radius:9999px;display:block;" />'
                 + '</div></div>'
-                // Name + symbol · rank
+                
                 + '<div style="flex:1;min-width:0;">'
                 + '<h3 class="coin-name-text" style="font-size:14px;font-weight:800;color:#f1f5f9;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + coinName + '</h3>'
                 + '<p class="coin-symbol-text" style="font-size:9px;color:#64748b;text-transform:uppercase;font-weight:700;letter-spacing:0.1em;margin-top:1px;">' + (coinSymbol || "").toUpperCase() + ' &middot; #' + (coin.market_cap_rank || index + 1) + '</p>'
                 + '</div>'
-                // Signal chip
+                
                 + '<div style="flex-shrink:0;background:' + signalBg + ';border:1px solid ' + signalColor + '40;border-radius:9px;padding:5px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:56px;">'
                 + '<i class="fa-solid ' + signalIcon + '" style="font-size:10px;color:' + signalColor + ';"></i>'
                 + '<span style="font-size:7.5px;font-weight:900;color:' + signalColor + ';white-space:nowrap;letter-spacing:0.04em;text-transform:uppercase;">' + signalLabel + '</span>'
                 + '</div>'
                 + '</div>'
 
-                // Row 2 — Price block
-                + '<div style="margin-bottom:11px;">'
++ '<div style="margin-bottom:11px;">'
                 + '<p style="font-size:8.5px;color:#475569;text-transform:uppercase;letter-spacing:0.09em;font-weight:600;margin-bottom:3px;">Harga Saat Ini</p>'
                 + '<div style="display:flex;align-items:center;justify-content:space-between;">'
                 + '<h2 style="font-size:23px;font-weight:900;color:#f8fafc;line-height:1;letter-spacing:-0.03em;">' + formatCurrency(coin.current_price) + '</h2>'
@@ -1498,8 +1481,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
                 + '</div>'
                 + '</div>'
 
-                // Row 3 — Icon stat pills
-                + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:11px;">'
++ '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:11px;">'
                 + '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:8px 9px;display:flex;align-items:center;gap:8px;">'
                 + '<div style="width:26px;height:26px;border-radius:8px;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-chart-pie" style="font-size:10px;color:#60a5fa;"></i></div>'
                 + '<div style="min-width:0;"><p style="font-size:7.5px;color:#475569;text-transform:uppercase;font-weight:700;letter-spacing:0.07em;">Mkt Cap</p><p style="font-size:11px;color:#f1f5f9;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + formatCompact(coin.market_cap) + '</p></div>'
@@ -1510,8 +1492,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
                 + '</div>'
                 + '</div>'
 
-                // Row 4 — 24H range bar with thumb marker
-                + '<div style="margin-bottom:13px;">'
++ '<div style="margin-bottom:13px;">'
                 + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
                 + '<span style="font-size:8.5px;color:#f87171;font-family:ui-monospace,monospace;font-weight:600;">' + formatCurrency(coin.low_24h || 0) + '</span>'
                 + '<span style="font-size:8px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;">24H Range</span>'
@@ -1523,14 +1504,12 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
                 + '</div>'
                 + '</div>'
 
-                // Row 5 — CTA button (gradient)
-                + '<button class="home-card-cta-btn" style="width:100%;padding:10px 12px;border-radius:10px;background:linear-gradient(135deg,' + accentColor + '25,' + accentColor + '10);border:1px solid ' + accentColor + '38;font-size:13px;font-weight:800;color:#f8fafc;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:all 0.25s ease;letter-spacing:0.01em;" onmouseover="this.style.background=\'linear-gradient(135deg,' + accentColor + '40,' + accentColor + '20)\';this.style.borderColor=\'' + accentColor + '70\';this.style.transform=\'translateY(-1px)\';" onmouseout="this.style.background=\'linear-gradient(135deg,' + accentColor + '25,' + accentColor + '10)\';this.style.borderColor=\'' + accentColor + '38\';this.style.transform=\'\';">'
++ '<button class="home-card-cta-btn" style="width:100%;padding:10px 12px;border-radius:10px;background:linear-gradient(135deg,' + accentColor + '25,' + accentColor + '10);border:1px solid ' + accentColor + '38;font-size:13px;font-weight:800;color:#f8fafc;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:all 0.25s ease;letter-spacing:0.01em;" onmouseover="this.style.background=\'linear-gradient(135deg,' + accentColor + '40,' + accentColor + '20)\';this.style.borderColor=\'' + accentColor + '70\';this.style.transform=\'translateY(-1px)\';" onmouseout="this.style.background=\'linear-gradient(135deg,' + accentColor + '25,' + accentColor + '10)\';this.style.borderColor=\'' + accentColor + '38\';this.style.transform=\'\';">'
                 + 'Lihat Analisis <i class="fa-solid fa-arrow-right-long" style="font-size:11px;"></i>'
                 + '</button>'
                 + '</div>'
 
-                // Bottom accent glow line
-                + '<div style="height:3px;width:100%;background:linear-gradient(90deg,transparent 0%,' + accentColor + ' 50%,transparent 100%);opacity:0.55;"></div>';
++ '<div style="height:3px;width:100%;background:linear-gradient(90deg,transparent 0%,' + accentColor + ' 50%,transparent 100%);opacity:0.55;"></div>';
 
             tableBody.appendChild(row);
 
@@ -1746,8 +1725,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
                 resetAutoSlide();
             });
 
-            // Touch swipe support for mobile
-            var touchStartX = 0;
+var touchStartX = 0;
             var touchStartY = 0;
             var touchMoved = false;
             wrapper.addEventListener("touchstart", function (e) {
@@ -1798,8 +1776,6 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
     fetchCryptoData();
     setInterval(fetchCryptoData, 60000);
 })();
-
-
 
 (function () {
 
@@ -1984,7 +1960,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
     }
 
     function startTickerScroll(inner, baseCount) {
-        // Smooth CSS-animation marquee. Duration scales with article count (min 25s, max 90s)
+        
         var duration = Math.min(90, Math.max(25, baseCount * 4));
         inner.style.cssText += ";will-change:transform;animation:news-ticker-scroll " + duration.toFixed(1) + "s linear infinite;";
 
@@ -2012,10 +1988,26 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
         tickerTrack.scrollLeft = 0;
 
         if (!articles.length) {
-            featuredSlot.innerHTML = '<div class="min-h-[200px] flex items-center justify-center rounded-3xl border border-white/8 text-gray-500 text-sm" style="background:rgba(255,255,255,0.03);"><i class="fa-regular fa-face-sad-tear mr-2 text-lg"></i>Tidak ada berita untuk kategori ini.</div>';
+            featuredSlot.style.gridColumn = "1 / -1";
+            sideStack.style.display = "none";
+            featuredSlot.innerHTML = [
+                '<div class="news-empty-state">',
+                  '<div class="news-empty-icon-wrap">',
+                    '<i class="fa-regular fa-newspaper news-empty-icon"></i>',
+                    '<div class="news-empty-ping"></div>',
+                  '</div>',
+                  '<p class="news-empty-title">Belum ada berita di sini</p>',
+                  '<p class="news-empty-sub">Kategori ini sedang kosong. Coba pilih kategori lain atau refresh halaman.</p>',
+                  '<button class="news-empty-btn" onclick="document.querySelector(\'.news-filter-pill[data-cat=all]\').click()">',
+                    '<i class="fa-solid fa-arrow-left mr-2"></i>Lihat Semua Berita',
+                  '</button>',
+                '</div>'
+            ].join('');
             if (moreRow) moreRow.style.display = "none";
             return;
         }
+        featuredSlot.style.gridColumn = "";
+        sideStack.style.display = "";
         if (moreRow) moreRow.style.display = "";
 
         if (articles[0]) {
@@ -2033,10 +2025,9 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
             gsap.to(sc, { opacity: 1, x: 0, duration: 0.55, ease: "power3.out", delay: 0.15 + i * 0.1 });
         });
 
-        // Use ALL articles in the ticker (triplicate for seamless infinite CSS loop)
-        var tickerArticles = articles.length > 0 ? articles : [];
+var tickerArticles = articles.length > 0 ? articles : [];
         if (tickerArticles.length > 0) {
-            // Build 3 identical copies → animation scrolls -33.33% (= 1 full set) for a gapless loop
+            
             var inner = document.createElement("div");
             inner.id = "news-ticker-inner";
             var loopSet = tickerArticles.concat(tickerArticles).concat(tickerArticles);
@@ -2085,22 +2076,37 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
             var toShow = _currentFilter === "all" ? articles : articles.filter(function (a) { return a._cat === _currentFilter; });
             renderGrid(toShow);
 
-            // Stats bar
-            if (statsBar) { statsBar.classList.remove("hidden"); statsBar.classList.add("flex"); }
+if (statsBar) { statsBar.classList.remove("hidden"); statsBar.classList.add("flex"); }
             if (articleCountEl) { var sp = articleCountEl.querySelector("span"); if (sp) sp.textContent = articles.length + " artikel"; }
             if (lastUpdatedEl) {
                 var now = new Date();
                 lastUpdatedEl.innerHTML = '<i class="fa-regular fa-clock"></i> ' + now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
             }
 
-            // Show filter pills + attach listeners ONCE
-            if (filterPills && !_uiInitialized) {
+if (filterPills && !_uiInitialized) {
                 filterPills.classList.remove("hidden");
                 filterPills.classList.add("flex");
+
+                function moveNewsSlider(activeBtn) {
+                    var slider = document.getElementById("news-filter-slider");
+                    if (!slider || !activeBtn) return;
+                    var toggle = activeBtn.parentElement;
+                    var toggleRect = toggle.getBoundingClientRect();
+                    var btnRect = activeBtn.getBoundingClientRect();
+                    slider.style.width = btnRect.width + "px";
+                    slider.style.transform = "translateX(" + (btnRect.left - toggleRect.left - 3) + "px)";
+                }
+
+var initActive = filterPills.querySelector(".news-filter-pill.active");
+                if (initActive) {
+                    requestAnimationFrame(function () { moveNewsSlider(initActive); });
+                }
+
                 filterPills.querySelectorAll(".news-filter-pill").forEach(function (pill) {
                     pill.addEventListener("click", function () {
                         filterPills.querySelectorAll(".news-filter-pill").forEach(function (p) { p.classList.remove("active"); });
                         pill.classList.add("active");
+                        moveNewsSlider(pill);
                         _currentFilter = pill.dataset.cat;
                         var filtered = _currentFilter === "all" ? _allArticles : _allArticles.filter(function (a) { return a._cat === _currentFilter; });
                         gsap.to(mainGrid, { opacity: 0, duration: 0.18, onComplete: function () {
@@ -2111,8 +2117,7 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
                 });
             }
 
-            // Refresh button – attach ONCE
-            if (refreshBtn && !_uiInitialized) {
+if (refreshBtn && !_uiInitialized) {
                 refreshBtn.addEventListener("click", function () {
                     var icon = refreshBtn.querySelector("i");
                     if (icon) { icon.style.transition = "transform 0.5s"; icon.style.transform = "rotate(360deg)"; }
@@ -2143,7 +2148,6 @@ document.querySelectorAll(".hero-hover-btn").forEach(function (btn) {
 
     setInterval(fetchNews, 15 * 60 * 1000);
 })();
-
 
 document.addEventListener("DOMContentLoaded", function () {
     var sectionsToObserve = [
@@ -2186,13 +2190,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Initialize Reviews
-    initReviews();
+initReviews();
 });
 
-// ----------------------------------------------------
-// Review System
-// ----------------------------------------------------
 const initialReviews = [
     { id: 1, name: "Budi Santoso", avatar: "B", rating: 5, comment: "Sangat membantu untuk pemula seperti saya. Analisanya mudah dipahami!" },
     { id: 2, name: "Siti Rahma", avatar: "S", rating: 4, comment: "Fitur live market-nya sangat responsif. Ditunggu fitur AI Match-Up nya!" },

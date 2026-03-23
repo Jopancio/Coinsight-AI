@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -57,21 +57,17 @@
 <body
   class="antialiased min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-900 text-slate-50">
 
-  <!-- Back to Home -->
-  <a href="home.html"
+<a href="home.html"
     class="absolute top-6 left-6 flex items-center gap-2 text-gray-400 hover:text-emerald transition-colors z-50">
     <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
   </a>
 
-  <!-- Background Effects -->
-  <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-tech-blue-glow rounded-full blur-[100px] -z-10 opacity-50"></div>
+<div class="absolute top-1/4 left-1/4 w-96 h-96 bg-tech-blue-glow rounded-full blur-[100px] -z-10 opacity-50"></div>
   <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-glow rounded-full blur-[120px] -z-10 opacity-50"></div>
 
-  <!-- Auth Card -->
-  <div class="glass-card w-full max-w-md p-8 rounded-3xl shadow-2xl relative z-10 border border-white/10">
+<div class="glass-card w-full max-w-md p-8 rounded-3xl shadow-2xl relative z-10 border border-white/10">
 
-    <!-- Header -->
-    <div class="text-center mb-8">
+<div class="text-center mb-8">
       <div class="flex items-center justify-center gap-2 mb-4">
         <i class="fa-solid fa-chart-line text-emerald text-3xl"></i>
         <span class="text-2xl font-extrabold tracking-tight">
@@ -81,8 +77,7 @@
       <p class="text-gray-400 text-sm" id="auth-subtitle">Masuk untuk melanjutkan ke dashboard.</p>
     </div>
 
-    <!-- Toggle Buttons -->
-    <div class="flex p-1 mb-8 bg-slate-800/50 rounded-xl border border-white/5">
+<div class="flex p-1 mb-8 bg-slate-800/50 rounded-xl border border-white/5">
       <button id="btn-login"
         class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all bg-emerald/20 text-emerald shadow-sm"
         onclick="switchTab('login')">Login</button>
@@ -93,8 +88,7 @@
 
     <div class="relative min-h-[300px]">
 
-      <!-- Login Form -->
-      <form id="login-form" class="form-container active-form space-y-5" onsubmit="handleAuth(event, 'login')">
+<form id="login-form" class="form-container active-form space-y-5" onsubmit="handleAuth(event, 'login')">
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-1.5">Email</label>
           <div class="relative">
@@ -140,8 +134,7 @@
         </div>
       </form>
 
-      <!-- Sign Up Form -->
-      <form id="signup-form" class="form-container hidden-form space-y-4" onsubmit="handleAuth(event, 'signup')">
+<form id="signup-form" class="form-container hidden-form space-y-4" onsubmit="handleAuth(event, 'signup')">
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-1.5">Nama Lengkap</label>
           <div class="relative">

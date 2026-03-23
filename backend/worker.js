@@ -1,10 +1,5 @@
-// Rate limiting is handled via Cloudflare Workers Rate Limiting API (env.RATE_LIMITER binding).
-// Configure in wrangler.toml:
-//   [[unsafe.bindings]]
-//   name = "RATE_LIMITER"
-//   type = "ratelimit"
-//   namespace_id = "1001"
-//   simple = { limit = 25, period = 60 }
+﻿
+
 const RATE_LIMIT = 25;
 const TIME_WINDOW = 60000;
 
@@ -91,8 +86,7 @@ async function handleAiAnalyze(request, env, url, corsHeaders) {
     return jsonResponse(JSON.stringify({ error: "Gemini API key not configured on server" }), corsHeaders, 500);
   }
 
-  // Check cache (use a synthetic GET URL for caching)
-  const cacheUrl = new URL(url.toString());
+const cacheUrl = new URL(url.toString());
   cacheUrl.pathname = "/api/ai-analyze";
   cacheUrl.searchParams.set("coinId", coinId);
   const cacheKey = new Request(cacheUrl.toString());
@@ -104,30 +98,28 @@ async function handleAiAnalyze(request, env, url, corsHeaders) {
     return jsonResponse(body, corsHeaders);
   }
 
-  // Fetch all data in parallel
-  const [coinDataRes, historyRes, newsRes, fngRes] = await Promise.allSettled([
-    // 1. Detailed coin data from CoinGecko
+const [coinDataRes, historyRes, newsRes, fngRes] = await Promise.allSettled([
+    
     fetch(`https://api.coingecko.com/api/v3/coins/${encodeURIComponent(coinId)}?localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false`, {
       headers: {
         "x-cg-demo-api-key": env.COINGECKO_API_KEY || "",
         "Accept": "application/json"
       }
     }),
-    // 2. 30-day price history
+    
     fetch(`https://api.coingecko.com/api/v3/coins/${encodeURIComponent(coinId)}/market_chart?vs_currency=usd&days=30&interval=daily`, {
       headers: {
         "x-cg-demo-api-key": env.COINGECKO_API_KEY || "",
         "Accept": "application/json"
       }
     }),
-    // 3. Related news
+    
     fetch(`https://data-api.coindesk.com/news/v1/search?search_string=${encodeURIComponent(coinId)}&source_key=coindesk&limit=8&lang=EN`),
-    // 4. Fear & Greed Index
+    
     fetch("https://api.alternative.me/fng/?limit=7")
   ]);
 
-  // Parse coin data
-  let coinData = null;
+let coinData = null;
   if (coinDataRes.status === "fulfilled" && coinDataRes.value.ok) {
     coinData = await coinDataRes.value.json();
   }
@@ -136,8 +128,7 @@ async function handleAiAnalyze(request, env, url, corsHeaders) {
     return jsonResponse(JSON.stringify({ error: "Failed to fetch coin data. The coin might not exist or CoinGecko rate limit reached." }), corsHeaders, 502);
   }
 
-  // Parse history
-  let historyData = null;
+let historyData = null;
   let priceArray = [];
   let volatility = "N/A";
   let maxDrawdown = "N/A";
@@ -154,8 +145,7 @@ async function handleAiAnalyze(request, env, url, corsHeaders) {
     }
   }
 
-  // Parse news
-  let newsArticles = [];
+let newsArticles = [];
   if (newsRes.status === "fulfilled" && newsRes.value.ok) {
     try {
       const newsData = await newsRes.value.json();
@@ -166,11 +156,10 @@ async function handleAiAnalyze(request, env, url, corsHeaders) {
         source: item.SOURCE_DATA?.NAME || "CoinDesk",
         date: item.PUBLISHED_ON ? new Date(item.PUBLISHED_ON * 1000).toISOString().split("T")[0] : ""
       }));
-    } catch (e) { /* ignore parse errors */ }
+    } catch (e) {  }
   }
 
-  // If no news from search, try general crypto news as fallback
-  if (newsArticles.length === 0) {
+if (newsArticles.length === 0) {
     try {
       const fallbackRes = await fetch("https://data-api.coindesk.com/news/v1/article/list?lang=EN&limit=5");
       if (fallbackRes.ok) {
@@ -183,11 +172,10 @@ async function handleAiAnalyze(request, env, url, corsHeaders) {
           date: item.PUBLISHED_ON ? new Date(item.PUBLISHED_ON * 1000).toISOString().split("T")[0] : ""
         }));
       }
-    } catch (e) { /* ignore */ }
+    } catch (e) {  }
   }
 
-  // Parse Fear & Greed
-  let fngData = { value: "N/A", classification: "N/A", history: [] };
+let fngData = { value: "N/A", classification: "N/A", history: [] };
   if (fngRes.status === "fulfilled" && fngRes.value.ok) {
     try {
       const fngJson = await fngRes.value.json();
@@ -196,11 +184,10 @@ async function handleAiAnalyze(request, env, url, corsHeaders) {
         fngData.classification = fngJson.data[0].value_classification;
         fngData.history = fngJson.data.map(d => ({ value: d.value, classification: d.value_classification, date: new Date(d.timestamp * 1000).toISOString().split("T")[0] }));
       }
-    } catch (e) { /* ignore */ }
+    } catch (e) {  }
   }
 
-  // Build the market data object
-  const md = coinData.market_data || {};
+const md = coinData.market_data || {};
   const marketInfo = {
     name: coinData.name || coinId,
     symbol: (coinData.symbol || "").toUpperCase(),
@@ -227,8 +214,7 @@ async function handleAiAnalyze(request, env, url, corsHeaders) {
     maxDrawdown30d: maxDrawdown,
   };
 
-  // Build the Gemini prompt
-  const newsContext = newsArticles.length > 0
+const newsContext = newsArticles.length > 0
     ? newsArticles.map((n, i) => `  ${i + 1}. [${n.date}] "${n.title}" (${n.source}) - ${n.body}`).join("\n")
     : "  Tidak ada berita spesifik terkini yang ditemukan untuk koin ini.";
 
@@ -300,8 +286,7 @@ Berikan kesimpulan akhir dan rekomendasi (BUKAN financial advice, tapi panduan e
 
 PENTING: Di akhir, SELALU tambahkan disclaimer bahwa ini adalah analisis edukatif dari AI dan BUKAN merupakan saran investasi (financial advice). Keputusan investasi sepenuhnya tanggung jawab pengguna.`;
 
-  // Call Gemini API
-  let aiResponse;
+let aiResponse;
   try {
     const geminiRes = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
@@ -344,8 +329,7 @@ PENTING: Di akhir, SELALU tambahkan disclaimer bahwa ini adalah analisis edukati
     return jsonResponse(JSON.stringify({ error: "Failed to call Gemini API", detail: e.message }), corsHeaders, 502);
   }
 
-  // Build response
-  const responseBody = JSON.stringify({
+const responseBody = JSON.stringify({
     success: true,
     coin: {
       id: coinId,
@@ -386,8 +370,7 @@ PENTING: Di akhir, SELALU tambahkan disclaimer bahwa ini adalah analisis edukati
     timestamp: new Date().toISOString(),
   });
 
-  // Cache the result
-  await putCached(cacheKey, responseBody, ttl);
+await putCached(cacheKey, responseBody, ttl);
 
   return jsonResponse(responseBody, corsHeaders);
 }
@@ -414,8 +397,7 @@ async function handleAiCompare(request, env, url, corsHeaders) {
     return jsonResponse(JSON.stringify({ error: "Gemini API key not configured on server" }), corsHeaders, 500);
   }
 
-  // Cache key: sorted so "btc+doge" and "doge+btc" share the same cache entry
-  const sorted = [coinId1, coinId2].sort();
+const sorted = [coinId1, coinId2].sort();
   const cacheUrl = new URL(url.toString());
   cacheUrl.pathname = "/api/ai-compare";
   cacheUrl.searchParams.set("c1", sorted[0]);
@@ -429,10 +411,9 @@ async function handleAiCompare(request, env, url, corsHeaders) {
     return jsonResponse(body, corsHeaders);
   }
 
-  // Fetch all data in parallel: coin markets (both coins in 1 call), 30d history (×2), news (×2), Fear & Greed
-  const idsParam = `${encodeURIComponent(coinId1)},${encodeURIComponent(coinId2)}`;
+const idsParam = `${encodeURIComponent(coinId1)},${encodeURIComponent(coinId2)}`;
   const [marketsRes, hist1Res, hist2Res, news1Res, news2Res, fngRes] = await Promise.allSettled([
-    // 1 call for both coins via markets endpoint (supports comma-separated ids)
+    
     fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${idsParam}&order=market_cap_desc&per_page=2&page=1&sparkline=false&price_change_percentage=7d,30d`, {
       headers: { "x-cg-demo-api-key": env.COINGECKO_API_KEY || "", "Accept": "application/json" }
     }),
@@ -447,14 +428,13 @@ async function handleAiCompare(request, env, url, corsHeaders) {
     fetch("https://api.alternative.me/fng/?limit=7"),
   ]);
 
-  // Parse both coins from single markets response
-  let coinData1 = null, coinData2 = null;
+let coinData1 = null, coinData2 = null;
   if (marketsRes.status === "fulfilled" && marketsRes.value.ok) {
     try {
       const marketsArr = await marketsRes.value.json();
       coinData1 = marketsArr.find(c => c.id === coinId1) || null;
       coinData2 = marketsArr.find(c => c.id === coinId2) || null;
-    } catch (e) { /* ignore parse errors */ }
+    } catch (e) {  }
   }
 
   if (!coinData1 || !coinData2) {
@@ -462,8 +442,7 @@ async function handleAiCompare(request, env, url, corsHeaders) {
     return jsonResponse(JSON.stringify({ error: `Failed to fetch market data for "${missing}". The coin ID may be invalid or CoinGecko rate limit was reached. Please try again in a moment.` }), corsHeaders, 502);
   }
 
-  // Helper: extract market info from /coins/markets item format
-  function extractMarketInfo(c) {
+function extractMarketInfo(c) {
     return {
       id: c.id,
       name: c.name || c.id,
@@ -485,8 +464,7 @@ async function handleAiCompare(request, env, url, corsHeaders) {
     };
   }
 
-  // Parse history data
-  async function parseHistory(histResSettled) {
+async function parseHistory(histResSettled) {
     if (histResSettled.status !== "fulfilled" || !histResSettled.value.ok) {
       return { priceArray: [], volatility: 0, maxDrawdown: 0, priceChange30d: "N/A" };
     }
@@ -510,8 +488,7 @@ async function handleAiCompare(request, env, url, corsHeaders) {
   const info1 = { ...extractMarketInfo(coinData1), priceChange30d: hist1Data.priceChange30d, volatility30d: hist1Data.volatility, maxDrawdown30d: hist1Data.maxDrawdown };
   const info2 = { ...extractMarketInfo(coinData2), priceChange30d: hist2Data.priceChange30d, volatility30d: hist2Data.volatility, maxDrawdown30d: hist2Data.maxDrawdown };
 
-  // Parse news — merge, deduplicate by URL, take top 6
-  let newsArticles = [];
+let newsArticles = [];
   try {
     const seenUrls = new Set();
     for (const newsRes of [news1Res, news2Res]) {
@@ -531,10 +508,9 @@ async function handleAiCompare(request, env, url, corsHeaders) {
         }
       }
     }
-  } catch (e) { /* ignore */ }
+  } catch (e) {  }
 
-  // Fear & Greed
-  let fngData = { value: "N/A", classification: "N/A", history: [] };
+let fngData = { value: "N/A", classification: "N/A", history: [] };
   if (fngRes.status === "fulfilled" && fngRes.value.ok) {
     try {
       const fngJson = await fngRes.value.json();
@@ -547,7 +523,7 @@ async function handleAiCompare(request, env, url, corsHeaders) {
           date: new Date(d.timestamp * 1000).toISOString().split("T")[0],
         }));
       }
-    } catch (e) { /* ignore */ }
+    } catch (e) {  }
   }
 
   const newsContext = newsArticles.length > 0
@@ -558,8 +534,7 @@ async function handleAiCompare(request, env, url, corsHeaders) {
     ? `Saat ini: ${fngData.value}/100 (${fngData.classification}). Riwayat 7 hari: ${fngData.history.map(h => `${h.date}: ${h.value} (${h.classification})`).join(", ")}`
     : "Data tidak tersedia.";
 
-  // Calculate composite risk score (0-100, higher = riskier) from real data
-  function riskScore(info) {
+function riskScore(info) {
     const vol     = Math.abs(parseFloat(info.volatility30d)) || 0;
     const dd      = Math.abs(parseFloat(info.maxDrawdown30d)) || 0;
     const rank    = typeof info.marketCapRank === "number" ? info.marketCapRank
@@ -567,11 +542,11 @@ async function handleAiCompare(request, env, url, corsHeaders) {
     const pc7d    = Math.abs(parseFloat(info.priceChange7d)) || 0;
     const athDist = Math.abs(parseFloat(info.athChangePercentage)) || 0;
     return Math.round(
-      Math.min(vol     / 20,  1) * 35 +  // volatility   35%
-      Math.min(dd      / 50,  1) * 30 +  // drawdown     30%
-      Math.min(rank    / 500, 1) * 20 +  // rank risk    20%
-      Math.min(pc7d    / 30,  1) * 10 +  // 7d move      10%
-      Math.min(athDist / 80,  1) *  5    // ATH distance  5%
+      Math.min(vol     / 20,  1) * 35 +  
+      Math.min(dd      / 50,  1) * 30 +  
+      Math.min(rank    / 500, 1) * 20 +  
+      Math.min(pc7d    / 30,  1) * 10 +  
+      Math.min(athDist / 80,  1) *  5    
     );
   }
   function riskLabel(s) {
@@ -669,8 +644,7 @@ Jelaskan dalam 2-3 kalimat mengapa koin ini lebih unggul secara keseluruhan berd
 ---
 ⚠️ DISCLAIMER: Analisis ini bersifat edukatif dan dihasilkan oleh AI berdasarkan data pasar terkini. Ini BUKAN merupakan saran investasi atau financial advice. Selalu lakukan riset mandiri (DYOR) dan konsultasikan dengan profesional keuangan sebelum membuat keputusan investasi. Investasi aset kripto mengandung risiko tinggi termasuk kehilangan seluruh modal.`;
 
-  // Call Gemini
-  let aiResponse;
+let aiResponse;
   try {
     const geminiRes = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
@@ -757,8 +731,7 @@ export default {
     const ip = request.headers.get("cf-connecting-ip") || "unknown";
     const now = Date.now();
 
-    // Use Cloudflare Workers Rate Limiting binding if available (persistent across isolates)
-    if (env.RATE_LIMITER && ip !== "unknown") {
+if (env.RATE_LIMITER && ip !== "unknown") {
       try {
         const { success } = await env.RATE_LIMITER.limit({ key: ip });
         if (!success) {
@@ -768,12 +741,11 @@ export default {
           });
         }
       } catch (e) {
-        // Binding not configured — skip rate limiting gracefully
+        
       }
     }
 
-    // AI analyze endpoint — single coin (POST)
-    if (path === "/api/ai-analyze") {
+if (path === "/api/ai-analyze") {
       try {
         return await handleAiAnalyze(request, env, url, corsHeaders);
       } catch (error) {
@@ -782,8 +754,7 @@ export default {
       }
     }
 
-    // AI compare endpoint — two coins comparison (POST)
-    if (path === "/api/ai-compare") {
+if (path === "/api/ai-compare") {
       try {
         return await handleAiCompare(request, env, url, corsHeaders);
       } catch (error) {

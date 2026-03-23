@@ -1,14 +1,13 @@
-
+﻿
 function debounce(func, wait) {
-    // Prefer a shared/global debounce implementation if one already exists (e.g., from script.js)
+    
     if (typeof window !== "undefined" &&
         typeof window.debounce === "function" &&
         window.debounce !== debounce) {
         return window.debounce(func, wait);
     }
 
-    // Fallback: local debounce implementation if no shared version is available
-    var timeout;
+var timeout;
     return function () {
         var context = this;
         var args = arguments;
@@ -358,17 +357,17 @@ lucide.createIcons();
             };
 
             card.innerHTML =
-                // Top accent strip
+                
                 '<div class="all-coin-card-strip" style="background:linear-gradient(90deg,' + accentColor + ' 0%,' + accentColor + '40 60%,transparent 100%);"></div>' +
-                // Chart header
+                
                 '<div class="all-coin-card-chart">' +
                 '<div style="position:absolute;inset:0;background:linear-gradient(180deg,' + accentColor + '14 0%,transparent 100%);pointer-events:none;"></div>' +
                 '<div style="position:absolute;inset:0;display:flex;align-items:flex-end;">' + generateChartSVG(coin, 280, 68) + '</div>' +
                 '<span class="all-coin-ghost-rank">' + (index + 1) + '</span>' +
                 '</div>' +
-                // Card body
+                
                 '<div class="p-4 flex flex-col flex-1 gap-3">' +
-                // Rank + badge row
+                
                 '<div class="flex justify-between items-center">' +
                 '<div class="all-coin-rank-badge">' +
                 '<span class="all-coin-rank-hash">#</span>' +
@@ -378,7 +377,7 @@ lucide.createIcons();
                 '<i class="fa-solid ' + changeIcon + '" style="font-size:0.5rem;"></i>' + bearishBullish +
                 '</span>' +
                 '</div>' +
-                // Coin identity row
+                
                 '<div class="flex items-center gap-2.5">' +
                 '<div style="position:relative;flex-shrink:0;width:2.5rem;height:2.5rem;">' +
                 '<div style="position:absolute;inset:-3px;border-radius:9999px;background:radial-gradient(' + accentColor + '38 0%,transparent 68%);pointer-events:none;"></div>' +
@@ -389,9 +388,9 @@ lucide.createIcons();
                 '<p class="coin-symbol-text text-[10px] uppercase font-semibold tracking-wider" style="color:#6b7280;margin-top:1px;">' + coinSymbol + '</p>' +
                 '</div>' +
                 '</div>' +
-                // Price
+                
                 '<p class="all-coin-price">' + formatCurrency(coin.current_price) + '</p>' +
-                // Stats grid
+                
                 '<div class="all-coin-stats-grid">' +
                 '<div class="all-coin-stat-box">' +
                 '<p class="all-coin-stat-label">24H</p>' +
@@ -406,7 +405,7 @@ lucide.createIcons();
                 '<p class="all-coin-stat-val">' + formatCompact(coin.total_volume) + '</p>' +
                 '</div>' +
                 '</div>' +
-                // CTA
+                
                 '<div class="all-coin-cta">' +
                 '<span>Lihat Analisis</span><i class="fa-solid fa-arrow-right-long"></i>' +
                 '</div>' +
@@ -452,16 +451,16 @@ lucide.createIcons();
             };
 
             bar.innerHTML =
-                // Left accent strip
+                
                 '<div class="all-coin-bar-strip" style="background:' + accentColor + ';opacity:0.7;"></div>' +
-                // Rank
+                
                 '<div class="all-coin-bar-rank' + (index < 3 ? ' top-rank' : '') + '">' + (index + 1) + '</div>' +
-                // Coin image with glow ring
+                
                 '<div style="position:relative;flex-shrink:0;">' +
                 '<div style="position:absolute;inset:-2px;border-radius:9999px;background:radial-gradient(' + accentColor + '30 0%,transparent 70%);pointer-events:none;"></div>' +
                 '<img id="' + barImgId + '" src="' + (coin.image || "") + '" alt="' + coinName + '" class="w-9 h-9 rounded-full" style="display:block;position:relative;" onerror="this.parentElement.innerHTML=\'<div style=&quot;width:2.25rem;height:2.25rem;border-radius:9999px;background:linear-gradient(135deg,#1e3a8a,#10b981);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;color:#fff;&quot;>' + coinName.charAt(0) + '</div>\'" />' +
                 '</div>' +
-                // Name + symbol + meta
+                
                 '<div class="min-w-0 flex-1">' +
                 '<div class="flex items-center gap-2">' +
                 '<h3 class="coin-name-text text-white font-bold text-sm truncate">' + coinName + '</h3>' +
@@ -469,14 +468,14 @@ lucide.createIcons();
                 '</div>' +
                 '<p class="all-coin-bar-meta">Cap: ' + formatCompact(coin.market_cap) + ' · Vol: ' + formatCompact(coin.total_volume) + '</p>' +
                 '</div>' +
-                // Sparkline
+                
                 '<div style="width:5rem;height:2rem;flex-shrink:0;" class="hidden md:block">' + generateChartSVG(coin, 80, 32) + '</div>' +
-                // Price + change
+                
                 '<div class="all-coin-bar-price-wrap">' +
                 '<p class="all-coin-bar-price">' + formatCurrency(coin.current_price) + '</p>' +
                 '<p class="all-coin-bar-change ' + changeClass + '"><i class="fa-solid ' + changeIcon + '" style="font-size:0.5rem;margin-right:2px;"></i>' + Math.abs(priceChange).toFixed(2) + '%</p>' +
                 '</div>' +
-                // Arrow
+                
                 '<i class="fa-solid fa-chevron-right all-coin-bar-arrow"></i>';
 
             container.appendChild(bar);
@@ -489,7 +488,7 @@ lucide.createIcons();
     var isSwitchingView = false;
 
     function animateIn(els, type) {
-        // Skip when a view-switch transition is handling animation
+        
         if (isSwitchingView) return;
 
         var elsArr = Array.from(els);
@@ -576,11 +575,9 @@ lucide.createIcons();
         viewSlider.style.transform = "translateX(" + (btnRect.left - toggleRect.left - 3) + "px)";
     }
 
-    // Init slider position
-    if (cardBtn) { requestAnimationFrame(function() { moveSlider(cardBtn); }); }
+if (cardBtn) { requestAnimationFrame(function() { moveSlider(cardBtn); }); }
 
-    // GSAP Flip-inspired view-switch: stagger old items out, re-render, stagger new items in
-    function switchViewFlip(newView, activeBtn, inactiveBtn) {
+function switchViewFlip(newView, activeBtn, inactiveBtn) {
         activeBtn.className  = activeViewCls;
         inactiveBtn.className = inactiveViewCls;
         moveSlider(activeBtn);
@@ -594,14 +591,11 @@ lucide.createIcons();
 
         var goingToBar = newView === "bar";
 
-        // Disable CSS transitions on old elements so they don't fight GSAP
-        oldEls.forEach(function (el) { el.style.transition = "none"; });
+oldEls.forEach(function (el) { el.style.transition = "none"; });
 
-        // Kill any in-progress animations on old elements first
-        gsap.killTweensOf(oldEls);
+gsap.killTweensOf(oldEls);
 
-        // Phase 1: stagger-out old items
-        gsap.to(oldEls, {
+gsap.to(oldEls, {
             opacity: 0,
             y: goingToBar ? -18 : 18,
             scale: 0.93,
@@ -611,16 +605,15 @@ lucide.createIcons();
             ease: "power2.in",
             overwrite: true,
             onComplete: function () {
-                // Phase 2: re-render new layout (animateIn is suppressed by isSwitchingView)
+                
                 isSwitchingView = true;
                 currentView = newView;
                 visibleCount = 10;
                 render();
                 isSwitchingView = false;
 
-                // Phase 3: stagger-in new items from the opposite direction
-                var newEls = Array.from(container.children);
-                // Disable CSS transitions on new elements so they don't fight GSAP stagger
+var newEls = Array.from(container.children);
+                
                 newEls.forEach(function (el) { el.style.transition = "none"; });
                 gsap.set(newEls, { opacity: 0, y: goingToBar ? 22 : -22, scale: 0.93, filter: "blur(6px)" });
                 gsap.to(newEls, {
@@ -629,7 +622,7 @@ lucide.createIcons();
                     stagger: { each: 0.03, from: goingToBar ? "start" : "end" },
                     ease: "expo.out",
                     onComplete: function () {
-                        // Restore CSS transitions after GSAP finishes
+                        
                         newEls.forEach(function (el) { el.style.transition = ""; });
                     }
                 });
@@ -659,8 +652,7 @@ lucide.createIcons();
         var oldFilter = activeFilter;
         if (oldFilter === newFilter) return;
 
-        // Update tab classes immediately for snappy UI feedback
-        filterTabs.forEach(function (t) {
+filterTabs.forEach(function (t) {
             t.className = (t === clickedTab) ? activeFilterCls : inactiveFilterCls;
         });
 
@@ -679,17 +671,14 @@ lucide.createIcons();
             return;
         }
 
-        // Determine direction based on filter order for a spatial feel
-        var oldIdx = filterOrder.indexOf(oldFilter);
+var oldIdx = filterOrder.indexOf(oldFilter);
         var newIdx = filterOrder.indexOf(newFilter);
         var goingRight = newIdx > oldIdx;
 
-        // Kill lingering tweens and disable CSS transitions
-        gsap.killTweensOf(oldEls);
+gsap.killTweensOf(oldEls);
         oldEls.forEach(function (el) { el.style.transition = "none"; });
 
-        // Phase 1: stagger-out existing items
-        gsap.to(oldEls, {
+gsap.to(oldEls, {
             opacity: 0,
             y: -14,
             scale: 0.95,
@@ -699,15 +688,14 @@ lucide.createIcons();
             ease: "power2.in",
             overwrite: true,
             onComplete: function () {
-                // Phase 2: apply new filter and re-render silently
+                
                 isSwitchingView = true;
                 activeFilter = newFilter;
                 visibleCount = 10;
                 render();
                 isSwitchingView = false;
 
-                // Phase 3: stagger-in new items
-                var newEls = Array.from(container.children);
+var newEls = Array.from(container.children);
                 newEls.forEach(function (el) { el.style.transition = "none"; });
                 gsap.set(newEls, { opacity: 0, y: 18, scale: 0.95, filter: "blur(5px)" });
                 gsap.to(newEls, {

@@ -38,8 +38,7 @@
     function animateEnter() {
         var isTransitioning = sessionStorage.getItem(TRANSITION_KEY);
 
-        // Treat browser reload (F5 / Ctrl+R) as a transition too
-        if (!isTransitioning && isReload()) {
+if (!isTransitioning && isReload()) {
             isTransitioning = true;
         }
 
@@ -123,8 +122,7 @@
         animateExit(anchor.href);
     });
 
-    // Intercept Ctrl+R / F5 to fade out before reloading
-    var isReloading = false;
+var isReloading = false;
     document.addEventListener("keydown", function (e) {
         var isCtrlR = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r";
         var isF5 = e.key === "F5";

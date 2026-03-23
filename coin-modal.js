@@ -1,4 +1,4 @@
-(function(window) {
+﻿(function(window) {
     var favoriteCoins = JSON.parse(localStorage.getItem('coin_favorites') || '[]');
     var API_BASE_URL = 'https://skidibi-toilet.jovancion.workers.dev/api';
 
@@ -115,8 +115,7 @@
         if (rowElement) rowElement.style.opacity = "0";
         document.body.appendChild(detailCard);
 
-        // Entry state: card starts blurred so it dissolves into view
-        gsap.set(detailCard, { filter: "blur(12px)", transformOrigin: "center center" });
+gsap.set(detailCard, { filter: "blur(12px)", transformOrigin: "center center" });
 
         gsap.to(overlay, {
             backgroundColor: "rgba(0,0,0,0.88)",
@@ -125,8 +124,7 @@
             ease: "expo.out"
         });
 
-
-        var finalImgTop = targetTop + 68;
+var finalImgTop = targetTop + 68;
         var finalImgLeft = targetLeft + 32;
         var finalImgSize = 48;
 
@@ -147,8 +145,7 @@
         var finalSymbolLeft = finalNameLeft + finalNameWidth + 12;
         var finalSymbolTop = finalNameTop + 6;
 
-        // Spring into position for a lively feel
-        gsap.to(animImgWrap, {
+gsap.to(animImgWrap, {
             top: finalImgTop,
             left: finalImgLeft,
             width: finalImgSize,
@@ -157,8 +154,7 @@
             ease: "back.out(1.5)"
         });
 
-        // Name fades + slides in slightly after card starts expanding
-        gsap.set(animName, { opacity: 0 });
+gsap.set(animName, { opacity: 0 });
         gsap.to(animName, {
             top: finalNameTop,
             left: finalNameLeft,
@@ -169,8 +165,7 @@
             delay: 0.07
         });
 
-        // Symbol follows name
-        gsap.set(animSymbol, { opacity: 0 });
+gsap.set(animSymbol, { opacity: 0 });
         gsap.to(animSymbol, {
             top: finalSymbolTop,
             left: finalSymbolLeft,
@@ -203,8 +198,7 @@
                 var isFav = favoriteCoins.includes(coin.id);
                 var starIconClass = isFav ? 'fa-solid text-amber' : 'fa-regular text-gray-400';
 
-                // Computed values for redesigned overview
-                var modalIsUp      = coin.price_change_percentage_24h >= 0;
+var modalIsUp      = coin.price_change_percentage_24h >= 0;
                 var modalAccent    = modalIsUp ? '#10b981' : '#ef4444';
                 var modalAccentRgb = modalIsUp ? '16,185,129' : '239,68,68';
                 var modalAccentDim = modalIsUp ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)';
@@ -423,8 +417,7 @@
                 `;
                 detailCard.appendChild(detailContent);
 
-
-                var coinNewsContainer = document.getElementById("coin-news-container");
+var coinNewsContainer = document.getElementById("coin-news-container");
                 if (coinNewsContainer) {
                     fetch(API_BASE_URL + "/coin-news?coin=" + encodeURIComponent(coin.name) + "&symbol=" + encodeURIComponent(coin.symbol))
                         .then(function (res) {
@@ -629,8 +622,7 @@
                     var origNameRect = cNameEl ? cNameEl.getBoundingClientRect() : currentRect;
                     var origSymbolRect = cSymbolEl ? cSymbolEl.getBoundingClientRect() : currentRect;
 
-                    // Logo flies back to its origin card — shared-element return
-                    gsap.to(animImgWrap, {
+gsap.to(animImgWrap, {
                         top: origImgRect.top,
                         left: origImgRect.left,
                         width: origImgRect.width,
@@ -640,8 +632,7 @@
                         ease: "power3.out"
                     });
 
-                    // Name & symbol fade out in place — cleaner than flying back
-                    gsap.to(animName, { opacity: 0, duration: 0.2, ease: "power2.in" });
+gsap.to(animName, { opacity: 0, duration: 0.2, ease: "power2.in" });
                     gsap.to(animSymbol, { opacity: 0, duration: 0.16, ease: "power2.in" });
 
                     gsap.to(overlay, {
@@ -652,8 +643,7 @@
                         onComplete: () => overlay.remove()
                     });
 
-                    // Card blurs and collapses back — dissolve-out effect
-                    gsap.to(detailCard, {
+gsap.to(detailCard, {
                         top: currentRect.top,
                         left: currentRect.left,
                         width: currentRow ? currentRect.width : 0,

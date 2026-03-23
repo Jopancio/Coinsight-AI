@@ -1,4 +1,4 @@
-function showConnectionError(type) {
+﻿function showConnectionError(type) {
     if (document.getElementById("connection-error-overlay")) return;
 
     var isTimeout = type === "timeout";
@@ -205,7 +205,7 @@ lucide.createIcons();
         if (prevBtn && nextBtn) {
             function getCardWidth() {
                 var firstCard = carousel.querySelector('a.glass-card');
-                if (firstCard) return firstCard.offsetWidth + 24; // card width + gap-6 (1.5rem = 24px)
+                if (firstCard) return firstCard.offsetWidth + 24; 
                 return Math.min(window.innerWidth * 0.75, 280) + 24;
             }
 

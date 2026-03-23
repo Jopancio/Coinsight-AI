@@ -1,8 +1,4 @@
-/**
- * toast.js — Global toast notification system
- * Usage: showToast('message', 'success' | 'error' | 'warning' | 'info', durationMs)
- * Include this before any script that needs notifications.
- */
+﻿
 
 (function () {
     var container = null;
@@ -59,8 +55,7 @@
 
         c.appendChild(toast);
 
-        // Trigger show animation on next frame
-        requestAnimationFrame(function () {
+requestAnimationFrame(function () {
             requestAnimationFrame(function () {
                 toast.classList.add('show');
             });

@@ -27,8 +27,21 @@
         return loader;
     }
 
+    function isReload() {
+        try {
+            var entries = performance.getEntriesByType("navigation");
+            if (entries.length > 0) return entries[0].type === "reload";
+        } catch (e) {}
+        return false;
+    }
+
     function animateEnter() {
         var isTransitioning = sessionStorage.getItem(TRANSITION_KEY);
+
+        // Treat browser reload (F5 / Ctrl+R) as a transition too
+        if (!isTransitioning && isReload()) {
+            isTransitioning = true;
+        }
 
         if (isTransitioning) {
             sessionStorage.removeItem(TRANSITION_KEY);
@@ -108,5 +121,25 @@
         event.preventDefault();
         sessionStorage.setItem(TRANSITION_KEY, "1");
         animateExit(anchor.href);
+    });
+
+    // Intercept Ctrl+R / F5 to fade out before reloading
+    var isReloading = false;
+    document.addEventListener("keydown", function (e) {
+        var isCtrlR = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r";
+        var isF5 = e.key === "F5";
+
+        if ((isCtrlR || isF5) && !isReloading) {
+            e.preventDefault();
+            isReloading = true;
+
+            sessionStorage.setItem(TRANSITION_KEY, "1");
+            document.body.style.transition = "opacity " + FADE_DURATION_MS + "ms ease";
+            document.body.style.opacity = "0";
+
+            setTimeout(function () {
+                location.reload();
+            }, FADE_DURATION_MS);
+        }
     });
 })();

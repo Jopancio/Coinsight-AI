@@ -167,11 +167,12 @@ var cardObserver = new IntersectionObserver(
                 gsap.to(entry.target, {
                     opacity: 1,
                     y: 0,
-                    duration: 0.6,
-                    delay: (idx % 2) * 0.2, 
-                    ease: "power2.out"
+                    scale: 1,
+                    duration: 0.7,
+                    delay: (idx % 2) * 0.15,
+                    ease: "back.out(1.7)"
                 });
-                observer.unobserve(entry.target); 
+                observer.unobserve(entry.target);
             }
         });
     },
@@ -179,7 +180,7 @@ var cardObserver = new IntersectionObserver(
 );
 
 cardList.forEach(function (card) {
-    gsap.set(card, { opacity: 0, y: 30 });
+    gsap.set(card, { opacity: 0, y: 30, scale: 0.93 });
     cardObserver.observe(card);
 });
 
@@ -192,6 +193,7 @@ var sectionObserver = new IntersectionObserver(
                 gsap.to(entry.target, {
                     opacity: 1,
                     y: 0,
+                    filter: "blur(0px)",
                     duration: 1,
                     ease: "power3.out"
                 });
@@ -203,7 +205,7 @@ var sectionObserver = new IntersectionObserver(
 );
 
 sectionList.forEach(function (sec) {
-    gsap.set(sec, { opacity: 0, y: 40 });
+    gsap.set(sec, { opacity: 0, y: 40, filter: "blur(10px)" });
     sectionObserver.observe(sec);
 });
 
@@ -648,13 +650,127 @@ var API_BASE_URL = "https://skidibi-toilet.jovancion.workers.dev/api";
         return '<div style="width:2rem;height:2rem;border-radius:9999px;background:linear-gradient(135deg,#1e3a8a,#10b981);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;color:#fff;flex-shrink:0;">' + letter + '</div>';
     }
 
+    var activeSortMode = "default";
+    var _firstPulseRender = true;
+
+    function renderMarketPulse() {
+        var pulseBar = document.getElementById("market-pulse-bar");
+        var sortTabs = document.getElementById("mkt-sort-tabs");
+        var coinsBadge = document.getElementById("mkt-coins-badge");
+        var coinsCount = document.getElementById("mkt-coins-count");
+        if (!allCoins.length) return;
+
+        var totalMktCap = allCoins.reduce(function (s, c) { return s + (c.market_cap || 0); }, 0);
+        var totalVol = allCoins.reduce(function (s, c) { return s + (c.total_volume || 0); }, 0);
+        var gainers = allCoins.filter(function (c) { return (c.price_change_percentage_24h || 0) > 0; }).length;
+        var losers = allCoins.filter(function (c) { return (c.price_change_percentage_24h || 0) < 0; }).length;
+
+        var fmt = new Intl.NumberFormat("en-US", { notation: "compact", style: "currency", currency: "USD" });
+
+        var mktCapEl = document.getElementById("pulse-mktcap");
+        var volEl = document.getElementById("pulse-vol");
+        var gainersEl = document.getElementById("pulse-gainers");
+        var losersEl = document.getElementById("pulse-losers");
+
+        var isFirstPulse = _firstPulseRender;
+        if (isFirstPulse) { _firstPulseRender = false; }
+
+        if (pulseBar) {
+            pulseBar.style.display = "block";
+            pulseBar.classList.remove("hidden");
+            if (isFirstPulse) {
+                var statCards = pulseBar.querySelectorAll(".glass-card");
+                gsap.from(statCards, { opacity: 0, y: 22, scale: 0.88, duration: 0.55, stagger: 0.09, ease: "back.out(1.6)" });
+            }
+        }
+        if (sortTabs) { sortTabs.style.display = "flex"; sortTabs.classList.remove("hidden"); }
+        if (coinsBadge) { coinsBadge.style.display = "inline-flex"; coinsBadge.classList.remove("hidden"); }
+        if (coinsCount) coinsCount.textContent = allCoins.length;
+
+        if (isFirstPulse) {
+            if (mktCapEl) {
+                var mc = { val: 0 };
+                gsap.to(mc, { val: totalMktCap, duration: 1.6, ease: "power2.out", delay: 0.3, onUpdate: function () { mktCapEl.textContent = fmt.format(mc.val); } });
+            }
+            if (volEl) {
+                var vl = { val: 0 };
+                gsap.to(vl, { val: totalVol, duration: 1.5, ease: "power2.out", delay: 0.45, onUpdate: function () { volEl.textContent = fmt.format(vl.val); } });
+            }
+            if (gainersEl) {
+                var gn = { val: 0 };
+                gsap.to(gn, { val: gainers, duration: 1.2, ease: "power2.out", delay: 0.55, onUpdate: function () { gainersEl.textContent = Math.round(gn.val) + " koin"; } });
+            }
+            if (losersEl) {
+                var ls = { val: 0 };
+                gsap.to(ls, { val: losers, duration: 1.2, ease: "power2.out", delay: 0.65, onUpdate: function () { losersEl.textContent = Math.round(ls.val) + " koin"; } });
+            }
+        } else {
+            if (mktCapEl) mktCapEl.textContent = fmt.format(totalMktCap);
+            if (volEl) volEl.textContent = fmt.format(totalVol);
+            if (gainersEl) gainersEl.textContent = gainers + " koin";
+            if (losersEl) losersEl.textContent = losers + " koin";
+        }
+
+        function moveSortSlider(activeBtn) {
+            var slider = document.getElementById("mkt-sort-slider");
+            if (!slider || !activeBtn) return;
+            var toggle = activeBtn.parentElement;
+            var toggleRect = toggle.getBoundingClientRect();
+            var btnRect = activeBtn.getBoundingClientRect();
+            slider.style.width = btnRect.width + "px";
+            slider.style.transform = "translateX(" + (btnRect.left - toggleRect.left - 3) + "px)";
+        }
+
+        var sortInitActive = document.querySelector(".mkt-sort-pill.active");
+        if (sortInitActive) {
+            requestAnimationFrame(function () { moveSortSlider(sortInitActive); });
+        }
+
+        document.querySelectorAll(".mkt-sort-pill").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                if (btn.dataset.sort === activeSortMode) return;
+                activeSortMode = btn.dataset.sort;
+                document.querySelectorAll(".mkt-sort-pill").forEach(function (b) { b.classList.remove("active"); });
+                btn.classList.add("active");
+                moveSortSlider(btn);
+
+                var sliderEl = document.getElementById("mkt-sort-slider");
+                if (sliderEl) {
+                    gsap.fromTo(sliderEl,
+                        { boxShadow: "0 0 22px rgba(16,185,129,0.95), 0 0 8px rgba(16,185,129,0.6)" },
+                        { boxShadow: "0 0 14px rgba(16,185,129,0.45)", duration: 0.7, ease: "power3.out" }
+                    );
+                }
+
+                var wrapper = document.getElementById("market-slideshow-wrapper");
+                if (wrapper) {
+                    gsap.to(wrapper, {
+                        opacity: 0, scale: 0.97, duration: 0.22, ease: "power2.in",
+                        onComplete: function () {
+                            gsap.set(wrapper, { opacity: 1, scale: 1 });
+                            window._nextRenderStagger = true;
+                            updateTable();
+                        }
+                    });
+                } else {
+                    updateTable();
+                }
+            });
+        });
+    }
+
     function updateTable() {
         var term = searchInput ? searchInput.value.toLowerCase() : "";
-        var filtered = allCoins;
+        var filtered = allCoins.slice();
         if (term) {
-            filtered = allCoins.filter(function (coin) {
+            filtered = filtered.filter(function (coin) {
                 return coin.name.toLowerCase().includes(term) || coin.symbol.toLowerCase().includes(term);
             });
+        }
+        if (activeSortMode === "gainers") {
+            filtered = filtered.slice().sort(function (a, b) { return (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0); });
+        } else if (activeSortMode === "losers") {
+            filtered = filtered.slice().sort(function (a, b) { return (a.price_change_percentage_24h || 0) - (b.price_change_percentage_24h || 0); });
         }
         renderTable(filtered);
     }
@@ -664,6 +780,7 @@ var API_BASE_URL = "https://skidibi-toilet.jovancion.workers.dev/api";
             var response = await fetchWithTimeout(API_BASE_URL + "/coins");
             allCoins = await response.json();
             renderHeroMockup();
+            renderMarketPulse();
             updateTable();
 
             if (initialLoad) {
@@ -1419,97 +1536,110 @@ if (tableBody._currentSlide !== undefined) {
 var absPct = Math.abs(priceChange);
             var signalLabel, signalIcon, signalColor, signalBg;
             if (isUp) {
-                if (absPct >= 10) { signalLabel = "Strong Bull"; signalIcon = "fa-rocket";        signalColor = "#10b981"; signalBg = "rgba(16,185,129,0.15)"; }
-                else if (absPct >= 3) { signalLabel = "Bullish";  signalIcon = "fa-arrow-trend-up"; signalColor = "#34d399"; signalBg = "rgba(16,185,129,0.12)"; }
-                else               { signalLabel = "Naik Tipis"; signalIcon = "fa-caret-up";     signalColor = "#6ee7b7"; signalBg = "rgba(16,185,129,0.09)"; }
+                if (absPct >= 10) { signalLabel = "Strong Bull"; signalIcon = "fa-rocket";         signalColor = "#10b981"; signalBg = "rgba(16,185,129,0.15)"; }
+                else if (absPct >= 3) { signalLabel = "Bullish";   signalIcon = "fa-arrow-trend-up"; signalColor = "#34d399"; signalBg = "rgba(16,185,129,0.12)"; }
+                else               { signalLabel = "Naik Tipis"; signalIcon = "fa-caret-up";      signalColor = "#6ee7b7"; signalBg = "rgba(16,185,129,0.09)"; }
             } else {
-                if (absPct >= 10) { signalLabel = "Strong Bear"; signalIcon = "fa-skull";              signalColor = "#ef4444"; signalBg = "rgba(239,68,68,0.15)"; }
-                else if (absPct >= 3) { signalLabel = "Bearish";   signalIcon = "fa-arrow-trend-down"; signalColor = "#f87171"; signalBg = "rgba(239,68,68,0.12)"; }
-                else               { signalLabel = "Turun Tipis"; signalIcon = "fa-caret-down";       signalColor = "#fca5a5"; signalBg = "rgba(239,68,68,0.09)"; }
+                if (absPct >= 10) { signalLabel = "Strong Bear"; signalIcon = "fa-skull";               signalColor = "#ef4444"; signalBg = "rgba(239,68,68,0.15)"; }
+                else if (absPct >= 3) { signalLabel = "Bearish";    signalIcon = "fa-arrow-trend-down"; signalColor = "#f87171"; signalBg = "rgba(239,68,68,0.12)"; }
+                else               { signalLabel = "Turun Tipis"; signalIcon = "fa-caret-down";        signalColor = "#fca5a5"; signalBg = "rgba(239,68,68,0.09)"; }
             }
 
+            var aiScore = Math.max(8, Math.min(95, Math.round(50 + priceChange * 4)));
+            var aiScoreColor = aiScore >= 65 ? "#10b981" : (aiScore >= 45 ? "#f59e0b" : "#ef4444");
+            var aiScoreLabel = aiScore >= 65 ? "Bullish" : (aiScore >= 45 ? "Netral" : "Bearish");
+            var athPct = typeof coin.ath_change_percentage === "number" ? coin.ath_change_percentage : 0;
+            var athPctColor = athPct >= -5 ? "#10b981" : (athPct >= -20 ? "#f59e0b" : "#ef4444");
+            var athPctStr = (athPct >= 0 ? "+" : "") + athPct.toFixed(1) + "%";
+
             row.innerHTML =
-                
-                '<div style="height:120px;width:100%;position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(' + accentRgb + ',0.07) 0%,transparent 100%);border-top:2px solid ' + accentColor + '45;">'
-                
-                + '<div style="position:absolute;right:-6px;top:50%;transform:translateY(-50%);font-size:5rem;font-weight:900;line-height:1;color:rgba(255,255,255,0.025);letter-spacing:-3px;user-select:none;pointer-events:none;font-family:ui-monospace,monospace;">' + (coinSymbol || "").toUpperCase() + '</div>'
+
+                '<div style="height:135px;width:100%;position:relative;overflow:hidden;background:linear-gradient(160deg,rgba(' + accentRgb + ',0.1) 0%,rgba(' + accentRgb + ',0.03) 60%,transparent 100%);border-top:2px solid ' + accentColor + '50;">'
+                + '<div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:5.5rem;font-weight:900;line-height:1;color:rgba(255,255,255,0.028);letter-spacing:-3px;user-select:none;pointer-events:none;font-family:ui-monospace,monospace;">' + (coinSymbol || "").toUpperCase() + '</div>'
                 + '<div style="position:absolute;inset:0;display:flex;align-items:flex-end;">' + generateCardChartSVG(coin) + '</div>'
-                
-                + '<div style="position:absolute;top:10px;left:12px;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);border-radius:9999px;padding:3px 11px;font-size:10px;font-weight:800;color:#cbd5e1;letter-spacing:0.02em;">#' + (index + 1) + '</div>'
-                
+                + '<div style="position:absolute;top:10px;left:12px;background:rgba(0,0,0,0.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);border-radius:9999px;padding:3px 11px;font-size:10px;font-weight:800;color:#cbd5e1;letter-spacing:0.05em;">RANK #' + (coin.market_cap_rank || index + 1) + '</div>'
                 + '<div style="position:absolute;top:10px;right:12px;background:' + accentDim + ';backdrop-filter:blur(10px);border:1px solid ' + accentColor + '50;border-radius:9999px;padding:3px 11px;font-size:9px;font-weight:800;color:' + accentColor + ';letter-spacing:0.05em;">' + bearishBullish + '</div>'
-                
-                + '<div style="position:absolute;bottom:9px;left:12px;display:flex;align-items:center;gap:5px;">'
+                + '<div style="position:absolute;bottom:10px;left:12px;display:flex;align-items:center;gap:5px;">'
                 + '<span style="width:6px;height:6px;border-radius:9999px;background:' + accentColor + ';box-shadow:0 0 7px ' + accentColor + ';display:inline-block;animation:pulse 2s cubic-bezier(0.4,0,0.6,1) infinite;"></span>'
                 + '<span style="font-size:8px;font-weight:800;color:rgba(255,255,255,0.45);letter-spacing:0.1em;">LIVE</span>'
                 + '</div>'
-                
-                + (isFav ? '<span style="position:absolute;bottom:8px;right:12px;"><i class="fa-solid fa-star" style="font-size:11px;color:#f59e0b;filter:drop-shadow(0 0 6px rgba(245,158,11,0.9));"></i></span>' : '')
+                + (isFav ? '<span style="position:absolute;bottom:9px;right:12px;"><i class="fa-solid fa-star" style="font-size:11px;color:#f59e0b;filter:drop-shadow(0 0 6px rgba(245,158,11,0.9));"></i></span>' : '')
                 + '</div>'
 
-+ '<div style="padding:16px 17px 15px;display:flex;flex-direction:column;flex:1;">'
+                + '<div style="padding:15px 16px 14px;display:flex;flex-direction:column;flex:1;">'
 
-+ '<div style="display:flex;align-items:center;gap:11px;margin-bottom:13px;">'
-                
-                + '<div class="coin-logo-wrap" id="' + imgId + '-wrap" style="flex-shrink:0;padding:2.5px;border-radius:9999px;background:conic-gradient(' + accentColor + ' 0%,' + accentColor + '30 100%);box-shadow:0 0 12px ' + accentColor + '35;">'
-                + '<div style="background:#0f172a;border-radius:9999px;padding:2px;">'
-                + '<img id="' + imgId + '" src="' + (coin.image || "") + '" alt="' + coinName + '" style="width:34px;height:34px;border-radius:9999px;display:block;" />'
+                + '<div style="display:flex;align-items:center;gap:11px;margin-bottom:13px;">'
+                + '<div class="coin-logo-wrap" id="' + imgId + '-wrap" style="flex-shrink:0;width:42px;height:42px;border-radius:9999px;padding:2.5px;background:linear-gradient(135deg,' + accentColor + '60,' + accentColor + '20);box-shadow:0 0 14px ' + accentColor + '35;">'
+                + '<div style="width:100%;height:100%;background:#0f172a;border-radius:9999px;display:flex;align-items:center;justify-content:center;overflow:hidden;">'
+                + '<img id="' + imgId + '" src="' + (coin.image || "") + '" alt="' + coinName + '" style="width:100%;height:100%;border-radius:9999px;object-fit:cover;display:block;" />'
                 + '</div></div>'
-                
                 + '<div style="flex:1;min-width:0;">'
-                + '<h3 class="coin-name-text" style="font-size:14px;font-weight:800;color:#f1f5f9;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + coinName + '</h3>'
-                + '<p class="coin-symbol-text" style="font-size:9px;color:#64748b;text-transform:uppercase;font-weight:700;letter-spacing:0.1em;margin-top:1px;">' + (coinSymbol || "").toUpperCase() + ' &middot; #' + (coin.market_cap_rank || index + 1) + '</p>'
+                + '<h3 class="coin-name-text" style="font-size:15px;font-weight:800;color:#f1f5f9;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + coinName + '</h3>'
+                + '<p class="coin-symbol-text" style="font-size:10px;color:#64748b;text-transform:uppercase;font-weight:700;letter-spacing:0.1em;margin-top:2px;">' + (coinSymbol || "").toUpperCase() + '</p>'
                 + '</div>'
-                
-                + '<div style="flex-shrink:0;background:' + signalBg + ';border:1px solid ' + signalColor + '40;border-radius:9px;padding:5px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:56px;">'
+                + '<div style="flex-shrink:0;display:inline-flex;align-items:center;gap:6px;background:' + signalBg + ';border:1px solid ' + signalColor + '40;border-radius:9999px;padding:6px 12px;">'
                 + '<i class="fa-solid ' + signalIcon + '" style="font-size:10px;color:' + signalColor + ';"></i>'
-                + '<span style="font-size:7.5px;font-weight:900;color:' + signalColor + ';white-space:nowrap;letter-spacing:0.04em;text-transform:uppercase;">' + signalLabel + '</span>'
+                + '<span style="font-size:9px;font-weight:900;color:' + signalColor + ';white-space:nowrap;letter-spacing:0.04em;text-transform:uppercase;">' + signalLabel + '</span>'
                 + '</div>'
                 + '</div>'
 
-+ '<div style="margin-bottom:11px;">'
-                + '<p style="font-size:8.5px;color:#475569;text-transform:uppercase;letter-spacing:0.09em;font-weight:600;margin-bottom:3px;">Harga Saat Ini</p>'
-                + '<div style="display:flex;align-items:center;justify-content:space-between;">'
-                + '<h2 style="font-size:23px;font-weight:900;color:#f8fafc;line-height:1;letter-spacing:-0.03em;">' + formatCurrency(coin.current_price) + '</h2>'
-                + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">'
-                + '<div style="display:inline-flex;align-items:center;gap:5px;background:' + accentDim + ';border:1px solid ' + accentColor + '40;border-radius:9px;padding:5px 11px;">'
+                + '<div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:13px;gap:8px;">'
+                + '<div>'
+                + '<p style="font-size:9px;color:#475569;text-transform:uppercase;font-weight:700;letter-spacing:0.09em;margin-bottom:4px;">Harga Saat Ini</p>'
+                + '<h2 style="font-size:clamp(1.15rem,3.5vw,1.5rem);font-weight:900;color:#f8fafc;line-height:1;letter-spacing:-0.03em;">' + formatCurrency(coin.current_price) + '</h2>'
+                + '</div>'
+                + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;padding-bottom:2px;">'
+                + '<div style="display:inline-flex;align-items:center;gap:5px;background:' + accentDim + ';border:1px solid ' + accentColor + '45;border-radius:8px;padding:6px 12px;">'
                 + '<i class="fa-solid ' + changeIcon + '" style="font-size:11px;color:' + accentColor + ';"></i>'
-                + '<span style="font-size:13px;font-weight:900;color:' + accentColor + ';">' + Math.abs(priceChange).toFixed(2) + '%</span>'
+                + '<span style="font-size:14px;font-weight:900;color:' + accentColor + ';">' + Math.abs(priceChange).toFixed(2) + '%</span>'
                 + '</div>'
-                + '<span style="font-size:8px;color:#475569;margin-right:2px;">vs 24 jam lalu</span>'
-                + '</div>'
-                + '</div>'
-                + '</div>'
-
-+ '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:11px;">'
-                + '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:8px 9px;display:flex;align-items:center;gap:8px;">'
-                + '<div style="width:26px;height:26px;border-radius:8px;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-chart-pie" style="font-size:10px;color:#60a5fa;"></i></div>'
-                + '<div style="min-width:0;"><p style="font-size:7.5px;color:#475569;text-transform:uppercase;font-weight:700;letter-spacing:0.07em;">Mkt Cap</p><p style="font-size:11px;color:#f1f5f9;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + formatCompact(coin.market_cap) + '</p></div>'
-                + '</div>'
-                + '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:8px 9px;display:flex;align-items:center;gap:8px;">'
-                + '<div style="width:26px;height:26px;border-radius:8px;background:rgba(245,158,11,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fa-solid fa-fire" style="font-size:10px;color:#f59e0b;"></i></div>'
-                + '<div style="min-width:0;"><p style="font-size:7.5px;color:#475569;text-transform:uppercase;font-weight:700;letter-spacing:0.07em;">Volume</p><p style="font-size:11px;color:#f1f5f9;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + formatCompact(coin.total_volume) + '</p></div>'
+                + '<span style="font-size:8.5px;color:#475569;">vs 24 jam lalu</span>'
                 + '</div>'
                 + '</div>'
 
-+ '<div style="margin-bottom:13px;">'
-                + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
-                + '<span style="font-size:8.5px;color:#f87171;font-family:ui-monospace,monospace;font-weight:600;">' + formatCurrency(coin.low_24h || 0) + '</span>'
+                + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px;">'
+                + '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:8px 8px;display:flex;flex-direction:column;gap:3px;">'
+                + '<div style="display:flex;align-items:center;gap:5px;"><i class="fa-solid fa-chart-pie" style="font-size:9px;color:#60a5fa;"></i><p style="font-size:7.5px;color:#475569;text-transform:uppercase;font-weight:700;letter-spacing:0.06em;">Mkt Cap</p></div>'
+                + '<p style="font-size:11px;color:#f1f5f9;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + formatCompact(coin.market_cap) + '</p>'
+                + '</div>'
+                + '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:8px 8px;display:flex;flex-direction:column;gap:3px;">'
+                + '<div style="display:flex;align-items:center;gap:5px;"><i class="fa-solid fa-bolt" style="font-size:9px;color:#f59e0b;"></i><p style="font-size:7.5px;color:#475569;text-transform:uppercase;font-weight:700;letter-spacing:0.06em;">Volume</p></div>'
+                + '<p style="font-size:11px;color:#f1f5f9;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + formatCompact(coin.total_volume) + '</p>'
+                + '</div>'
+                + '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:8px 8px;display:flex;flex-direction:column;gap:3px;">'
+                + '<div style="display:flex;align-items:center;gap:5px;"><i class="fa-solid fa-trophy" style="font-size:9px;color:#a78bfa;"></i><p style="font-size:7.5px;color:#475569;text-transform:uppercase;font-weight:700;letter-spacing:0.06em;">dari ATH</p></div>'
+                + '<p style="font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:' + athPctColor + ';">' + athPctStr + '</p>'
+                + '</div>'
+                + '</div>'
+
+                + '<div style="margin-bottom:12px;">'
+                + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">'
+                + '<span style="font-size:8px;color:#f87171;font-family:ui-monospace,monospace;font-weight:600;">' + formatCurrency(coin.low_24h || 0) + '</span>'
                 + '<span style="font-size:8px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;">24H Range</span>'
-                + '<span style="font-size:8.5px;color:#34d399;font-family:ui-monospace,monospace;font-weight:600;">' + formatCurrency(coin.high_24h || 0) + '</span>'
+                + '<span style="font-size:8px;color:#34d399;font-family:ui-monospace,monospace;font-weight:600;">' + formatCurrency(coin.high_24h || 0) + '</span>'
                 + '</div>'
-                + '<div style="position:relative;height:6px;border-radius:9999px;background:rgba(255,255,255,0.07);">'
-                + '<div style="position:absolute;top:0;left:0;height:100%;border-radius:9999px;width:' + rangePct + '%;background:linear-gradient(to right,' + accentColor + '40,' + accentColor + ');"></div>'
-                + '<div style="position:absolute;top:50%;left:' + rangePct + '%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:9999px;background:' + accentColor + ';border:2.5px solid #0f172a;box-shadow:0 0 9px ' + accentColor + ';"></div>'
+                + '<div style="position:relative;height:5px;border-radius:9999px;background:rgba(255,255,255,0.07);">'
+                + '<div class="range-bar-fill" data-target="' + rangePct + '" style="position:absolute;top:0;left:0;height:100%;border-radius:9999px;width:0%;background:linear-gradient(to right,' + accentColor + '35,' + accentColor + ');"></div>'
+                + '<div class="range-bar-dot" data-target="' + rangePct + '" style="position:absolute;top:50%;left:0%;transform:translate(-50%,-50%);width:11px;height:11px;border-radius:9999px;background:' + accentColor + ';border:2.5px solid #0f172a;box-shadow:0 0 8px ' + accentColor + ';"></div>'
                 + '</div>'
                 + '</div>'
 
-+ '<button class="home-card-cta-btn" style="width:100%;padding:10px 12px;border-radius:10px;background:linear-gradient(135deg,' + accentColor + '25,' + accentColor + '10);border:1px solid ' + accentColor + '38;font-size:13px;font-weight:800;color:#f8fafc;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:all 0.25s ease;letter-spacing:0.01em;" onmouseover="this.style.background=\'linear-gradient(135deg,' + accentColor + '40,' + accentColor + '20)\';this.style.borderColor=\'' + accentColor + '70\';this.style.transform=\'translateY(-1px)\';" onmouseout="this.style.background=\'linear-gradient(135deg,' + accentColor + '25,' + accentColor + '10)\';this.style.borderColor=\'' + accentColor + '38\';this.style.transform=\'\';">'
-                + 'Lihat Analisis <i class="fa-solid fa-arrow-right-long" style="font-size:11px;"></i>'
+                + '<div style="margin-bottom:14px;">'
+                + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">'
+                + '<div style="display:flex;align-items:center;gap:5px;"><i class="fa-solid fa-microchip" style="font-size:8px;color:#818cf8;"></i><span style="font-size:8px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;">AI Momentum</span></div>'
+                + '<div style="display:flex;align-items:center;gap:5px;"><span style="font-size:11px;font-weight:900;color:' + aiScoreColor + ';">' + aiScore + '</span><span style="font-size:8px;color:#475569;">/100</span><span style="font-size:8px;font-weight:700;color:' + aiScoreColor + ';background:rgba(255,255,255,0.05);border-radius:4px;padding:1px 6px;">' + aiScoreLabel + '</span></div>'
+                + '</div>'
+                + '<div style="position:relative;height:4px;border-radius:9999px;background:rgba(255,255,255,0.07);overflow:hidden;">'
+                + '<div class="ai-bar-fill" data-target="' + aiScore + '" style="height:100%;border-radius:9999px;width:0%;background:linear-gradient(to right,' + aiScoreColor + '60,' + aiScoreColor + ');box-shadow:0 0 8px ' + aiScoreColor + '50;"></div>'
+                + '</div>'
+                + '</div>'
+
+                + '<button class="home-card-cta-btn" style="width:100%;padding:11px 12px;border-radius:10px;background:linear-gradient(135deg,' + accentColor + '22,' + accentColor + '0c);border:1px solid ' + accentColor + '38;font-size:12px;font-weight:800;color:#f8fafc;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:all 0.25s ease;letter-spacing:0.01em;" onmouseover="this.style.background=\'linear-gradient(135deg,' + accentColor + '40,' + accentColor + '18)\';this.style.borderColor=\'' + accentColor + '65\';this.style.transform=\'translateY(-1px)\';" onmouseout="this.style.background=\'linear-gradient(135deg,' + accentColor + '22,' + accentColor + '0c)\';this.style.borderColor=\'' + accentColor + '38\';this.style.transform=\'\';">'
+                + '<i class="fa-solid fa-chart-line" style="font-size:11px;"></i> Lihat Analisis Lengkap <i class="fa-solid fa-arrow-right-long" style="font-size:10px;"></i>'
                 + '</button>'
                 + '</div>'
 
-+ '<div style="height:3px;width:100%;background:linear-gradient(90deg,transparent 0%,' + accentColor + ' 50%,transparent 100%);opacity:0.55;"></div>';
+                + '<div style="height:3px;width:100%;background:linear-gradient(90deg,transparent 0%,' + accentColor + ' 50%,transparent 100%);opacity:0.6;"></div>';
 
             tableBody.appendChild(row);
 
@@ -1553,8 +1683,10 @@ var absPct = Math.abs(priceChange);
             allCards.forEach(function (card, i) {
                 card.style.maxWidth = cardW + "px";
                 if (i === currentSlide) {
+                    card.classList.add("active-slide");
                     gsap.set(card, { left: centerX, scale: 1, opacity: 1, zIndex: 10, pointerEvents: "auto" });
                 } else {
+                    card.classList.remove("active-slide");
                     var diff = i - currentSlide;
                     if (diff > totalSlides / 2) diff -= totalSlides;
                     if (diff < -totalSlides / 2) diff += totalSlides;
@@ -1597,6 +1729,36 @@ var absPct = Math.abs(priceChange);
             }
         }
 
+        function positionAllCardsStaggered() {
+            positionAllCards();
+            var staggerQueue = [];
+            allCards.forEach(function (card, i) {
+                var diff = i - currentSlide;
+                if (diff > totalSlides / 2) diff -= totalSlides;
+                if (diff < -totalSlides / 2) diff += totalSlides;
+                var absDiff = Math.abs(diff);
+                var maxVisible = isMobile ? 1 : 2;
+                if (absDiff <= maxVisible) {
+                    var finalOp = absDiff === 0 ? 1 : (isMobile ? (1 - absDiff * 0.6) : (1 - absDiff * 0.35));
+                    staggerQueue.push({ card: card, absDiff: absDiff, finalOp: finalOp });
+                }
+            });
+            staggerQueue.sort(function (a, b) { return a.absDiff - b.absDiff; });
+            staggerQueue.forEach(function (item) {
+                gsap.set(item.card, { opacity: 0, y: 80 });
+            });
+            staggerQueue.forEach(function (item, idx) {
+                gsap.to(item.card, {
+                    opacity: item.finalOp,
+                    y: 0,
+                    duration: 0.55,
+                    delay: idx * 0.1,
+                    ease: "back.out(1.4)",
+                    clearProps: "y"
+                });
+            });
+        }
+
         function updateDots(activeIndex) {
             if (!dotsContainer) return;
             var dots = dotsContainer.querySelectorAll("button");
@@ -1606,6 +1768,25 @@ var absPct = Math.abs(priceChange);
                 } else {
                     d.className = "w-2.5 h-2.5 rounded-full bg-white/20 hover:bg-white/40 transition-all duration-300";
                 }
+            });
+        }
+
+        function animateCardBars(card) {
+            if (!card) return;
+            var aiBars = card.querySelectorAll(".ai-bar-fill");
+            aiBars.forEach(function (bar) {
+                var target = parseFloat(bar.getAttribute("data-target") || "50");
+                gsap.fromTo(bar, { width: "0%" }, { width: target + "%", duration: 1.0, ease: "power2.out", delay: 0.12 });
+            });
+            var rangeBars = card.querySelectorAll(".range-bar-fill");
+            rangeBars.forEach(function (bar) {
+                var target = parseFloat(bar.getAttribute("data-target") || "50");
+                gsap.fromTo(bar, { width: "0%" }, { width: target + "%", duration: 0.8, ease: "power2.out", delay: 0.22 });
+            });
+            var rangeDots = card.querySelectorAll(".range-bar-dot");
+            rangeDots.forEach(function (dot) {
+                var target = parseFloat(dot.getAttribute("data-target") || "50");
+                gsap.fromTo(dot, { left: "0%" }, { left: target + "%", duration: 0.8, ease: "power2.out", delay: 0.22 });
             });
         }
 
@@ -1642,21 +1823,30 @@ var absPct = Math.abs(priceChange);
                     var op = absDiff === 0 ? 1 : (isMobile ? (1 - absDiff * 0.6) : (1 - absDiff * 0.35));
                     var z = 10 - absDiff;
 
+                    if (absDiff === 0) {
+                        card.classList.add("active-slide");
+                    } else {
+                        card.classList.remove("active-slide");
+                    }
+
                     gsap.to(card, {
                         left: offsetX,
                         scale: sc,
                         opacity: op,
                         zIndex: z,
+                        y: 0,
                         duration: 0.5,
                         ease: "power2.out"
                     });
                     card.style.pointerEvents = absDiff === 0 ? "auto" : "none";
                 } else {
+                    card.classList.remove("active-slide");
                     gsap.to(card, {
                         left: centerX,
                         scale: 0.8,
                         opacity: 0,
                         zIndex: 1,
+                        y: 0,
                         duration: 0.35,
                         ease: "power2.out"
                     });
@@ -1665,7 +1855,10 @@ var absPct = Math.abs(priceChange);
             });
 
             updateDots(currentSlide);
-            setTimeout(function () { isAnimating = false; }, 550);
+            setTimeout(function () {
+                isAnimating = false;
+                animateCardBars(allCards[currentSlide]);
+            }, 420);
         }
 
         function nextSlide() {
@@ -1679,7 +1872,21 @@ var absPct = Math.abs(priceChange);
         }
 
         if (totalSlides > 0) {
-            positionAllCards();
+            if (window._nextRenderStagger) {
+                window._nextRenderStagger = false;
+                positionAllCardsStaggered();
+            } else {
+                positionAllCards();
+            }
+            animateCardBars(allCards[currentSlide]);
+            allCards.forEach(function (card) {
+                card.addEventListener("mouseenter", function () {
+                    gsap.to(card, { y: -6, duration: 0.35, ease: "power2.out", overwrite: "auto" });
+                });
+                card.addEventListener("mouseleave", function () {
+                    gsap.to(card, { y: 0, duration: 0.4, ease: "power2.out", overwrite: "auto" });
+                });
+            });
         }
 
         window.addEventListener("resize", function () {
@@ -2152,7 +2359,6 @@ if (refreshBtn && !_uiInitialized) {
 document.addEventListener("DOMContentLoaded", function () {
     var sectionsToObserve = [
         { id: "market-data", links: document.querySelectorAll('a[href="#market-data"], a[href="home.html#market-data"]') },
-        { id: "news", links: document.querySelectorAll('a[href="news.html"]') },
         { id: "fitur", links: document.querySelectorAll('a[href="#fitur"], a[href="home.html#fitur"]') }
     ];
 

@@ -57,6 +57,14 @@ window.addEventListener("scroll", function () {
 
 document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") menu.classList.remove("visible");
+
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      var tag = document.activeElement && document.activeElement.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      e.preventDefault();
+      var amount = e.key === "ArrowDown" ? 120 : -120;
+      window.scrollBy({ top: amount, behavior: "smooth" });
+    }
   });
 
 document.getElementById("ctx-back").addEventListener("click", function () {
@@ -66,11 +74,29 @@ document.getElementById("ctx-back").addEventListener("click", function () {
     history.forward();
   });
   document.getElementById("ctx-refresh").addEventListener("click", function () {
+    window._csReloading = true;
     sessionStorage.setItem("page-transitioning", "1");
-    document.body.style.transition = "opacity 500ms ease";
-    document.body.style.opacity = "0";
-    setTimeout(function () {
+
+    document.body.style.transition = "none";
+    document.body.style.opacity = "1";
+    void document.body.offsetWidth;
+
+    var done = false;
+    function onCtxDone() {
+      if (done) return;
+      done = true;
+      document.body.removeEventListener("transitionend", onCtxTrans);
       location.reload();
-    }, 500);
+    }
+    function onCtxTrans(ev) {
+      if (ev.target === document.body && ev.propertyName === "opacity") onCtxDone();
+    }
+    document.body.addEventListener("transitionend", onCtxTrans);
+    setTimeout(onCtxDone, 600);
+
+    requestAnimationFrame(function () {
+      document.body.style.transition = "opacity 500ms ease";
+      document.body.style.opacity = "0";
+    });
   });
 })();

@@ -56,13 +56,13 @@
                         style="width:1rem;height:1rem;"></i>Market</a>
                 <a href="news.html" class="nav-hover-link"
                     style="display:inline-flex;align-items:center;gap:0.4rem;"><i data-lucide="newspaper"
-                        style="width:1rem;height:1rem;"></i>Berita</a>
+                        style="width:1rem;height:1rem;"></i>Blog</a>
                 <a href="analisa.html" class="nav-hover-link nav-active"
                     style="display:inline-flex;align-items:center;gap:0.4rem;"><i data-lucide="bar-chart-2"
-                        style="width:1rem;height:1rem;"></i>Analisa</a>
+                        style="width:1rem;height:1rem;"></i>Analysis</a>
                 <a href="about.html" class="nav-hover-link"
                     style="display:inline-flex;align-items:center;gap:0.4rem;"><i data-lucide="users"
-                        style="width:1rem;height:1rem;"></i>Tentang Kami</a>
+                        style="width:1rem;height:1rem;"></i>About Us</a>
             </div>
             <div id="nav-actions" class="flex items-center gap-4">
                 <button id="nav-btn" style="padding:0.75rem 2rem;font-size:1rem;"
@@ -82,9 +82,9 @@
         <div class="mobile-nav-inner">
             <a href="home.html"><i class="fa-solid fa-house"></i> Home</a>
             <a href="market.html"><i class="fa-solid fa-chart-line"></i> Market</a>
-            <a href="news.html"><i class="fa-solid fa-newspaper"></i> Berita</a>
-            <a href="analisa.html" class="nav-active"><i class="fa-solid fa-bar-chart"></i> Analisa</a>
-            <a href="about.html"><i class="fa-solid fa-users"></i> Tentang Kami</a>
+            <a href="news.html"><i class="fa-solid fa-newspaper"></i> Blog</a>
+            <a href="analisa.html" class="nav-active"><i class="fa-solid fa-bar-chart"></i> Analysis</a>
+            <a href="about.html"><i class="fa-solid fa-users"></i> About Us</a>
             <div class="mobile-nav-divider"></div>
             <a href="auth.html" class="mobile-nav-cta"><i class="fa-solid fa-rocket"></i> Coba App Sekarang <i class="fa-solid fa-arrow-right ml-auto text-xs"></i></a>
         </div>
@@ -174,8 +174,9 @@
                                         <i class="fa-solid fa-chevron-down text-gray-500 text-[9px]"></i>
                                     </div>
                                     <select id="asset1" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+                                        <option value="" selected>-- Pilih Koin --</option>
                                         <option value="bitcoin">Bitcoin (BTC)</option>
-                                        <option value="ethereum" selected>Ethereum (ETH)</option>
+                                        <option value="ethereum">Ethereum (ETH)</option>
                                         <option value="solana">Solana (SOL)</option>
                                         <option value="cardano">Cardano (ADA)</option>
                                         <option value="ripple">XRP (XRP)</option>
@@ -257,7 +258,8 @@
                                         <i class="fa-solid fa-chevron-down text-gray-500 text-[9px]"></i>
                                     </div>
                                     <select id="asset2" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
-                                        <option value="dogecoin" selected>Dogecoin (DOGE)</option>
+                                        <option value="" selected>-- Pilih Koin --</option>
+                                        <option value="dogecoin">Dogecoin (DOGE)</option>
                                         <option value="pepe">Pepe (PEPE)</option>
                                         <option value="cardano">Cardano (ADA)</option>
                                         <option value="shiba-inu">Shiba Inu (SHIB)</option>
@@ -296,18 +298,20 @@
 
                 </div>
 
-<div class="flex justify-center mb-6">
+<div class="flex flex-col items-center gap-3 mb-6">
                     <button id="btnRun" onclick="runComparison()"
-                        class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-[15px] transition-all duration-300 hover:scale-105 active:scale-95"
-                        style="background:linear-gradient(135deg,#F59E0B,#D97706);color:#0F172A;box-shadow:0 0 30px rgba(245,158,11,0.3);border:none;cursor:pointer">
+                        class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-[15px] transition-all duration-300"
+                        disabled
+                        style="background:rgba(107,114,128,0.25);color:#6B7280;box-shadow:none;border:none;cursor:not-allowed;opacity:0.5">
                         <i class="fa-solid fa-play text-sm"></i>
                         Jalankan Analisis
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
                             <path d="M21 3v5h-5"/>
                         </svg>
-                        <div id="loading" class="hidden w-5 h-5 rounded-full border-[3px]" style="border-color:#0F172A;border-top-color:transparent;animation:spin 0.9s linear infinite"></div>
+                        <div id="loading" class="hidden w-5 h-5 rounded-full border-[3px]" style="border-color:#6B7280;border-top-color:transparent;animation:spin 0.9s linear infinite"></div>
                     </button>
+                    <p id="btnHint" class="text-gray-500 text-xs text-center">Pilih kedua aset terlebih dahulu untuk menjalankan analisis</p>
                 </div>
 
 <div id="alertSection" class="glass-card rounded-2xl border border-white/10 p-5 mb-6 flex items-start gap-4" style="border-left:4px solid #F59E0B">
@@ -632,18 +636,73 @@
             return maxDd;
         }
 
+        function resetCard(prefix) {
+            var el = function (id) { return document.getElementById(id); };
+            var placeholder = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%231E293B'/%3E%3Ctext x='50' y='62' text-anchor='middle' font-size='45' fill='%234B5563' font-family='sans-serif'%3E%3F%3C/text%3E%3C/svg%3E";
+            el(prefix + "Img").src = placeholder;
+            el(prefix + "Name").textContent = "Pilih Aset";
+            el(prefix + "Symbol").textContent = "";
+            el(prefix + "Price").textContent = "$--";
+            el(prefix + "Change").textContent = "--%";
+            el(prefix + "Change").style.color = "#6B7280";
+            var badge = el(prefix + "ChangeBadge");
+            if (badge) {
+                badge.style.background = "rgba(107,114,128,0.1)";
+                var svg = badge.querySelector("svg");
+                if (svg) { svg.setAttribute("stroke", "#6B7280"); }
+            }
+            el(prefix + "Mcap").textContent = "--";
+            if (prefix === "primary") {
+                el("primaryVol").textContent = "--";
+            } else {
+                el("compVol24").textContent = "--";
+            }
+            el(prefix + "Ath").textContent = "--";
+            el(prefix + "AthDist").textContent = "--";
+            el(prefix + "AthDist").style.color = "#6B7280";
+        }
+
+        function updateButtonState() {
+            var id1 = document.getElementById("asset1").value;
+            var id2 = document.getElementById("asset2").value;
+            var btn = document.getElementById("btnRun");
+            var hint = document.getElementById("btnHint");
+            var bothSelected = id1 && id2;
+            if (bothSelected) {
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.style.cursor = "pointer";
+                btn.style.background = "linear-gradient(135deg,#F59E0B,#D97706)";
+                btn.style.boxShadow = "0 0 30px rgba(245,158,11,0.3)";
+                btn.style.color = "#0F172A";
+                if (hint) hint.style.display = "none";
+            } else {
+                btn.disabled = true;
+                btn.style.opacity = "0.5";
+                btn.style.cursor = "not-allowed";
+                btn.style.background = "rgba(107,114,128,0.25)";
+                btn.style.boxShadow = "none";
+                btn.style.color = "#6B7280";
+                if (hint) hint.style.display = "block";
+            }
+        }
+
         async function loadCards() {
             var id1 = document.getElementById("asset1").value;
             var id2 = document.getElementById("asset2").value;
+            updateButtonState();
+            if (!id1) resetCard("primary");
+            if (!id2) resetCard("comp");
+            if (!id1 && !id2) return;
             try {
                 var res = await fetch(API_BASE + "/coins");
                 var allCoins = await res.json();
-                var coin1 = allCoins.find(function (c) { return c.id === id1; });
-                var coin2 = allCoins.find(function (c) { return c.id === id2; });
+                var coin1 = id1 ? allCoins.find(function (c) { return c.id === id1; }) : null;
+                var coin2 = id2 ? allCoins.find(function (c) { return c.id === id2; }) : null;
                 if (coin1) updateCoinCard("primary", coin1);
                 if (coin2) updateCoinCard("comp", coin2);
-                document.getElementById("legendPrimary").textContent = coin1 ? coin1.name : id1;
-                document.getElementById("legendComp").textContent = coin2 ? coin2.name : id2;
+                document.getElementById("legendPrimary").textContent = coin1 ? coin1.name : "Primary";
+                document.getElementById("legendComp").textContent = coin2 ? coin2.name : "Comparison";
             } catch (e) {
                 console.error("Failed to load coin data", e);
             }
@@ -656,6 +715,7 @@
         async function runComparison() {
             var id1 = document.getElementById("asset1").value;
             var id2 = document.getElementById("asset2").value;
+            if (!id1 || !id2) return;
             var btn = document.getElementById("btnRun");
             var loading = document.getElementById("loading");
 
@@ -697,9 +757,8 @@
                 document.getElementById("alertText").textContent =
                     "Gagal mengambil data. CoinGecko API memiliki limit, silakan tunggu 1 menit lalu coba lagi.";
             } finally {
-                btn.disabled = false;
-                btn.style.opacity = "1";
                 loading.classList.add("hidden");
+                updateButtonState();
             }
         }
 

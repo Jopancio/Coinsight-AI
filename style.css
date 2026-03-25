@@ -468,6 +468,58 @@ body {
   }
 }
 
+.mkt-sort-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  position: relative;
+}
+
+.mkt-sort-slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  height: calc(100% - 6px);
+  border-radius: 9999px;
+  background: #10b981;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.45);
+  transition: transform 0.28s cubic-bezier(0.34, 1.2, 0.64, 1),
+              width 0.28s cubic-bezier(0.34, 1.2, 0.64, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.mkt-sort-pill {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  white-space: nowrap;
+  transition: color 0.2s;
+  font-family: inherit;
+}
+
+.mkt-sort-pill:hover:not(.active) {
+  color: #e2e8f0;
+}
+
+.mkt-sort-pill.active {
+  color: #fff;
+}
+
 .market-nav-btn {
   background: rgba(15, 23, 42, 0.7);
   backdrop-filter: blur(12px);
@@ -484,11 +536,18 @@ body {
 }
 
 .market-coin-card {
-  transition: box-shadow 0.4s ease;
+  transition: box-shadow 0.45s ease, border-color 0.45s ease, background 0.45s ease;
+}
+
+.market-coin-card.active-slide {
+  background: rgb(17, 28, 50) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
 }
 
 .market-coin-card:hover {
-  box-shadow: 0 0 30px rgba(16, 185, 129, 0.1), 0 12px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 48px rgba(16, 185, 129, 0.22), 0 24px 64px rgba(0, 0, 0, 0.55);
+  border-color: rgba(16, 185, 129, 0.32) !important;
 }
 
 .all-coins-search {

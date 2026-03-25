@@ -86,12 +86,27 @@ if (!isTransitioning && isReload()) {
     }
 
     function animateExit(nextHref) {
-        document.body.style.transition = "opacity " + FADE_DURATION_MS + "ms ease";
-        document.body.style.opacity = "0";
+        document.body.style.transition = "none";
+        document.body.style.opacity = "1";
+        void document.body.offsetWidth;
 
-        setTimeout(function () {
+        var done = false;
+        function onDone() {
+            if (done) return;
+            done = true;
+            document.body.removeEventListener("transitionend", onTransEnd);
             window.location.href = nextHref;
-        }, FADE_DURATION_MS);
+        }
+        function onTransEnd(e) {
+            if (e.target === document.body && e.propertyName === "opacity") onDone();
+        }
+        document.body.addEventListener("transitionend", onTransEnd);
+        setTimeout(onDone, FADE_DURATION_MS + 100);
+
+        requestAnimationFrame(function () {
+            document.body.style.transition = "opacity " + FADE_DURATION_MS + "ms ease";
+            document.body.style.opacity = "0";
+        });
     }
 
     window.addEventListener("pageshow", function (e) {
@@ -122,22 +137,51 @@ if (!isTransitioning && isReload()) {
         animateExit(anchor.href);
     });
 
-var isReloading = false;
+window._csReloading = false;
+
+    // Intercept browser reload button: instantly hide page + set flag so
+    // the loader animation plays on re-entry.
+    window.addEventListener("beforeunload", function () {
+        if (!window._csReloading) {
+            sessionStorage.setItem(TRANSITION_KEY, "1");
+            document.documentElement.style.opacity = "0";
+        }
+    });
+
+    // Intercept Ctrl+R / Cmd+R / F5 — capture phase so we run before the
+    // browser's built-in handler.  Fade out first, then reload manually.
     document.addEventListener("keydown", function (e) {
         var isCtrlR = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r";
         var isF5 = e.key === "F5";
 
-        if ((isCtrlR || isF5) && !isReloading) {
+        if ((isCtrlR || isF5) && !window._csReloading) {
             e.preventDefault();
-            isReloading = true;
+            e.stopImmediatePropagation();
+            window._csReloading = true;
 
             sessionStorage.setItem(TRANSITION_KEY, "1");
-            document.body.style.transition = "opacity " + FADE_DURATION_MS + "ms ease";
-            document.body.style.opacity = "0";
 
-            setTimeout(function () {
-                location.reload();
-            }, FADE_DURATION_MS);
+            document.body.style.transition = "none";
+            document.body.style.opacity = "1";
+            void document.body.offsetWidth;
+
+            var done = false;
+            function onReloadDone() {
+                if (done) return;
+                done = true;
+                document.body.removeEventListener("transitionend", onReloadTrans);
+                window.location.reload(true);
+            }
+            function onReloadTrans(ev) {
+                if (ev.target === document.body && ev.propertyName === "opacity") onReloadDone();
+            }
+            document.body.addEventListener("transitionend", onReloadTrans);
+            setTimeout(onReloadDone, FADE_DURATION_MS + 100);
+
+            requestAnimationFrame(function () {
+                document.body.style.transition = "opacity " + FADE_DURATION_MS + "ms ease";
+                document.body.style.opacity = "0";
+            });
         }
-    });
+    }, true);
 })();

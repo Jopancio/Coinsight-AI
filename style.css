@@ -173,45 +173,62 @@ body {
   }
 }
 
-.slot-machine-container {
+/* === Letter-by-letter slide-up cycling === */
+#hero-cycling-word {
   display: inline-block;
-  height: 1.25em;
   overflow: hidden;
   vertical-align: bottom;
-}
-
-.slot-machine-text {
-  display: flex;
-  flex-direction: column;
-  animation: slotMachine 6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
-}
-
-.slot-machine-text>span {
   height: 1.25em;
-  line-height: 1.25em;
-  display: flex;
-  align-items: center;
 }
 
-@keyframes slotMachine {
+.hero-letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(1.2em);
+  animation: letterUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
 
-  0%,
-  25% {
-    transform: translateY(0);
+.hero-letter-out {
+  animation: letterOut 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes letterUp {
+  0% {
+    opacity: 0;
+    transform: translateY(1.2em) scale(0.85);
+    filter: blur(4px);
   }
-
-  33%,
-  58% {
-    transform: translateY(-1.25em);
+  60% {
+    opacity: 1;
+    filter: blur(0);
   }
-
-  66%,
-  91% {
-    transform: translateY(-2.5em);
+  80% {
+    transform: translateY(-0.05em) scale(1.02);
   }
-
   100% {
-    transform: translateY(-3.75em);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes letterOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  20% {
+    transform: translateY(0.05em) scale(1.02);
+  }
+  40% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-1.2em) scale(0.85);
+    filter: blur(4px);
   }
 }
 
@@ -236,8 +253,9 @@ body {
   content: '';
   position: absolute;
   bottom: -5px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  margin: 0 auto;
   width: 0%;
   height: 2px;
   border-radius: 9999px;
@@ -543,6 +561,8 @@ body {
   background: rgb(17, 28, 50) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  box-shadow: 0 0 32px rgba(16, 185, 129, 0.15), 0 16px 48px rgba(0, 0, 0, 0.4);
 }
 
 .market-coin-card:hover {
@@ -1232,58 +1252,39 @@ body {
 #back-to-top {
   position: fixed;
   bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
-  border: none;
-  color: rgba(148, 163, 184, 0.7);
+  right: 2rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(226, 232, 240, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
   cursor: pointer;
   z-index: 9000;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease;
-  font-size: 0.8125rem;
-  font-weight: 400;
-  letter-spacing: 0.02em;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  padding: 0;
 }
 
 #back-to-top.visible {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
   pointer-events: all;
 }
 
 #back-to-top:hover {
-  color: rgba(226, 232, 240, 0.9);
-  background: transparent;
-  box-shadow: none;
-}
-
-.btt-mouse-icon {
-  display: flex;
-  align-items: center;
-  animation: btt-bounce 1.6s ease-in-out infinite;
-}
-
-@keyframes btt-bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  45% {
-    transform: translateY(-6px);
-  }
-  65% {
-    transform: translateY(-3px);
-  }
+  color: #fff;
+  background: rgba(51, 65, 85, 0.95);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.5);
 }
 
 .market-ticker-wrap {

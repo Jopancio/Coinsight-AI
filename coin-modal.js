@@ -27,6 +27,7 @@
 
         var rect = rowElement ? rowElement.getBoundingClientRect() : { top: window.innerHeight / 2, left: window.innerWidth / 2, width: 0, height: 0 };
         document.body.style.overflow = "hidden";
+        document.documentElement.style.overflow = "hidden";
 
         var overlay = document.createElement("div");
         overlay.id = "coin-detail-overlay";
@@ -38,6 +39,8 @@
         overlay.style.backgroundColor = "rgba(0,0,0,0)";
         overlay.style.zIndex = "999";
         overlay.style.cursor = "pointer";
+        overlay.style.overscrollBehavior = "contain";
+        overlay.addEventListener("touchmove", function(e) { e.preventDefault(); }, { passive: false });
         document.body.appendChild(overlay);
 
         var detailCard = document.createElement("div");
@@ -662,6 +665,7 @@ gsap.to(detailCard, {
                             if (currentRow) currentRow.style.opacity = "1";
                             if (rowElement && rowElement !== currentRow) rowElement.style.opacity = "1";
                             document.body.style.overflow = "";
+                            document.documentElement.style.overflow = "";
                         }
                     });
                 };

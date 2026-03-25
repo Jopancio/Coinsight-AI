@@ -20,6 +20,7 @@
         }
     </style>
     <script>if(sessionStorage.getItem('page-transitioning')){document.documentElement.style.opacity='0';}</script>
+    <script>if(!localStorage.getItem('currentUser')){window.location.replace('auth.html');}</script>
 </head>
 
 <body class="antialiased overflow-x-hidden pt-24">
@@ -96,14 +97,17 @@
             const currentUser = JSON.parse(localStorage.getItem("currentUser"));
             const navActions = document.getElementById("nav-actions");
             if (currentUser && navActions) {
-                navActions.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <span class="text-sm font-semibold text-gray-300 hidden md:block">Halo, ${currentUser.name.split(' ')[0]}</span>
-                        <div class="w-10 h-10 rounded-full bg-tech-blue flex items-center justify-center text-white font-bold border-2 border-white/10 shadow-sm cursor-pointer hover:bg-blue-600 transition" onclick="logout()" title="Logout">
-                            ${currentUser.name.charAt(0).toUpperCase()}
+                const navBtn = document.getElementById('nav-btn');
+                if (navBtn) {
+                    navBtn.outerHTML = `
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm font-semibold text-gray-300 hidden md:block">Halo, ${currentUser.name.split(' ')[0]}</span>
+                            <div class="w-10 h-10 rounded-full bg-tech-blue flex items-center justify-center text-white font-bold border-2 border-white/10 shadow-sm cursor-pointer hover:bg-blue-600 transition" onclick="logout()" title="Logout">
+                                ${currentUser.name.charAt(0).toUpperCase()}
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
             }
             lucide.createIcons();
         });
@@ -131,20 +135,7 @@
                 <p class="text-gray-400 text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
                     Bandingkan volatilitas &amp; sentimen dua aset kripto secara berdampingan &mdash; pahami risiko spekulatif sebelum investasi.
                 </p>
-                <div class="flex flex-wrap justify-center gap-2">
-                    <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-gray-400 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-                        <i class="fa-solid fa-clock text-blue-400 text-[9px]"></i> 30 Hari Historis
-                    </span>
-                    <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-gray-400 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-                        <i class="fa-solid fa-bolt text-amber-400 text-[9px]"></i> Real-Time API
-                    </span>
-                    <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-gray-400 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-                        <i class="fa-solid fa-brain text-emerald-400 text-[9px]"></i> AI Insight
-                    </span>
-                    <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-gray-400 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-                        <i class="fa-solid fa-shield-halved text-purple-400 text-[9px]"></i> Risk Scoring
-                    </span>
-                </div>
+
             </div>
         </section>
 
@@ -330,7 +321,7 @@
                         </div>
                     </div>
                     <div class="rounded-2xl p-4" style="background:rgba(255,255,255,0.015)">
-                        <canvas id="historicalChart" height="270"></canvas>
+                        <canvas id="historicalChart" height="120"></canvas>
                     </div>
                 </div>
 

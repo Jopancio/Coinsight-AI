@@ -829,6 +829,7 @@ var API_BASE_URL = "https://skidibi-toilet.jovancion.workers.dev/api";
 
         var rect = rowElement ? rowElement.getBoundingClientRect() : { top: window.innerHeight / 2, left: window.innerWidth / 2, width: 0, height: 0 };
         document.body.style.overflow = "hidden";
+        document.documentElement.style.overflow = "hidden";
 
         var overlay = document.createElement("div");
         overlay.id = "coin-detail-overlay";
@@ -840,6 +841,8 @@ var API_BASE_URL = "https://skidibi-toilet.jovancion.workers.dev/api";
         overlay.style.backgroundColor = "rgba(0,0,0,0)";
         overlay.style.zIndex = "999";
         overlay.style.cursor = "pointer";
+        overlay.style.overscrollBehavior = "contain";
+        overlay.addEventListener("touchmove", function(e) { e.preventDefault(); }, { passive: false });
         document.body.appendChild(overlay);
 
         var detailCard = document.createElement("div");
@@ -1459,6 +1462,7 @@ gsap.to(detailCard, {
                             animSymbol.remove();
                             if (currentRow) currentRow.style.opacity = "1";
                             document.body.style.overflow = "";
+                            document.documentElement.style.overflow = "";
                         }
                     });
                 };
@@ -1482,10 +1486,10 @@ if (tableBody._currentSlide !== undefined) {
             var aFav = favoriteCoins.includes(a.id) ? 1 : 0;
             var bFav = favoriteCoins.includes(b.id) ? 1 : 0;
             if (aFav !== bFav) return bFav - aFav;
-            return 0;
+            return (a.market_cap_rank || 9999) - (b.market_cap_rank || 9999);
         });
 
-        var filtered = sortedCoins.slice(0, 8);
+        var filtered = sortedCoins.slice(0, 5);
 
         if (filtered.length === 0) {
             tableBody.innerHTML = '<div class="py-20 text-center text-gray-500 w-full">Tidak ada koin ditemukan.</div>';
@@ -1507,8 +1511,15 @@ if (tableBody._currentSlide !== undefined) {
             row.style.pointerEvents = "none";
             row.style.zIndex = "1";
             row.style.willChange = "transform, opacity";
+            row.setAttribute("data-slide-index", index);
             row.onclick = function () {
-                openCoinDetail(row, coin);
+                var myIndex = parseInt(row.getAttribute("data-slide-index"));
+                if (tableBody._currentSlide === myIndex) {
+                    openCoinDetail(row, coin);
+                } else {
+                    goToSlide(myIndex);
+                    resetAutoSlide();
+                }
             };
 
             var priceChange = coin.price_change_percentage_24h || 0;
@@ -1557,7 +1568,6 @@ var absPct = Math.abs(priceChange);
                 '<div style="height:135px;width:100%;position:relative;overflow:hidden;background:linear-gradient(160deg,rgba(' + accentRgb + ',0.1) 0%,rgba(' + accentRgb + ',0.03) 60%,transparent 100%);border-top:2px solid ' + accentColor + '50;">'
                 + '<div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:5.5rem;font-weight:900;line-height:1;color:rgba(255,255,255,0.028);letter-spacing:-3px;user-select:none;pointer-events:none;font-family:ui-monospace,monospace;">' + (coinSymbol || "").toUpperCase() + '</div>'
                 + '<div style="position:absolute;inset:0;display:flex;align-items:flex-end;">' + generateCardChartSVG(coin) + '</div>'
-                + '<div style="position:absolute;top:10px;left:12px;background:rgba(0,0,0,0.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);border-radius:9999px;padding:3px 11px;font-size:10px;font-weight:800;color:#cbd5e1;letter-spacing:0.05em;">RANK #' + (coin.market_cap_rank || index + 1) + '</div>'
                 + '<div style="position:absolute;top:10px;right:12px;background:' + accentDim + ';backdrop-filter:blur(10px);border:1px solid ' + accentColor + '50;border-radius:9999px;padding:3px 11px;font-size:9px;font-weight:800;color:' + accentColor + ';letter-spacing:0.05em;">' + bearishBullish + '</div>'
                 + '<div style="position:absolute;bottom:10px;left:12px;display:flex;align-items:center;gap:5px;">'
                 + '<span style="width:6px;height:6px;border-radius:9999px;background:' + accentColor + ';box-shadow:0 0 7px ' + accentColor + ';display:inline-block;animation:pulse 2s cubic-bezier(0.4,0,0.6,1) infinite;"></span>'
@@ -1698,7 +1708,9 @@ var absPct = Math.abs(priceChange);
                         var sc = isMobile ? (1 - absDiff * 0.12) : (1 - absDiff * 0.08);
                         var op = isMobile ? (1 - absDiff * 0.6) : (1 - absDiff * 0.35);
                         var z = 10 - absDiff;
-                        gsap.set(card, { left: offsetX, scale: sc, opacity: op, zIndex: z, pointerEvents: "none" });
+                        gsap.set(card, { left: offsetX, scale: sc, opacity: op, zIndex: z, pointerEvents: "auto" });
+                    card.style.pointerEvents = "auto";
+                    card.style.cursor = absDiff === 0 ? "pointer" : "pointer";
                     } else {
                         gsap.set(card, { left: centerX, scale: 0.8, opacity: 0, zIndex: 1, pointerEvents: "none" });
                     }
@@ -1838,7 +1850,8 @@ var absPct = Math.abs(priceChange);
                         duration: 0.5,
                         ease: "power2.out"
                     });
-                    card.style.pointerEvents = absDiff === 0 ? "auto" : "none";
+                    card.style.pointerEvents = "auto";
+                    card.style.cursor = "pointer";
                 } else {
                     card.classList.remove("active-slide");
                     gsap.to(card, {

@@ -45,7 +45,7 @@
       <div id="nav-links" style="gap:2.5rem;font-size:1rem;" class="hidden lg:flex font-semibold text-gray-300">
         <a href="home.html" class="nav-hover-link" style="display:inline-flex;align-items:center;gap:0.4rem;"><i
             data-lucide="home" style="width:1rem;height:1rem;"></i>Home</a>
-        <a href="analisa.html" class="nav-hover-link" style="display:inline-flex;align-items:center;gap:0.4rem;"><i
+        <a href="analisa.html" onclick="navAuthGuard(event)" class="nav-hover-link" style="display:inline-flex;align-items:center;gap:0.4rem;"><i
             data-lucide="bar-chart-2" style="width:1rem;height:1rem;"></i>Analysis</a>
         <a href="market.html" class="nav-hover-link nav-active" style="display:inline-flex;align-items:center;gap:0.4rem;"><i
             data-lucide="trending-up" style="width:1rem;height:1rem;"></i>Market</a>
@@ -70,7 +70,7 @@
   <div id="mobile-menu-dropdown">
     <div class="mobile-nav-inner">
       <a href="home.html"><i class="fa-solid fa-house"></i> Home</a>
-      <a href="analisa.html"><i class="fa-solid fa-bar-chart"></i> Analysis</a>
+      <a href="analisa.html" onclick="navAuthGuard(event)"><i class="fa-solid fa-bar-chart"></i> Analysis</a>
       <a href="market.html" class="nav-active"><i class="fa-solid fa-chart-line"></i> Market</a>
       <a href="news.html"><i class="fa-solid fa-newspaper"></i> Blog</a>
       <a href="about.html"><i class="fa-solid fa-users"></i> About Us</a>
@@ -85,14 +85,17 @@
       const currentUser = JSON.parse(localStorage.getItem("currentUser"));
       const navActions = document.getElementById("nav-actions");
       if (currentUser && navActions) {
-        navActions.innerHTML = `
-          <div class="flex items-center gap-3">
-            <span class="text-sm font-semibold text-gray-300 hidden md:block">Halo, ${currentUser.name.split(' ')[0]}</span>
-            <div class="w-10 h-10 rounded-full bg-tech-blue flex items-center justify-center text-white font-bold border-2 border-white/10 shadow-sm cursor-pointer hover:bg-blue-600 transition" onclick="logout()" title="Logout">
-              ${currentUser.name.charAt(0).toUpperCase()}
+        const navBtn = document.getElementById('nav-btn');
+        if (navBtn) {
+          navBtn.outerHTML = `
+            <div class="flex items-center gap-3">
+              <span class="text-sm font-semibold text-gray-300 hidden md:block">Halo, ${currentUser.name.split(' ')[0]}</span>
+              <div class="w-10 h-10 rounded-full bg-tech-blue flex items-center justify-center text-white font-bold border-2 border-white/10 shadow-sm cursor-pointer hover:bg-blue-600 transition" onclick="logout()" title="Logout">
+                ${currentUser.name.charAt(0).toUpperCase()}
+              </div>
             </div>
-          </div>
-        `;
+          `;
+        }
       }
     });
     function logout() {

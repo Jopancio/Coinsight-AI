@@ -1,4 +1,4 @@
-ï»¿    function openCoinDetail(rowElement, coin) {
+ÿþï»¿    function openCoinDetail(rowElement, coin) {
         if (!window.location.search.includes('coin=' + coin.id)) {
             var url = new URL(window.location);
             url.searchParams.set('coin', coin.id);
@@ -39,16 +39,16 @@
         var targetLeft = (window.innerWidth - targetWidth) / 2;
         var targetTop = (window.innerHeight - targetHeight) / 2;
 
-        var wrapEl = rowElement ? (rowElement.querySelector(".coin-logo-wrap") || rowElement.querySelector("td > div > div:first-child")) : null;
-        var nameEl = rowElement ? (rowElement.querySelector(".coin-name-text") || rowElement.querySelector("span.font-bold")) : null;
-        var symbolEl = rowElement ? (rowElement.querySelector(".coin-symbol-text") || rowElement.querySelector("span.font-mono")) : null;
+        var wrapEl = rowElement ? (rowElement.querySelector(".coin-logo-wrap"|| rowElement.querySelector("td > div > div:first-child")) : null;
+        var nameEl = rowElement ? (rowElement.querySelector(".coin-name-text") || rowElement.querySelector("span.font-bold"): null;
+        var symbolEl = rowElement ? (rowElement.querySelector(".coin-symbol-text"|| rowElement.querySelector("span.font-mono")) : null;
 
-        var imgRect = wrapEl ? wrapEl.getBoundingClientRect() : { top: rect.top, left: rect.left, width: 32, height: 32 };
+        var imgRect = wrapEl ? wrapEl.getBoundingClientRect(: { top: rect.top, left: rect.left, width: 32, height: 32 };
         var nameRect = nameEl ? nameEl.getBoundingClientRect() : { top: rect.top, left: rect.left + 50, width: 50, height: 20 };
         var symbolRect = symbolEl ? symbolEl.getBoundingClientRect() : { top: rect.top, left: rect.left + 150, width: 40, height: 20 };
 
         var animImgWrap = wrapEl ? wrapEl.cloneNode(true) : document.createElement("div");
-        if (!wrapEl) {
+        if (!wrapEl{
             animImgWrap.innerHTML = '<img src="' + coin.image + '" class="w-8 h-8 rounded-full" onerror="this.style.display=\'none\'" />';
         }
         animImgWrap.id = "";
@@ -61,7 +61,7 @@
         animImgWrap.style.margin = "0";
 
         var internalImg = animImgWrap.querySelector("img") || animImgWrap.querySelector("div");
-        if (internalImg) {
+        if (internalImg{
             internalImg.style.width = "100%";
             internalImg.style.height = "100%";
         }
@@ -159,7 +159,7 @@ var finalImgTop = targetTop + 68;
             boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1)",
             duration: 0.6,
             ease: "power3.inOut",
-            onComplete: function () {
+            onComplete: function ({
                 var detailContent = document.createElement("div");
                 detailContent.className = "p-8 w-full h-full flex flex-col relative";
 
@@ -197,7 +197,7 @@ var finalImgTop = targetTop + 68;
                     
                     <div id="detail-body" class="flex-1 overflow-y-auto thin-scrollbar pr-2 opacity-0">
                         <div class="flex flex-col pb-8">
-                            <!-- Chart & Data (Full Width Now) -->
+                            <!-- Chart & Data (Full Width Now-->
                             <div class="mb-4 lg:-mt-16 flex justify-between items-end">
                                 <div>
                                     <h3 class="text-4xl lg:text-5xl font-bold text-white mb-2">${formatCurrency(coin.current_price)}</h3>
@@ -227,7 +227,7 @@ var finalImgTop = targetTop + 68;
                                 <div>
                                     <p class="text-sm text-gray-400 mb-1">Circulating supply</p>
                                     <p class="text-lg font-semibold text-white">${formatCompact(coin.circulating_supply)} <span class="text-xs text-gray-500 uppercase">${coin.symbol}</span></p>
-                                    ${coin.max_supply ? '<p class="text-[10px] text-gray-500 mt-0.5">' + Math.round((coin.circulating_supply / coin.max_supply) * 100) + '% of total</p>' : ''}
+                                    ${coin.max_supply ? '<p class="text-[10px] text-gray-500 mt-0.5">' + Math.round((coin.circulating_supply / coin.max_supply) * 100+ '% of total</p>' : ''}
                                 </div>
                                 <div>
                                     <p class="text-sm text-gray-400 mb-1">All-time high</p>
@@ -269,14 +269,14 @@ var finalImgTop = targetTop + 68;
 
 var coinNewsContainer = document.getElementById("coin-news-container");
                 if (coinNewsContainer) {
-                    fetch(API_BASE_URL + "/coin-news?coin=" + encodeURIComponent(coin.name) + "&symbol=" + encodeURIComponent(coin.symbol))
-                        .then(function (res) {
-                            if (!res.ok) throw new Error("Gagal mengambil berita koin");
+                    fetch(API_BASE_URL + "/coin-news?coin=" + encodeURIComponent(coin.name+ "&symbol=" + encodeURIComponent(coin.symbol))
+                        .then(function (res{
+                            if (!res.okthrow new Error("Gagal mengambil berita koin");
                             return res.json();
                         })
                         .then(function (result) {
                             var articles = result.data || [];
-                            if (articles.length === 0) {
+                            if (articles.length === 0{
                                 coinNewsContainer.innerHTML = '<div class="col-span-full text-center text-gray-500 py-6 bg-white/5 rounded-xl border border-white/10 text-sm">Belum ada berita terbaru untuk aset ini.</div>';
                                 return;
                             }
@@ -310,7 +310,7 @@ var coinNewsContainer = document.getElementById("coin-news-container");
                                 });
                             });
                         })
-                        .catch(function (err) {
+                        .catch(function (err{
                             console.error("News fetch error:", err);
                             coinNewsContainer.innerHTML = '<div class="col-span-full text-center text-red-400 py-6 text-sm bg-white/5 rounded-xl border border-white/10">Terjadi kesalahan pada backend kami. Harap coba lagi nanti.</div>';
                         });
@@ -320,7 +320,7 @@ var coinNewsContainer = document.getElementById("coin-news-container");
                 favBtn.onclick = function () {
                     var idx = favoriteCoins.indexOf(coin.id);
                     var newIsFav = false;
-                    if (idx > -1) {
+                    if (idx > -1{
                         favoriteCoins.splice(idx, 1);
                     } else {
                         favoriteCoins.push(coin.id);
@@ -334,7 +334,7 @@ var coinNewsContainer = document.getElementById("coin-news-container");
                 var shareBtn = document.getElementById("share-btn");
                 shareBtn.onclick = function () {
                     var shareData = {
-                        title: coin.name + " (" + coin.symbol.toUpperCase() + ") di CoinSight AI",
+                        title: coin.name + " (" + coin.symbol.toUpperCase() + "di CoinSight AI",
                         text: "Lihat data pasar terkini untuk " + coin.name + ". Harga saat ini: " + formatCurrency(coin.current_price) + " dengan perubahan " + (coin.price_change_percentage_24h || 0).toFixed(2) + "% dalam 24 jam terakhir.",
                         url: window.location.href
                     };
@@ -342,14 +342,14 @@ var coinNewsContainer = document.getElementById("coin-news-container");
                     var icon = shareBtn.querySelector("i");
 
                     if (navigator.share) {
-                        navigator.share(shareData).catch(function (err) {
+                        navigator.share(shareData).catch(function (err{
                             console.log("Error sharing:", err);
                         });
                     } else {
                         var copyText = shareData.title + "\\n" + shareData.text + "\\n" + shareData.url;
-                        navigator.clipboard.writeText(copyText).then(function () {
+                        navigator.clipboard.writeText(copyText).then(function ({
                             icon.className = "fa-solid fa-check text-emerald";
-                            setTimeout(function () {
+                            setTimeout(function ({
                                 icon.className = "fa-solid fa-arrow-up-from-bracket";
                             }, 2000);
                         }).catch(function (err) {
@@ -359,7 +359,7 @@ var coinNewsContainer = document.getElementById("coin-news-container");
                 };
 
                 gsap.to(document.getElementById("detail-body"), {
-                    opacity: 1, duration: 0.3, onComplete: function () {
+                    opacity: 1, duration: 0.3, onComplete: function ({
                         if (window.TradingView) {
                             new window.TradingView.widget({
                                 "autosize": true,
@@ -392,12 +392,12 @@ var coinNewsContainer = document.getElementById("coin-news-container");
                     var currentRow = document.getElementById("row-" + coin.id);
                     var currentRect = currentRow ? currentRow.getBoundingClientRect() : { top: window.innerHeight / 2, left: window.innerWidth / 2, width: 0, height: 0 };
 
-                    var cWrapEl = currentRow ? (currentRow.querySelector(".coin-logo-wrap") || currentRow.querySelector("td > div > div:first-child")) : null;
-                    var cNameEl = currentRow ? (currentRow.querySelector(".coin-name-text") || currentRow.querySelector("span.font-bold")) : null;
-                    var cSymbolEl = currentRow ? (currentRow.querySelector(".coin-symbol-text") || currentRow.querySelector("span.font-mono")) : null;
+                    var cWrapEl = currentRow ? (currentRow.querySelector(".coin-logo-wrap") || currentRow.querySelector("td > div > div:first-child"): null;
+                    var cNameEl = currentRow ? (currentRow.querySelector(".coin-name-text") || currentRow.querySelector("span.font-bold"): null;
+                    var cSymbolEl = currentRow ? (currentRow.querySelector(".coin-symbol-text") || currentRow.querySelector("span.font-mono"): null;
 
                     var origImgRect = cWrapEl ? cWrapEl.getBoundingClientRect() : currentRect;
-                    var origNameRect = cNameEl ? cNameEl.getBoundingClientRect() : currentRect;
+                    var origNameRect = cNameEl ? cNameEl.getBoundingClientRect(: currentRect;
                     var origSymbolRect = cSymbolEl ? cSymbolEl.getBoundingClientRect() : currentRect;
 
                     gsap.to(animImgWrap, {
@@ -453,7 +453,7 @@ var coinNewsContainer = document.getElementById("coin-news-container");
                             animImgWrap.remove();
                             animName.remove();
                             animSymbol.remove();
-                            if (currentRow) currentRow.style.opacity = "1";
+                            if (currentRowcurrentRow.style.opacity = "1";
                             document.body.style.overflow = "";
                         }
                     });

@@ -167,21 +167,12 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="relative">
-                                    <div class="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-xl px-3 py-2 cursor-pointer hover:bg-white/10 transition-colors">
-                                        <i class="fa-solid fa-repeat text-gray-400 text-[9px]"></i>
-                                        <span class="text-gray-300 text-xs font-semibold">Ganti</span>
-                                        <i class="fa-solid fa-chevron-down text-gray-500 text-[9px]"></i>
-                                    </div>
-                                    <select id="asset1" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
-                                        <option value="" selected>-- Pilih Koin --</option>
-                                        <option value="bitcoin">Bitcoin (BTC)</option>
-                                        <option value="ethereum">Ethereum (ETH)</option>
-                                        <option value="solana">Solana (SOL)</option>
-                                        <option value="cardano">Cardano (ADA)</option>
-                                        <option value="ripple">XRP (XRP)</option>
-                                    </select>
-                                </div>
+                                <input type="hidden" id="asset1" value="" />
+                                <button onclick="openAssetOverlay('primary')" class="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-xl px-3 py-2 hover:bg-white/10 transition-all active:scale-95">
+                                    <i class="fa-solid fa-repeat text-gray-400 text-[9px]"></i>
+                                    <span class="text-gray-300 text-xs font-semibold">Ganti</span>
+                                    <i class="fa-solid fa-chevron-down text-gray-500 text-[9px]"></i>
+                                </button>
                             </div>
                             <div class="flex items-baseline gap-3">
                                 <span id="primaryPrice" class="text-white text-3xl font-extrabold">$--</span>
@@ -251,21 +242,12 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="relative">
-                                    <div class="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-xl px-3 py-2 cursor-pointer hover:bg-white/10 transition-colors">
-                                        <i class="fa-solid fa-repeat text-gray-400 text-[9px]"></i>
-                                        <span class="text-gray-300 text-xs font-semibold">Ganti</span>
-                                        <i class="fa-solid fa-chevron-down text-gray-500 text-[9px]"></i>
-                                    </div>
-                                    <select id="asset2" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
-                                        <option value="" selected>-- Pilih Koin --</option>
-                                        <option value="dogecoin">Dogecoin (DOGE)</option>
-                                        <option value="pepe">Pepe (PEPE)</option>
-                                        <option value="cardano">Cardano (ADA)</option>
-                                        <option value="shiba-inu">Shiba Inu (SHIB)</option>
-                                        <option value="bitcoin">Bitcoin (BTC)</option>
-                                    </select>
-                                </div>
+                                <input type="hidden" id="asset2" value="" />
+                                <button onclick="openAssetOverlay('comp')" class="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-xl px-3 py-2 hover:bg-white/10 transition-all active:scale-95">
+                                    <i class="fa-solid fa-repeat text-gray-400 text-[9px]"></i>
+                                    <span class="text-gray-300 text-xs font-semibold">Ganti</span>
+                                    <i class="fa-solid fa-chevron-down text-gray-500 text-[9px]"></i>
+                                </button>
                             </div>
                             <div class="flex items-baseline gap-3">
                                 <span id="compPrice" class="text-white text-3xl font-extrabold">$--</span>
@@ -500,6 +482,89 @@
 
     </main>
 
+    <!-- ── Asset Selector Overlay ───────────────────────────── -->
+    <div id="assetOverlay" style="display:none;position:fixed;inset:0;z-index:9998;">
+        <div id="assetOverlayBg" onclick="closeAssetOverlay()"
+            style="position:absolute;inset:0;background:rgba(2,6,23,0.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);"></div>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:1rem;pointer-events:none;">
+            <div id="assetOverlayPanel" onclick="event.stopPropagation()"
+                class="glass-card rounded-3xl border border-white/10 w-full flex flex-col"
+                style="max-width:900px;max-height:88vh;overflow:hidden;pointer-events:all;">
+
+                <!-- Header -->
+                <div class="flex items-center justify-between px-6 py-5 border-b border-white/8">
+                    <div class="flex items-center gap-3">
+                        <div id="overlayIconWrap" class="w-10 h-10 rounded-2xl flex items-center justify-center"
+                            style="background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);">
+                            <i id="overlayIcon" class="fa-solid fa-layer-group text-blue-400 text-sm"></i>
+                        </div>
+                        <div>
+                            <p id="overlayLabel" class="text-[10px] font-bold uppercase tracking-widest" style="color:#60A5FA">Primary Asset</p>
+                            <h3 class="text-white font-extrabold text-lg leading-tight">Pilih Aset</h3>
+                        </div>
+                    </div>
+                    <button onclick="closeAssetOverlay()"
+                        class="w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:bg-white/10 active:scale-90"
+                        style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);">
+                        <i class="fa-solid fa-xmark text-gray-400 text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Search + Filter -->
+                <div class="px-6 py-4 border-b border-white/8 flex flex-col sm:flex-row gap-3">
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none"></i>
+                        <input type="text" id="overlaySearch" placeholder="Cari nama koin atau simbol..."
+                            oninput="filterOverlayCoins()"
+                            class="w-full rounded-full py-2.5 pl-10 pr-4 text-sm text-white placeholder-gray-600 focus:outline-none transition-all"
+                            style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);" />
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                        <button data-overlay-filter="all" onclick="setOverlayFilter(this)"
+                            class="overlay-filter-btn px-4 py-2 rounded-full text-xs font-bold transition-all"
+                            style="background:#10B981;color:white;">
+                            <i class="fa-solid fa-globe mr-1"></i>Semua
+                        </button>
+                        <button data-overlay-filter="bullish" onclick="setOverlayFilter(this)"
+                            class="overlay-filter-btn px-4 py-2 rounded-full text-xs font-bold transition-all"
+                            style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#6B7280;">
+                            <i class="fa-solid fa-arrow-trend-up mr-1 text-emerald-400"></i>Bullish
+                        </button>
+                        <button data-overlay-filter="bearish" onclick="setOverlayFilter(this)"
+                            class="overlay-filter-btn px-4 py-2 rounded-full text-xs font-bold transition-all"
+                            style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#6B7280;">
+                            <i class="fa-solid fa-arrow-trend-down mr-1 text-red-400"></i>Bearish
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Coin count -->
+                <div class="px-6 pt-3 pb-0">
+                    <p id="overlayCoinCount" class="text-[11px] text-gray-600 font-medium"></p>
+                </div>
+
+                <!-- Coins Grid (scrollable) -->
+                <div id="overlayCoinGrid"
+                    class="overflow-y-auto px-6 py-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"
+                    style="flex:1;min-height:0;">
+                    <div class="rounded-2xl bg-white/5 animate-pulse" style="height:86px;"></div>
+                    <div class="rounded-2xl bg-white/5 animate-pulse" style="height:86px;"></div>
+                    <div class="rounded-2xl bg-white/5 animate-pulse" style="height:86px;"></div>
+                    <div class="rounded-2xl bg-white/5 animate-pulse" style="height:86px;"></div>
+                    <div class="rounded-2xl bg-white/5 animate-pulse" style="height:86px;"></div>
+                    <div class="rounded-2xl bg-white/5 animate-pulse" style="height:86px;"></div>
+                    <div class="rounded-2xl bg-white/5 animate-pulse" style="height:86px;"></div>
+                    <div class="rounded-2xl bg-white/5 animate-pulse" style="height:86px;"></div>
+                </div>
+
+                <!-- Footer hint -->
+                <div class="px-6 py-3 border-t border-white/6 text-center">
+                    <p class="text-gray-600 text-[11px]"><i class="fa-solid fa-hand-pointer mr-1"></i>Klik koin untuk memilihnya sebagai aset analisis</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer class="bg-black/50 py-8 border-t border-white/10 mt-10">
         <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-2">
@@ -537,6 +602,15 @@
         .ai-news-card { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07); border-radius: 1rem; padding: 1rem; transition: border-color 0.2s; }
         .ai-news-card:hover { border-color: rgba(59,130,246,0.3); }
         .ai-news-card a { text-decoration: none; }
+
+        /* Overlay scrollbar */
+        #overlayCoinGrid::-webkit-scrollbar { width: 5px; }
+        #overlayCoinGrid::-webkit-scrollbar-track { background: transparent; }
+        #overlayCoinGrid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; }
+        #overlayCoinGrid::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+        /* Overlay search focus ring */
+        #overlaySearch:focus { border-color: rgba(16,185,129,0.4) !important; box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
     </style>
 
     <script>
@@ -708,8 +782,6 @@
             }
         }
 
-        document.getElementById("asset1").addEventListener("change", loadCards);
-        document.getElementById("asset2").addEventListener("change", loadCards);
         loadCards();
 
         async function runComparison() {
@@ -1140,6 +1212,222 @@
                 console.error("AI compare error:", err);
             }
         }
+
+        // ── Asset Selector Overlay ───────────────────────────────
+        var _overlayType = null;
+        var _overlayCoins = [];
+        var _overlayFilter = 'all';
+
+        function openAssetOverlay(type) {
+            _overlayType = type;
+            _overlayFilter = 'all';
+
+            var label = document.getElementById('overlayLabel');
+            var iconWrap = document.getElementById('overlayIconWrap');
+            var icon = document.getElementById('overlayIcon');
+            var search = document.getElementById('overlaySearch');
+
+            if (type === 'primary') {
+                label.textContent = 'Primary Asset';
+                label.style.color = '#60A5FA';
+                iconWrap.style.background = 'rgba(59,130,246,0.15)';
+                iconWrap.style.borderColor = 'rgba(59,130,246,0.3)';
+                icon.className = 'fa-solid fa-layer-group text-blue-400 text-sm';
+                icon.style.color = '#60A5FA';
+            } else {
+                label.textContent = 'Comparison Asset';
+                label.style.color = '#FBBF24';
+                iconWrap.style.background = 'rgba(245,158,11,0.15)';
+                iconWrap.style.borderColor = 'rgba(245,158,11,0.3)';
+                icon.className = 'fa-solid fa-layer-group text-amber-400 text-sm';
+                icon.style.color = '#FBBF24';
+            }
+
+            search.value = '';
+
+            document.querySelectorAll('.overlay-filter-btn').forEach(function(btn) {
+                if (btn.dataset.overlayFilter === 'all') {
+                    btn.style.background = '#10B981';
+                    btn.style.color = 'white';
+                    btn.style.border = 'none';
+                } else {
+                    btn.style.background = 'rgba(255,255,255,0.06)';
+                    btn.style.color = '#6B7280';
+                    btn.style.border = '1px solid rgba(255,255,255,0.1)';
+                }
+            });
+
+            var overlay = document.getElementById('assetOverlay');
+            var panel = document.getElementById('assetOverlayPanel');
+            var bg = document.getElementById('assetOverlayBg');
+
+            overlay.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+
+            gsap.set(bg, { opacity: 0 });
+            gsap.set(panel, { opacity: 0, y: 52, scale: 0.94 });
+            gsap.to(bg, { opacity: 1, duration: 0.3, ease: 'power2.out' });
+            gsap.to(panel, { opacity: 1, y: 0, scale: 1, duration: 0.44, ease: 'back.out(1.5)', delay: 0.04 });
+
+            loadOverlayCoins();
+        }
+
+        function closeAssetOverlay() {
+            var overlay = document.getElementById('assetOverlay');
+            var panel = document.getElementById('assetOverlayPanel');
+            var bg = document.getElementById('assetOverlayBg');
+
+            gsap.to(bg, { opacity: 0, duration: 0.25, ease: 'power2.in' });
+            gsap.to(panel, {
+                opacity: 0, y: 36, scale: 0.95, duration: 0.28, ease: 'power2.in',
+                onComplete: function() {
+                    overlay.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+
+        async function loadOverlayCoins() {
+            var grid = document.getElementById('overlayCoinGrid');
+            var countEl = document.getElementById('overlayCoinCount');
+
+            grid.innerHTML = Array(12).fill(0).map(function() {
+                return '<div class="rounded-2xl bg-white/5 animate-pulse" style="height:86px;"></div>';
+            }).join('');
+            countEl.textContent = 'Memuat data pasar...';
+
+            try {
+                var res = await fetch(API_BASE + '/coins');
+                _overlayCoins = await res.json();
+                renderOverlayCoins();
+            } catch(e) {
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem 1rem;">' +
+                    '<i class="fa-solid fa-wifi" style="color:#EF4444;font-size:2rem;display:block;margin-bottom:0.75rem;"></i>' +
+                    '<p style="color:#FCA5A5;font-size:0.875rem;font-weight:600;">Gagal memuat data pasar</p>' +
+                    '<p style="color:#6B7280;font-size:0.75rem;margin-top:0.25rem;">Periksa koneksi internet Anda</p></div>';
+                countEl.textContent = '';
+            }
+        }
+
+        function filterOverlayCoins() { renderOverlayCoins(); }
+
+        function setOverlayFilter(btn) {
+            _overlayFilter = btn.dataset.overlayFilter;
+            document.querySelectorAll('.overlay-filter-btn').forEach(function(b) {
+                if (b === btn) {
+                    b.style.background = '#10B981';
+                    b.style.color = 'white';
+                    b.style.border = 'none';
+                } else {
+                    b.style.background = 'rgba(255,255,255,0.06)';
+                    b.style.color = '#6B7280';
+                    b.style.border = '1px solid rgba(255,255,255,0.1)';
+                }
+            });
+            renderOverlayCoins();
+        }
+
+        function renderOverlayCoins() {
+            var search = (document.getElementById('overlaySearch').value || '').toLowerCase().trim();
+            var grid = document.getElementById('overlayCoinGrid');
+            var countEl = document.getElementById('overlayCoinCount');
+
+            var currentId = _overlayType === 'primary'
+                ? document.getElementById('asset1').value
+                : document.getElementById('asset2').value;
+
+            var filtered = _overlayCoins.filter(function(c) {
+                var matchSearch = !search
+                    || c.name.toLowerCase().includes(search)
+                    || (c.symbol || '').toLowerCase().includes(search);
+                var change = c.price_change_percentage_24h || 0;
+                var matchFilter = _overlayFilter === 'all'
+                    || (_overlayFilter === 'bullish' && change >= 0)
+                    || (_overlayFilter === 'bearish' && change < 0);
+                return matchSearch && matchFilter;
+            });
+
+            countEl.textContent = filtered.length + ' koin tersedia';
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem 1rem;">' +
+                    '<i class="fa-solid fa-magnifying-glass" style="color:#374151;font-size:2rem;display:block;margin-bottom:0.75rem;"></i>' +
+                    '<p style="color:#6B7280;font-size:0.875rem;font-weight:600;">Koin tidak ditemukan</p>' +
+                    '<p style="color:#374151;font-size:0.75rem;margin-top:0.25rem;">Coba kata kunci yang berbeda</p></div>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map(function(c) {
+                var change = c.price_change_percentage_24h || 0;
+                var isUp = change >= 0;
+                var changeColor = isUp ? '#10B981' : '#EF4444';
+                var changeBg = isUp ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)';
+                var isSelected = currentId === c.id;
+                var rank = c.market_cap_rank || '';
+                var borderStyle = isSelected
+                    ? 'border-color:' + changeColor + ';background:' + changeBg + ';'
+                    : 'border-color:rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);';
+
+                return '<div class="overlay-coin-card rounded-2xl cursor-pointer transition-all hover:scale-[1.03] hover:border-white/20 active:scale-[0.97]"' +
+                    ' style="border:1px solid;' + borderStyle + 'padding:0.75rem;"' +
+                    ' onclick="selectOverlayCoin(\'' + c.id + '\')">' +
+                    '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">' +
+                    (c.image ? '<img src="' + c.image + '" style="width:2rem;height:2rem;border-radius:9999px;flex-shrink:0;" />'
+                             : '<div style="width:2rem;height:2rem;border-radius:9999px;background:rgba(255,255,255,0.1);flex-shrink:0;"></div>') +
+                    '<div style="flex:1;min-width:0;">' +
+                    '<p style="color:white;font-size:0.8125rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + c.name + '</p>' +
+                    '<p style="color:#6B7280;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">' +
+                        (c.symbol || '').toUpperCase() +
+                        (rank ? ' <span style="color:#374151">#' + rank + '</span>' : '') +
+                    '</p>' +
+                    '</div>' +
+                    (isSelected ? '<i class="fa-solid fa-circle-check" style="color:#10B981;font-size:0.75rem;flex-shrink:0;"></i>' : '') +
+                    '</div>' +
+                    '<p style="color:white;font-size:0.8125rem;font-weight:800;margin-bottom:0.35rem;">' + formatCurrency(c.current_price) + '</p>' +
+                    '<span style="display:inline-flex;align-items:center;gap:0.25rem;padding:0.2rem 0.5rem;border-radius:0.5rem;font-size:0.7rem;font-weight:700;background:' + changeBg + ';color:' + changeColor + '">' +
+                        (isUp ? '▲' : '▼') + ' ' + Math.abs(change).toFixed(2) + '%' +
+                    '</span>' +
+                    '</div>';
+            }).join('');
+
+            var cards = grid.querySelectorAll('.overlay-coin-card');
+            gsap.fromTo(cards,
+                { opacity: 0, y: 14, scale: 0.95 },
+                { opacity: 1, y: 0, scale: 1, duration: 0.32, stagger: 0.022, ease: 'power2.out' }
+            );
+        }
+
+        function selectOverlayCoin(coinId) {
+            var targetEl = document.getElementById(_overlayType === 'primary' ? 'asset1' : 'asset2');
+
+            var cards = document.querySelectorAll('.overlay-coin-card');
+            cards.forEach(function(card) {
+                var onclickAttr = card.getAttribute('onclick') || '';
+                if (onclickAttr.indexOf("'" + coinId + "'") !== -1) {
+                    gsap.to(card, {
+                        scale: 1.1, duration: 0.12, ease: 'power2.out',
+                        onComplete: function() {
+                            gsap.to(card, { scale: 1, duration: 0.14, ease: 'power2.in' });
+                        }
+                    });
+                }
+            });
+
+            targetEl.value = coinId;
+            setTimeout(function() {
+                closeAssetOverlay();
+                setTimeout(function() { loadCards(); }, 310);
+            }, 180);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var overlay = document.getElementById('assetOverlay');
+                if (overlay && overlay.style.display !== 'none') {
+                    closeAssetOverlay();
+                }
+            }
+        });
     </script>
 
     <script src="navbar.js"></script>

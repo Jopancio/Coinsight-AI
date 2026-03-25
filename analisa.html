@@ -155,7 +155,7 @@
 
 <div id="primaryCard" class="glass-card rounded-3xl border border-blue-500/20 overflow-hidden flex flex-col">
                         <div class="h-1 w-full" style="background:linear-gradient(90deg,#3b82f6,#22d3ee)"></div>
-                        <div class="p-6 border-b border-white/8">
+                        <div class="p-6">
                             <div class="flex items-center justify-between mb-5">
                                 <div class="flex items-center gap-3">
                                     <img id="primaryImg" src="" alt="" class="w-11 h-11 rounded-full" style="box-shadow:0 0 0 2px rgba(59,130,246,0.35)" />
@@ -191,7 +191,7 @@
                                 <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">24h Volume</p>
                                 <p id="primaryVol" class="text-gray-200 text-sm font-semibold">--</p>
                             </div>
-                            <div class="col-span-2 h-px bg-white/5"></div>
+                            <div class="col-span-2"></div>
                             <div>
                                 <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">All Time High</p>
                                 <p id="primaryAth" class="text-gray-200 text-sm font-semibold">--</p>
@@ -230,7 +230,7 @@
 
 <div id="comparisonCard" class="glass-card rounded-3xl border border-amber-500/20 overflow-hidden flex flex-col">
                         <div class="h-1 w-full" style="background:linear-gradient(90deg,#f59e0b,#fb923c)"></div>
-                        <div class="p-6 border-b border-white/8">
+                        <div class="p-6">
                             <div class="flex items-center justify-between mb-5">
                                 <div class="flex items-center gap-3">
                                     <img id="compImg" src="" alt="" class="w-11 h-11 rounded-full" style="box-shadow:0 0 0 2px rgba(245,158,11,0.35)" />
@@ -266,7 +266,7 @@
                                 <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">24h Volume</p>
                                 <p id="compVol24" class="text-gray-200 text-sm font-semibold">--</p>
                             </div>
-                            <div class="col-span-2 h-px bg-white/5"></div>
+                            <div class="col-span-2"></div>
                             <div>
                                 <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">All Time High</p>
                                 <p id="compAth" class="text-gray-200 text-sm font-semibold">--</p>
@@ -492,7 +492,7 @@
                 style="max-width:900px;max-height:88vh;overflow:hidden;pointer-events:all;">
 
                 <!-- Header -->
-                <div class="flex items-center justify-between px-6 py-5 border-b border-white/8">
+                <div class="flex items-center justify-between px-6 py-5">
                     <div class="flex items-center gap-3">
                         <div id="overlayIconWrap" class="w-10 h-10 rounded-2xl flex items-center justify-center"
                             style="background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);">
@@ -511,7 +511,7 @@
                 </div>
 
                 <!-- Search + Filter -->
-                <div class="px-6 py-4 border-b border-white/8 flex flex-col sm:flex-row gap-3">
+                <div class="px-6 py-4 flex flex-col sm:flex-row gap-3">
                     <div class="relative flex-1">
                         <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none"></i>
                         <input type="text" id="overlaySearch" placeholder="Cari nama koin atau simbol..."
@@ -558,14 +558,14 @@
                 </div>
 
                 <!-- Footer hint -->
-                <div class="px-6 py-3 border-t border-white/6 text-center">
+                <div class="px-6 py-3 text-center">
                     <p class="text-gray-600 text-[11px]"><i class="fa-solid fa-hand-pointer mr-1"></i>Klik koin untuk memilihnya sebagai aset analisis</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <footer class="bg-black/50 py-8 border-t border-white/10 mt-10">
+    <footer class="bg-black/50 py-8 mt-10">
         <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-chart-pie text-tech-blue text-xl"></i>
@@ -1336,6 +1336,11 @@
                 ? document.getElementById('asset1').value
                 : document.getElementById('asset2').value;
 
+            // The coin selected in the OTHER slot is excluded from selection
+            var otherSlotId = _overlayType === 'primary'
+                ? document.getElementById('asset2').value
+                : document.getElementById('asset1').value;
+
             var filtered = _overlayCoins.filter(function(c) {
                 var matchSearch = !search
                     || c.name.toLowerCase().includes(search)
@@ -1363,7 +1368,28 @@
                 var changeColor = isUp ? '#10B981' : '#EF4444';
                 var changeBg = isUp ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)';
                 var isSelected = currentId === c.id;
+                var isDisabled = otherSlotId && otherSlotId === c.id;
                 var rank = c.market_cap_rank || '';
+
+                if (isDisabled) {
+                    return '<div class="overlay-coin-card rounded-2xl" title="Sudah dipilih di slot lainnya"' +
+                        ' style="border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.015);padding:0.75rem;opacity:0.35;cursor:not-allowed;position:relative;">' +
+                        '<div style="position:absolute;inset:0;border-radius:1rem;display:flex;align-items:center;justify-content:center;z-index:1;">' +
+                        '<span style="background:rgba(15,23,42,0.85);border:1px solid rgba(255,255,255,0.08);color:#6B7280;font-size:0.65rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:9999px;letter-spacing:0.05em;">SUDAH DIPILIH</span>' +
+                        '</div>' +
+                        '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">' +
+                        (c.image ? '<img src="' + c.image + '" style="width:2rem;height:2rem;border-radius:9999px;flex-shrink:0;filter:grayscale(1);" />'
+                                 : '<div style="width:2rem;height:2rem;border-radius:9999px;background:rgba(255,255,255,0.05);flex-shrink:0;"></div>') +
+                        '<div style="flex:1;min-width:0;">' +
+                        '<p style="color:#4B5563;font-size:0.8125rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + c.name + '</p>' +
+                        '<p style="color:#374151;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">' + (c.symbol || '').toUpperCase() + '</p>' +
+                        '</div></div>' +
+                        '<p style="color:#4B5563;font-size:0.8125rem;font-weight:800;margin-bottom:0.35rem;">' + formatCurrency(c.current_price) + '</p>' +
+                        '<span style="display:inline-flex;align-items:center;gap:0.25rem;padding:0.2rem 0.5rem;border-radius:0.5rem;font-size:0.7rem;font-weight:700;background:rgba(255,255,255,0.04);color:#374151;">' +
+                        (isUp ? '▲' : '▼') + ' ' + Math.abs(change).toFixed(2) + '%</span>' +
+                        '</div>';
+                }
+
                 var borderStyle = isSelected
                     ? 'border-color:' + changeColor + ';background:' + changeBg + ';'
                     : 'border-color:rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);';

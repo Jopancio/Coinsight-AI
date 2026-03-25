@@ -108,7 +108,7 @@ lucide.createIcons();
             card.innerHTML = `
                 <div class="h-32 overflow-hidden relative shrink-0">
                     <div class="absolute inset-0 bg-amber/10 group-hover:bg-transparent transition-colors z-10"></div>
-                    <img src="${coverUrl}" alt="News Cover" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
+                    <img src="${coverUrl}" alt="News Cover" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
                     <div class="absolute top-2 left-2 z-20 bg-amber text-black px-2 py-0.5 rounded-full text-[10px] font-bold shadow-md">
                         TOP STORY
                     </div>
@@ -130,7 +130,7 @@ lucide.createIcons();
             card.innerHTML = `
                 <div class="h-28 overflow-hidden relative">
                     <div class="absolute inset-0 bg-tech-blue/20 group-hover:bg-transparent transition-colors z-10"></div>
-                    <img src="${coverUrl}" alt="News Cover" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
+                    <img src="${coverUrl}" alt="News Cover" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
                     <div class="absolute top-2 left-2 z-20 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-full text-[10px] font-bold text-white border border-white/10">
                         ${source}
                     </div>

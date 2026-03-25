@@ -242,8 +242,8 @@ lucide.createIcons();
             };
             chip.innerHTML =
                 '<div class="flex items-center gap-2">' +
-                '<img src="' + (coin.image || "") + '" alt="' + coin.name + '" class="w-6 h-6 rounded-full" onerror="this.style.display=\'none\'" />' +
-                '<span class="text-xs font-bold text-white uppercase">' + (coin.symbol || "").toUpperCase() + '</span>' +
+                '<img src="' + (coin.image || "") + '" alt="' + coin.name + '" class="w-6 h-6 rounded-full" loading="lazy" onerror="this.style.display=\'none\'" />' +
+                '<span class="text-xs font-bold text-white uppercase">'  + (coin.symbol || "").toUpperCase() + '</span>' +
                 '</div>' +
                 '<p class="text-sm font-extrabold text-white leading-tight">' + formatCurrency(coin.current_price) + '</p>' +
                 '<p class="text-[11px] font-bold ' + color + '"><i class="fa-solid ' + icon + ' mr-0.5"></i>' + Math.abs(change).toFixed(2) + '%</p>';
@@ -282,7 +282,7 @@ lucide.createIcons();
 
             row.innerHTML =
                 '<span class="text-[10px] text-gray-600 font-bold w-4 shrink-0">' + (i + 1) + '</span>' +
-                '<img src="' + (coin.image || "") + '" alt="' + coin.name + '" class="w-6 h-6 rounded-full shrink-0" onerror="this.style.display=\'none\'" />' +
+                '<img src="' + (coin.image || "") + '" alt="' + coin.name + '" class="w-6 h-6 rounded-full shrink-0" loading="lazy" onerror="this.style.display=\'none\'" />' +
                 '<span class="text-xs font-semibold text-white flex-1 truncate">' + coin.name + '</span>' +
                 label;
             return row;
@@ -381,7 +381,7 @@ lucide.createIcons();
                 '<div class="flex items-center gap-2.5">' +
                 '<div style="position:relative;flex-shrink:0;width:2.5rem;height:2.5rem;">' +
                 '<div style="position:absolute;inset:-3px;border-radius:9999px;background:radial-gradient(' + accentColor + '38 0%,transparent 68%);pointer-events:none;"></div>' +
-                '<img id="' + imgId + '" src="' + (coin.image || "") + '" alt="' + coinName + '" style="width:2.5rem;height:2.5rem;border-radius:9999px;display:block;position:relative;" onerror="this.parentElement.innerHTML=\'<div style=&quot;width:2.5rem;height:2.5rem;border-radius:9999px;background:linear-gradient(135deg,#1e3a8a,#10b981);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.875rem;color:#fff;&quot;>' + coinName.charAt(0) + '</div>\'" />' +
+                '<img id="' + imgId + '" src="' + (coin.image || "") + '" alt="' + coinName + '" loading="lazy" style="width:2.5rem;height:2.5rem;border-radius:9999px;display:block;position:relative;" onerror="this.parentElement.innerHTML=\'<div style=&quot;width:2.5rem;height:2.5rem;border-radius:9999px;background:linear-gradient(135deg,#1e3a8a,#10b981);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.875rem;color:#fff;&quot;>' + coinName.charAt(0) + '</div>\'" />' +
                 '</div>' +
                 '<div class="min-w-0">' +
                 '<h3 class="coin-name-text text-white font-bold leading-tight">' + coinName + '</h3>' +
@@ -458,7 +458,7 @@ lucide.createIcons();
                 
                 '<div style="position:relative;flex-shrink:0;">' +
                 '<div style="position:absolute;inset:-2px;border-radius:9999px;background:radial-gradient(' + accentColor + '30 0%,transparent 70%);pointer-events:none;"></div>' +
-                '<img id="' + barImgId + '" src="' + (coin.image || "") + '" alt="' + coinName + '" class="w-9 h-9 rounded-full" style="display:block;position:relative;" onerror="this.parentElement.innerHTML=\'<div style=&quot;width:2.25rem;height:2.25rem;border-radius:9999px;background:linear-gradient(135deg,#1e3a8a,#10b981);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;color:#fff;&quot;>' + coinName.charAt(0) + '</div>\'" />' +
+                '<img id="' + barImgId + '" src="' + (coin.image || "") + '" alt="' + coinName + '" class="w-9 h-9 rounded-full" loading="lazy" style="display:block;position:relative;" onerror="this.parentElement.innerHTML=\'<div style=&quot;width:2.25rem;height:2.25rem;border-radius:9999px;background:linear-gradient(135deg,#1e3a8a,#10b981);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;color:#fff;&quot;>' + coinName.charAt(0) + '</div>\'" />' +
                 '</div>' +
                 
                 '<div class="min-w-0 flex-1">' +

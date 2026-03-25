@@ -871,7 +871,7 @@ var API_BASE_URL = "https://skidibi-toilet.jovancion.workers.dev/api";
 
         var animImgWrap = wrapEl ? wrapEl.cloneNode(true) : document.createElement("div");
         if (!wrapEl) {
-            animImgWrap.innerHTML = '<img src="' + coin.image + '" class="w-8 h-8 rounded-full" onerror="this.style.display=\'none\'" />';
+            animImgWrap.innerHTML = '<img src="' + coin.image + '" class="w-8 h-8 rounded-full" loading="lazy" onerror="this.style.display=\'none\'" />';
         }
         animImgWrap.id = "";
         animImgWrap.style.position = "fixed";
@@ -1571,7 +1571,7 @@ var absPct = Math.abs(priceChange);
                 + '<div style="display:flex;align-items:center;gap:11px;margin-bottom:13px;">'
                 + '<div class="coin-logo-wrap" id="' + imgId + '-wrap" style="flex-shrink:0;width:42px;height:42px;border-radius:9999px;padding:2.5px;background:linear-gradient(135deg,' + accentColor + '60,' + accentColor + '20);box-shadow:0 0 14px ' + accentColor + '35;">'
                 + '<div style="width:100%;height:100%;background:#0f172a;border-radius:9999px;display:flex;align-items:center;justify-content:center;overflow:hidden;">'
-                + '<img id="' + imgId + '" src="' + (coin.image || "") + '" alt="' + coinName + '" style="width:100%;height:100%;border-radius:9999px;object-fit:cover;display:block;" />'
+                + '<img id="' + imgId + '" src="' + (coin.image || "") + '" alt="' + coinName + '" loading="lazy" style="width:100%;height:100%;border-radius:9999px;object-fit:cover;display:block;" />'
                 + '</div></div>'
                 + '<div style="flex:1;min-width:0;">'
                 + '<h3 class="coin-name-text" style="font-size:15px;font-weight:800;color:#f1f5f9;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + coinName + '</h3>'
@@ -2060,7 +2060,7 @@ var touchStartX = 0;
         a.style.minHeight = "440px";
         a.innerHTML = `
             <div class="absolute inset-0">
-                <img src="${coverUrl}" alt="Featured News" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80'" />
+                <img src="${coverUrl}" alt="Featured News" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80'" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/10"></div>
                 <div class="absolute inset-0 transition-opacity duration-500" style="background:linear-gradient(135deg,${accentGlow} 0%,transparent 55%);"></div>
             </div>
@@ -2106,7 +2106,7 @@ var touchStartX = 0;
         a.style.background = "rgba(255,255,255,0.035)";
         a.innerHTML = `
             <div class="relative w-28 sm:w-32 shrink-0 overflow-hidden" style="min-height:130px;">
-                <img src="${coverUrl}" alt="News" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
+                <img src="${coverUrl}" alt="News" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
                 <div class="absolute inset-0 bg-gradient-to-r from-transparent to-black/30"></div>
                 <div class="absolute bottom-0 left-0 w-1 h-full" style="background:${c.bg};opacity:0.8;"></div>
             </div>
@@ -2146,7 +2146,7 @@ var touchStartX = 0;
         a.style.cssText = "width:250px;background:rgba(255,255,255,0.04);";
         a.innerHTML = `
             <div class="relative h-32 overflow-hidden shrink-0">
-                <img src="${coverUrl}" alt="News" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
+                <img src="${coverUrl}" alt="News" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent"></div>
                 <div class="absolute top-0 left-0 w-full h-0.5" style="background:${c.bg};"></div>
                 ${catBadge(cat, "absolute bottom-2 left-2 !text-[9px] !px-1.5 !py-0")}

@@ -55,6 +55,23 @@ window.addEventListener("scroll", function () {
     menu.classList.remove("visible");
   });
 
+var _arrowHeld = {};
+var _arrowRaf = null;
+var _arrowSpeed = 8;
+
+function _arrowScrollTick() {
+    var dy = 0;
+    if (_arrowHeld["ArrowDown"]) dy += _arrowSpeed;
+    if (_arrowHeld["ArrowUp"])   dy -= _arrowSpeed;
+    if (dy !== 0) {
+      var el = document.scrollingElement || document.documentElement;
+      el.scrollTop += dy;
+      _arrowRaf = requestAnimationFrame(_arrowScrollTick);
+    } else {
+      _arrowRaf = null;
+    }
+  }
+
 document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") menu.classList.remove("visible");
 
@@ -62,8 +79,16 @@ document.addEventListener("keydown", function (e) {
       var tag = document.activeElement && document.activeElement.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
       e.preventDefault();
-      var amount = e.key === "ArrowDown" ? 120 : -120;
-      window.scrollBy({ top: amount, behavior: "smooth" });
+      _arrowHeld[e.key] = true;
+      if (!_arrowRaf) {
+        _arrowRaf = requestAnimationFrame(_arrowScrollTick);
+      }
+    }
+  });
+
+document.addEventListener("keyup", function (e) {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      _arrowHeld[e.key] = false;
     }
   });
 

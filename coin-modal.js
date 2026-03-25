@@ -69,7 +69,7 @@
 
         var animImgWrap = wrapEl ? wrapEl.cloneNode(true) : document.createElement("div");
         if (!wrapEl) {
-            animImgWrap.innerHTML = '<img src="' + coin.image + '" class="w-8 h-8 rounded-full" onerror="this.style.display=\'none\'" />';
+            animImgWrap.innerHTML = '<img src="' + coin.image + '" class="w-8 h-8 rounded-full" loading="lazy" onerror="this.style.display=\'none\'" />';
         }
         animImgWrap.id = "";
         animImgWrap.style.position = "fixed";

@@ -2,8 +2,8 @@
     "use strict";
 
     var TRANSITION_KEY = "page-transitioning";
-    var FADE_DURATION_MS = 500;
-    var HOLD_DURATION_MS = 2500;
+    var FADE_DURATION_MS = 400;
+    var HOLD_DURATION_MS = 1800;
 
     function createLoader() {
         var loader = document.getElementById("global-loader");
@@ -27,40 +27,30 @@
         return loader;
     }
 
-    function isReload() {
-        try {
-            var entries = performance.getEntriesByType("navigation");
-            if (entries.length > 0) return entries[0].type === "reload";
-        } catch (e) {}
-        return false;
-    }
-
     function animateEnter() {
         var isTransitioning = sessionStorage.getItem(TRANSITION_KEY);
-
-if (!isTransitioning && isReload()) {
-            isTransitioning = true;
-        }
 
         if (isTransitioning) {
             sessionStorage.removeItem(TRANSITION_KEY);
 
+            // Hide body content, show loader on top of the same background
             document.body.style.opacity = "0";
             document.body.style.transition = "none";
+            document.documentElement.style.opacity = "";
 
             var loader = createLoader();
             loader.style.opacity = "1";
             loader.style.transition = "none";
 
-            document.documentElement.style.opacity = "";
-
             setTimeout(function () {
+                // Fade out loader
                 loader.style.transition = "opacity " + FADE_DURATION_MS + "ms ease";
                 loader.style.opacity = "0";
 
                 setTimeout(function () {
                     if (loader.parentNode) loader.parentNode.removeChild(loader);
 
+                    // Fade in body content
                     document.body.style.transition = "opacity " + FADE_DURATION_MS + "ms ease";
                     document.body.style.opacity = "1";
 
@@ -73,13 +63,15 @@ if (!isTransitioning && isReload()) {
         } else {
             document.documentElement.style.opacity = "";
             document.body.style.opacity = "0";
-            document.body.style.transition = "opacity " + FADE_DURATION_MS + "ms ease";
+            document.body.style.transition = "none";
+            void document.body.offsetWidth;
 
+            document.body.style.transition = "opacity " + FADE_DURATION_MS + "ms ease";
             requestAnimationFrame(function () {
                 document.body.style.opacity = "1";
             });
 
-            window.setTimeout(function () {
+            setTimeout(function () {
                 document.body.style.transition = "";
             }, FADE_DURATION_MS);
         }
@@ -115,7 +107,7 @@ if (!isTransitioning && isReload()) {
             document.body.style.opacity = "1";
             document.body.style.transition = "";
             var loader = document.getElementById("global-loader");
-            if (loader) loader.parentNode.removeChild(loader);
+            if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
         } else {
             animateEnter();
         }
@@ -139,12 +131,9 @@ if (!isTransitioning && isReload()) {
 
 window._csReloading = false;
 
-    // Intercept browser reload button: instantly hide page + set flag so
-    // the loader animation plays on re-entry.
     window.addEventListener("beforeunload", function () {
         if (!window._csReloading) {
             sessionStorage.setItem(TRANSITION_KEY, "1");
-            document.documentElement.style.opacity = "0";
         }
     });
 

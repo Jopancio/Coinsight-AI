@@ -93,7 +93,7 @@
         if (isScrolled) return;
         isScrolled = true;
 
-        var isMob = window.innerWidth < 768;
+        var isMob = window.innerWidth < 1024;
         if (isMob) return; 
 
         if (navTween) navTween.kill();
@@ -112,7 +112,7 @@
         if (!isScrolled) return;
         isScrolled = false;
 
-        var isMob = window.innerWidth < 768;
+        var isMob = window.innerWidth < 1024;
         if (isMob) return; 
 
         if (navTween) navTween.kill();
@@ -142,7 +142,7 @@
         }
     });
 
-    if (window.scrollY > 50 && window.innerWidth >= 768) {
+    if (window.scrollY > 50 && window.innerWidth >= 1024) {
         gsap.set(nav, { width: "56rem", maxWidth: "90%", top: "1rem", borderRadius: "9999px", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)" });
         gsap.set(navContainer, { padding: "0.75rem 1.5rem" });
         gsap.set(logoIcon, { width: "2rem", height: "2rem", fontSize: "1.25rem" });

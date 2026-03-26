@@ -106,12 +106,65 @@
     });
 
     function logout() {
-      if (confirm('Apakah Anda yakin ingin keluar?')) {
-        localStorage.removeItem('currentUser');
-        window.location.reload();
-      }
+      const modal = document.getElementById('logout-modal');
+      const box   = document.getElementById('logout-box');
+      const backdrop = document.getElementById('logout-backdrop');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      // Force reflow before animating
+      void modal.offsetHeight;
+      backdrop.style.opacity = '1';
+      box.style.opacity = '1';
+      box.style.transform = 'scale(1) translateY(0)';
+    }
+    function confirmLogout() {
+      localStorage.removeItem('currentUser');
+      window.location.reload();
+    }
+    function cancelLogout() {
+      const modal = document.getElementById('logout-modal');
+      const box   = document.getElementById('logout-box');
+      const backdrop = document.getElementById('logout-backdrop');
+      backdrop.style.opacity = '0';
+      box.style.opacity = '0';
+      box.style.transform = 'scale(0.92) translateY(16px)';
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }, 260);
     }
   </script>
+
+  <!-- Logout Confirmation Modal -->
+  <style>
+    #logout-backdrop { transition: opacity 0.25s ease; }
+    #logout-box       { transition: opacity 0.25s ease, transform 0.28s cubic-bezier(.34,1.56,.64,1); }
+  </style>
+  <div id="logout-modal" class="hidden fixed inset-0 z-[999] items-center justify-center">
+    <!-- Backdrop -->
+    <div id="logout-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm" style="opacity:0;" onclick="cancelLogout()"></div>
+    <!-- Dialog -->
+    <div id="logout-box" class="relative glass-card border border-white/10 rounded-3xl p-8 w-full max-w-sm mx-4 shadow-2xl shadow-black/50" style="opacity:0;transform:scale(0.92) translateY(16px);">
+      <!-- Glow accent -->
+      <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-20 bg-red-500/20 rounded-full blur-3xl pointer-events-none"></div>
+      <!-- Icon -->
+      <div class="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-5">
+        <i class="fa-solid fa-arrow-right-from-bracket text-red-400 text-xl"></i>
+      </div>
+      <h3 class="text-xl font-bold text-white text-center mb-2">Keluar dari Akun?</h3>
+      <p class="text-gray-400 text-sm text-center mb-7 leading-relaxed">Apakah Anda yakin ingin keluar? Anda perlu login kembali untuk mengakses fitur premium.</p>
+      <div class="flex gap-3">
+        <button onclick="cancelLogout()"
+          class="flex-1 py-3 rounded-xl glass-card border border-white/10 text-gray-300 font-semibold text-sm hover:bg-white/10 hover:text-white transition-all duration-200">
+          Batal
+        </button>
+        <button onclick="confirmLogout()"
+          class="flex-1 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold text-sm transition-all duration-200 shadow-lg shadow-red-500/30 hover:shadow-red-500/50 hover:-translate-y-0.5 active:translate-y-0">
+          <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Keluar
+        </button>
+      </div>
+    </div>
+  </div>
 
   <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 px-6 overflow-hidden">
     <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-tech-blue-glow rounded-full blur-[100px] -z-10"></div>
@@ -126,43 +179,69 @@
         </div>
         <h1 class="text-5xl lg:text-7xl font-extrabold leading-tight">
           Investasi Kripto Pakai
-          <span id="hero-cycling-word" class="text-emerald-400 font-bold"></span>,<br />Bukan
+          <span id="hero-slot-wrapper" class="inline-block overflow-hidden relative" style="height:1.2em;line-height:1.2em;vertical-align:bottom;top:0.125em;">
+            <span id="hero-slot-strip" class="text-emerald-400 font-bold inline-flex flex-col" style="transition:transform 0.6s cubic-bezier(.23,1.02,.32,1);">
+              <span class="hero-slot-word" style="display:block;height:1.2em;line-height:1.2em;">Logika</span>
+              <span class="hero-slot-word" style="display:block;height:1.2em;line-height:1.2em;">Strategi</span>
+              <span class="hero-slot-word" style="display:block;height:1.2em;line-height:1.2em;">Mindset</span>
+            </span>
+          </span>,<br />Bukan
           Emosi.
+          <style>
+            @keyframes slotSpin {
+              0%   { transform: translateY(0); }
+              5%   { transform: translateY(5%); }
+              100% { transform: translateY(-100%); }
+            }
+            #hero-slot-strip.spinning {
+              animation: slotSpin 0.45s cubic-bezier(.45,.02,.09,1) forwards;
+            }
+          </style>
           <script>
           (function(){
-            var words=["Strategi","Mindset","Logika"];
-            var container=document.getElementById("hero-cycling-word");
-            var wordIdx=0;
-            function animateWord(){
-              var word=words[wordIdx];
-              container.innerHTML="";
-              var letters=word.split("");
-              letters.forEach(function(ch,i){
-                var span=document.createElement("span");
-                span.textContent=ch;
-                span.className="hero-letter";
-                span.style.animationDelay=(i*0.07)+"s";
-                container.appendChild(span);
-              });
-              var totalIn=letters.length*0.07+0.5;
-              setTimeout(function(){
-                var spans=container.querySelectorAll(".hero-letter");
-                var total=spans.length;
-                spans.forEach(function(s,i){
-                  s.style.animation='none';
-                  void s.offsetHeight;
-                  s.classList.add("hero-letter-out");
-                  s.style.animation='';
-                  s.style.animationDelay=((total-1-i)*0.07)+"s";
-                });
-                var totalOut=total*0.07+0.5;
-                setTimeout(function(){
-                  wordIdx=(wordIdx+1)%words.length;
-                  animateWord();
-                },totalOut*1000);
-              },totalIn*1000+1400);
+            var words = ["Logika","Strategi","Mindset"];
+            var strip = document.getElementById("hero-slot-strip");
+            var wrapper = document.getElementById("hero-slot-wrapper");
+            var idx = 0;
+
+            function getWordHeight() {
+              return strip.querySelector('.hero-slot-word').offsetHeight;
             }
-            animateWord();
+
+            function snapTo(i) {
+              strip.style.transition = 'none';
+              strip.style.transform = 'translateY(-' + (i * getWordHeight()) + 'px)';
+            }
+
+            function rollNext() {
+              var nextIdx = (idx + 1) % words.length;
+
+              /* Build strip: current, next, one-after for smooth loop */
+              strip.innerHTML = '';
+              var order = [idx, nextIdx, (nextIdx + 1) % words.length];
+              for (var i = 0; i < order.length; i++) {
+                var span = document.createElement('span');
+                span.className = 'hero-slot-word';
+                span.style.cssText = 'display:block;height:1.2em;line-height:1.2em;';
+                span.textContent = words[order[i]];
+                strip.appendChild(span);
+              }
+
+              /* Snap to top (current word), no transition */
+              strip.style.transition = 'none';
+              strip.style.transform = 'translateY(0)';
+
+              /* Force reflow, then animate to next word */
+              void strip.offsetHeight;
+              strip.style.transition = 'transform 0.55s cubic-bezier(.23,1.02,.32,1)';
+              strip.style.transform = 'translateY(-' + getWordHeight() + 'px)';
+
+              idx = nextIdx;
+            }
+
+            /* Initial snap */
+            snapTo(0);
+            setInterval(rollNext, 2600);
           })();
           </script>
         </h1>
@@ -764,7 +843,7 @@
 <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Komentar Anda</label>
                 <textarea id="review-text" required rows="4"
-                  class="w-full bg-white/4 border border-white/10 rounded-2xl p-4 text-white focus:outline-none focus:border-tech-blue/60 focus:ring-1 focus:ring-tech-blue/20 transition-all resize-none placeholder-gray-600 text-sm leading-relaxed"
+                  class="w-full bg-slate-900/80 border border-white/10 rounded-2xl p-4 text-white focus:outline-none focus:border-tech-blue/60 focus:ring-1 focus:ring-tech-blue/20 transition-all resize-none placeholder-gray-600 text-sm leading-relaxed"
                   placeholder="Ceritakan pengalaman Anda menggunakan CoinSight AI..."></textarea>
               </div>
 

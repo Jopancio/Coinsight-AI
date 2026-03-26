@@ -418,7 +418,7 @@ lucide.createIcons();
         animateIn(newEls, "card");
     }
 
-    function renderBars(coins, appendFrom, appendFrom) {
+    function renderBars(coins, appendFrom) {
         if (!container) return;
         appendFrom = appendFrom || 0;
         container.className = "flex flex-col gap-2";

@@ -12,12 +12,12 @@
     }
 
     function formatCompact(val) {
-        if (!val) return '\\';
-        if (val >= 1e12) return '\\$' + (val / 1e12).toFixed(2) + 'T';
-        if (val >= 1e9) return '\\$' + (val / 1e9).toFixed(2) + 'B';
-        if (val >= 1e6) return '\\$' + (val / 1e6).toFixed(2) + 'M';
-        if (val >= 1e3) return '\\$' + (val / 1e3).toFixed(2) + 'K';
-        return '\\$' + val.toFixed(2);
+        if (!val) return '$0';
+        if (val >= 1e12) return '$' + (val / 1e12).toFixed(2) + 'T';
+        if (val >= 1e9) return '$' + (val / 1e9).toFixed(2) + 'B';
+        if (val >= 1e6) return '$' + (val / 1e6).toFixed(2) + 'M';
+        if (val >= 1e3) return '$' + (val / 1e3).toFixed(2) + 'K';
+        return '$' + val.toFixed(2);
     }    window.openCoinDetail = function(rowElement, coin) {
         if (!window.location.search.includes('coin=' + coin.id)) {
             var url = new URL(window.location);
@@ -499,7 +499,7 @@ var coinNewsContainer = document.getElementById("coin-news-container");
                             console.log("Error sharing:", err);
                         });
                     } else {
-                        var copyText = shareData.title + "\\n" + shareData.text + "\\n" + shareData.url;
+                        var copyText = shareData.title + "\n" + shareData.text + "\n" + shareData.url;
                         navigator.clipboard.writeText(copyText).then(function () {
                             icon.className = "fa-solid fa-check text-emerald";
                             setTimeout(function () {

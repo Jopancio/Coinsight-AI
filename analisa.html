@@ -1283,7 +1283,9 @@
             var bg = document.getElementById('assetOverlayBg');
 
             overlay.style.display = 'block';
+            document.documentElement.style.overflow = 'hidden';
             document.body.style.overflow = 'hidden';
+            document.body.style.touchAction = 'none';
 
             gsap.set(bg, { opacity: 0 });
             gsap.set(panel, { opacity: 0, y: 52, scale: 0.94 });
@@ -1303,7 +1305,9 @@
                 opacity: 0, y: 36, scale: 0.95, duration: 0.28, ease: 'power2.in',
                 onComplete: function() {
                     overlay.style.display = 'none';
+                    document.documentElement.style.overflow = '';
                     document.body.style.overflow = '';
+                    document.body.style.touchAction = '';
                 }
             });
         }

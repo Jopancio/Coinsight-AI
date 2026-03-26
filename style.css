@@ -1529,7 +1529,7 @@ body {
 }
 
 .news-hero {
-  padding-top: 6rem;
+  padding-top: 1rem;
   min-height: 70vh;
   display: flex;
   flex-direction: column;

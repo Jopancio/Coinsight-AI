@@ -1,4 +1,4 @@
-# JUDUL KARYA
+# CoinSight AI
 ## Institusi
 SMA Talenta School
 ## Anggota Tim

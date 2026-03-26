@@ -503,6 +503,26 @@ body {
   transition: box-shadow 0.45s ease, border-color 0.45s ease, background 0.45s ease;
 }
 
+/* Dark overlay untuk kartu samping — menggantikan CSS opacity agar isi kartu tetap jelas */
+.market-coin-card.side-slide-1::before,
+.market-coin-card.side-slide-2::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 1.5rem;
+  transition: background 0.45s ease;
+  z-index: 50;
+}
+
+.market-coin-card.side-slide-1::before {
+  background: rgba(2, 8, 20, 0.48);
+}
+
+.market-coin-card.side-slide-2::before {
+  background: rgba(2, 8, 20, 0.70);
+}
+
 .market-coin-card.active-slide {
   background: rgb(17, 28, 50) !important;
   backdrop-filter: blur(20px) !important;
@@ -1548,6 +1568,22 @@ body {
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
   border: 1px solid;
+}
+
+#carousel-btc,
+#carousel-eth,
+#carousel-sol {
+  will-change: scroll-position;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+#carousel-btc > a,
+#carousel-eth > a,
+#carousel-sol > a {
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .news-carousel-btn {

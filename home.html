@@ -5,6 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CoinSight AI | Smart Crypto Analysis</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="shortcut icon" href="assets/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/favicon.png" />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
@@ -179,8 +182,8 @@
         </div>
         <h1 class="text-5xl lg:text-7xl font-extrabold leading-tight">
           Investasi Kripto Pakai
-          <span id="hero-slot-wrapper" class="inline-block overflow-hidden relative" style="height:1.2em;line-height:1.2em;vertical-align:bottom;top:0.125em;">
-            <span id="hero-slot-strip" class="text-emerald-400 font-bold inline-flex flex-col" style="transition:transform 0.6s cubic-bezier(.23,1.02,.32,1);">
+          <span id="hero-slot-wrapper" class="inline-block relative" style="height:1.2em;line-height:1.2em;vertical-align:bottom;top:0.12em;overflow:hidden;clip-path:inset(0 0 0 0);will-change:transform;">
+            <span id="hero-slot-strip" class="text-emerald-400 font-bold inline-flex flex-col" style="transition:transform 0.6s cubic-bezier(.23,1.02,.32,1);will-change:transform;">
               <span class="hero-slot-word" style="display:block;height:1.2em;line-height:1.2em;">Logika</span>
               <span class="hero-slot-word" style="display:block;height:1.2em;line-height:1.2em;">Strategi</span>
               <span class="hero-slot-word" style="display:block;height:1.2em;line-height:1.2em;">Mindset</span>
@@ -194,7 +197,7 @@
               100% { transform: translateY(-100%); }
             }
             #hero-slot-strip.spinning {
-              animation: slotSpin 0.45s cubic-bezier(.45,.02,.09,1) forwards;
+              animation: slotSpin 0.45s cubic-bezier(.45,.01,.09,1) forwards;
             }
           </style>
           <script>
@@ -222,7 +225,7 @@
               for (var i = 0; i < order.length; i++) {
                 var span = document.createElement('span');
                 span.className = 'hero-slot-word';
-                span.style.cssText = 'display:block;height:1.2em;line-height:1.2em;';
+                span.style.cssText = 'display:block;height:1.5em;line-height:1.2em;';
                 span.textContent = words[order[i]];
                 strip.appendChild(span);
               }

@@ -57,7 +57,7 @@ window.addEventListener("scroll", function () {
 
 var _arrowHeld = {};
 var _arrowRaf = null;
-var _arrowSpeed = 8;
+var _arrowSpeed = 108;
 
 function _arrowScrollTick() {
     var dy = 0;

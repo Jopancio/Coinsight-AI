@@ -184,12 +184,19 @@ lucide.createIcons();
         var isPaused = false;
         var isButtonAnimating = false;
         var autoScrollRAF = null;
+        var scrollAccumulator = 0;
 
         function autoScrollStep() {
             if (!isPaused && !isButtonAnimating && carousel.scrollWidth > carousel.clientWidth) {
-                carousel.scrollLeft += scrollSpeed;
+                scrollAccumulator += scrollSpeed;
+                var intScroll = Math.floor(scrollAccumulator);
+                if (intScroll >= 1) {
+                    carousel.scrollLeft += intScroll;
+                    scrollAccumulator -= intScroll;
+                }
                 if (carousel.scrollLeft >= (carousel.scrollWidth - carousel.clientWidth - 1)) {
                     carousel.scrollLeft = 0;
+                    scrollAccumulator = 0;
                 }
             }
             autoScrollRAF = requestAnimationFrame(autoScrollStep);
@@ -217,10 +224,10 @@ lucide.createIcons();
 
                 gsap.to(carousel, {
                     scrollLeft: targetScroll,
-                    duration: 0.6,
+                    duration: 0.35,
                     ease: "power2.inOut",
                     onComplete: function () {
-                        setTimeout(function () { isButtonAnimating = false; }, 800);
+                        setTimeout(function () { isButtonAnimating = false; }, 200);
                     }
                 });
             });
@@ -238,10 +245,10 @@ lucide.createIcons();
 
                 gsap.to(carousel, {
                     scrollLeft: targetScroll,
-                    duration: 0.6,
+                    duration: 0.35,
                     ease: "power2.inOut",
                     onComplete: function () {
-                        setTimeout(function () { isButtonAnimating = false; }, 800);
+                        setTimeout(function () { isButtonAnimating = false; }, 200);
                     }
                 });
             });

@@ -1694,6 +1694,7 @@ var absPct = Math.abs(priceChange);
                 card.style.maxWidth = cardW + "px";
                 if (i === currentSlide) {
                     card.classList.add("active-slide");
+                    card.classList.remove("side-slide-1", "side-slide-2");
                     gsap.set(card, { left: centerX, scale: 1, opacity: 1, zIndex: 10, pointerEvents: "auto" });
                 } else {
                     card.classList.remove("active-slide");
@@ -1706,12 +1707,15 @@ var absPct = Math.abs(priceChange);
                     if (absDiff <= maxVisible) {
                         var offsetX = centerX + diff * peekOffset;
                         var sc = isMobile ? (1 - absDiff * 0.12) : (1 - absDiff * 0.08);
-                        var op = isMobile ? (1 - absDiff * 0.6) : (1 - absDiff * 0.35);
                         var z = 10 - absDiff;
-                        gsap.set(card, { left: offsetX, scale: sc, opacity: op, zIndex: z, pointerEvents: "auto" });
+                        card.classList.remove("side-slide-1", "side-slide-2");
+                        if (absDiff === 1) card.classList.add("side-slide-1");
+                        else if (absDiff === 2) card.classList.add("side-slide-2");
+                        gsap.set(card, { left: offsetX, scale: sc, opacity: 1, zIndex: z, pointerEvents: "auto" });
                     card.style.pointerEvents = "auto";
-                    card.style.cursor = absDiff === 0 ? "pointer" : "pointer";
+                    card.style.cursor = "pointer";
                     } else {
+                        card.classList.remove("side-slide-1", "side-slide-2");
                         gsap.set(card, { left: centerX, scale: 0.8, opacity: 0, zIndex: 1, pointerEvents: "none" });
                     }
                 }
@@ -1751,8 +1755,7 @@ var absPct = Math.abs(priceChange);
                 var absDiff = Math.abs(diff);
                 var maxVisible = isMobile ? 1 : 2;
                 if (absDiff <= maxVisible) {
-                    var finalOp = absDiff === 0 ? 1 : (isMobile ? (1 - absDiff * 0.6) : (1 - absDiff * 0.35));
-                    staggerQueue.push({ card: card, absDiff: absDiff, finalOp: finalOp });
+                    staggerQueue.push({ card: card, absDiff: absDiff });
                 }
             });
             staggerQueue.sort(function (a, b) { return a.absDiff - b.absDiff; });
@@ -1760,8 +1763,11 @@ var absPct = Math.abs(priceChange);
                 gsap.set(item.card, { opacity: 0, y: 80 });
             });
             staggerQueue.forEach(function (item, idx) {
+                item.card.classList.remove("side-slide-1", "side-slide-2");
+                if (item.absDiff === 1) item.card.classList.add("side-slide-1");
+                else if (item.absDiff === 2) item.card.classList.add("side-slide-2");
                 gsap.to(item.card, {
-                    opacity: item.finalOp,
+                    opacity: 1,
                     y: 0,
                     duration: 0.55,
                     delay: idx * 0.1,
@@ -1832,19 +1838,22 @@ var absPct = Math.abs(priceChange);
                 if (absDiff <= maxVisible) {
                     var offsetX = centerX + diff * peekOffset;
                     var sc = absDiff === 0 ? 1 : (isMobile ? (1 - absDiff * 0.12) : (1 - absDiff * 0.08));
-                    var op = absDiff === 0 ? 1 : (isMobile ? (1 - absDiff * 0.6) : (1 - absDiff * 0.35));
                     var z = 10 - absDiff;
 
                     if (absDiff === 0) {
                         card.classList.add("active-slide");
+                        card.classList.remove("side-slide-1", "side-slide-2");
                     } else {
                         card.classList.remove("active-slide");
+                        card.classList.remove("side-slide-1", "side-slide-2");
+                        if (absDiff === 1) card.classList.add("side-slide-1");
+                        else if (absDiff === 2) card.classList.add("side-slide-2");
                     }
 
                     gsap.to(card, {
                         left: offsetX,
                         scale: sc,
-                        opacity: op,
+                        opacity: 1,
                         zIndex: z,
                         y: 0,
                         duration: 0.5,
@@ -1853,7 +1862,7 @@ var absPct = Math.abs(priceChange);
                     card.style.pointerEvents = "auto";
                     card.style.cursor = "pointer";
                 } else {
-                    card.classList.remove("active-slide");
+                    card.classList.remove("active-slide", "side-slide-1", "side-slide-2");
                     gsap.to(card, {
                         left: centerX,
                         scale: 0.8,
@@ -2615,10 +2624,10 @@ function renderReviews(reviews) {
 
                 gsap.to(reviewsCarousel, {
                     scrollLeft: targetScroll,
-                    duration: 0.6,
+                    duration: 0.35,
                     ease: "power2.inOut",
                     onComplete: function () {
-                        setTimeout(function () { isButtonAnimating = false; }, 800);
+                        setTimeout(function () { isButtonAnimating = false; }, 200);
                     }
                 });
             });
@@ -2636,7 +2645,7 @@ function renderReviews(reviews) {
 
                 gsap.to(reviewsCarousel, {
                     scrollLeft: targetScroll,
-                    duration: 0.6,
+                    duration: 0.35,
                     ease: "power2.inOut",
                     onComplete: function () {
                         setTimeout(function () { isButtonAnimating = false; }, 800);

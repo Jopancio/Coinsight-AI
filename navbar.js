@@ -180,15 +180,3 @@
         });
     });
 })();
-
-function navAuthGuard(e) {
-    if (!localStorage.getItem('currentUser')) {
-        e.preventDefault();
-        if (typeof showToast === 'function') {
-            showToast('Silakan login terlebih dahulu untuk mengakses fitur Analysis.', 'warning');
-        }
-        setTimeout(function () {
-            window.location.href = 'auth.html';
-        }, typeof showToast === 'function' ? 1500 : 0);
-    }
-}

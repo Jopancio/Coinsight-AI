@@ -23,7 +23,6 @@
         }
     </style>
     <script>if(sessionStorage.getItem('page-transitioning')){document.documentElement.style.opacity='0';}</script>
-    <script>if(!localStorage.getItem('currentUser')){window.location.replace('auth.html');}</script>
 </head>
 
 <body class="antialiased overflow-x-hidden pt-24">
@@ -70,7 +69,7 @@
             </div>
             <div id="nav-actions" class="flex items-center gap-4">
                 <button id="nav-btn" style="padding:0.75rem 2rem;font-size:1rem;"
-                    onclick="window.location.href='auth.html'"
+                    onclick="window.location.href='analisa.html'"
                     class="bg-amber hover:bg-yellow-500 text-slate-900 rounded-full font-bold shadow-[0_0_15px_rgba(245,158,11,0.4)]">
                     Coba App <i class="fa-solid fa-arrow-right ml-1"></i>
                 </button>
@@ -90,36 +89,15 @@
             <a href="news.html"><i class="fa-solid fa-newspaper"></i> Blog</a>
             <a href="about.html"><i class="fa-solid fa-users"></i> About Us</a>
             <div class="mobile-nav-divider"></div>
-            <a href="auth.html" class="mobile-nav-cta"><i class="fa-solid fa-rocket"></i> Coba App Sekarang <i class="fa-solid fa-arrow-right ml-auto text-xs"></i></a>
+            <a href="analisa.html" class="mobile-nav-cta"><i class="fa-solid fa-rocket"></i> Coba App Sekarang <i class="fa-solid fa-arrow-right ml-auto text-xs"></i></a>
         </div>
     </div>
     <div id="mobile-menu-overlay"></div>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-            const navActions = document.getElementById("nav-actions");
-            if (currentUser && navActions) {
-                const navBtn = document.getElementById('nav-btn');
-                if (navBtn) {
-                    navBtn.outerHTML = `
-                        <div class="flex items-center gap-3">
-                            <span class="text-sm font-semibold text-gray-300 hidden md:block">Halo, ${currentUser.name.split(' ')[0]}</span>
-                            <div class="w-10 h-10 rounded-full bg-tech-blue flex items-center justify-center text-white font-bold border-2 border-white/10 shadow-sm cursor-pointer hover:bg-blue-600 transition" onclick="logout()" title="Logout">
-                                ${currentUser.name.charAt(0).toUpperCase()}
-                            </div>
-                        </div>
-                    `;
-                }
-            }
             lucide.createIcons();
         });
-        function logout() {
-            if (confirm('Apakah Anda yakin ingin keluar?')) {
-                localStorage.removeItem('currentUser');
-                window.location.reload();
-            }
-        }
     </script>
 
     <main class="pb-24">

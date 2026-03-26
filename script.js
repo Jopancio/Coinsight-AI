@@ -2429,20 +2429,12 @@ const initialReviews = [
 
 function initReviews() {
     const reviewsGrid = document.getElementById("reviews-carousel");
-    const loginPrompt = document.getElementById("login-prompt-review");
     const addReviewContainer = document.getElementById("add-review-container");
     const totalReviewsEl = document.getElementById("total-reviews");
 
     if (!reviewsGrid) return;
 
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-    if (currentUser) {
-        loginPrompt.classList.add("hidden");
-        addReviewContainer.classList.remove("hidden");
-    } else {
-        loginPrompt.classList.remove("hidden");
-        addReviewContainer.classList.add("hidden");
-    }
+    if (addReviewContainer) addReviewContainer.classList.remove("hidden");
 
     let savedReviews = JSON.parse(localStorage.getItem("appReviews"));
     if (!savedReviews || savedReviews.length === 0) {
@@ -2711,15 +2703,10 @@ function setupReviewForm(reviews) {
         e.preventDefault();
         const rating = ratingInput.value;
         const comment = commentInput.value.trim();
-        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const currentUser = JSON.parse(localStorage.getItem("currentUser")) || { name: 'Pengguna CoinSight' };
 
         if (!rating) {
             showToast("Silakan pilih rating terlebih dahulu.", "warning");
-            return;
-        }
-
-        if (!currentUser) {
-            showToast("Sesi login tidak ditemukan. Silakan login ulang.", "error");
             return;
         }
 

@@ -50,7 +50,7 @@
         <a href="home.html" class="nav-hover-link nav-active"
           style="display:inline-flex;align-items:center;gap:0.4rem;"><i data-lucide="home"
             style="width:1rem;height:1rem;"></i>Home</a>
-        <a href="analisa.html" onclick="navAuthGuard(event)" class="nav-hover-link" style="display:inline-flex;align-items:center;gap:0.4rem;"><i
+        <a href="analisa.html" class="nav-hover-link" style="display:inline-flex;align-items:center;gap:0.4rem;"><i
             data-lucide="bar-chart-2" style="width:1rem;height:1rem;"></i>Analysis</a>
         <a href="market.html" class="nav-hover-link" style="display:inline-flex;align-items:center;gap:0.4rem;"><i
             data-lucide="trending-up" style="width:1rem;height:1rem;"></i>Market</a>
@@ -60,7 +60,7 @@
             data-lucide="users" style="width:1rem;height:1rem;"></i>About Us</a>
       </div>
       <div id="nav-actions" class="flex items-center gap-4">
-        <button id="nav-btn" style="padding:0.75rem 2rem;font-size:1rem;" onclick="window.location.href='auth.html'"
+        <button id="nav-btn" style="padding:0.75rem 2rem;font-size:1rem;" onclick="window.location.href='analisa.html'"
           class="bg-amber hover:bg-yellow-500 text-slate-900 rounded-full font-bold shadow-[0_0_15px_rgba(245,158,11,0.4)]">
           Coba App <i class="fa-solid fa-arrow-right ml-1"></i>
         </button>
@@ -77,97 +77,16 @@
   <div id="mobile-menu-dropdown">
     <div class="mobile-nav-inner">
       <a href="home.html" class="nav-active"><i class="fa-solid fa-house"></i> Home</a>
-      <a href="analisa.html" onclick="navAuthGuard(event)"><i class="fa-solid fa-bar-chart"></i> Analysis</a>
+      <a href="analisa.html"><i class="fa-solid fa-bar-chart"></i> Analysis</a>
       <a href="market.html"><i class="fa-solid fa-chart-line"></i> Market</a>
       <a href="news.html"><i class="fa-solid fa-newspaper"></i> Blog</a>
       <a href="about.html"><i class="fa-solid fa-users"></i> About Us</a>
       <div class="mobile-nav-divider"></div>
-      <a href="auth.html" class="mobile-nav-cta"><i class="fa-solid fa-rocket"></i> Coba App Sekarang <i
+      <a href="analisa.html" class="mobile-nav-cta"><i class="fa-solid fa-rocket"></i> Coba App Sekarang <i
           class="fa-solid fa-arrow-right ml-auto text-xs"></i></a>
     </div>
   </div>
   <div id="mobile-menu-overlay"></div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-      const navActions = document.getElementById("nav-actions");
-
-      if (currentUser && navActions) {
-        const navBtn = document.getElementById('nav-btn');
-        if (navBtn) {
-          navBtn.outerHTML = `
-            <div class="flex items-center gap-3">
-              <span class="text-sm font-semibold text-gray-300 hidden md:block">Halo, ${currentUser.name.split(' ')[0]}</span>
-              <div class="w-10 h-10 rounded-full bg-tech-blue flex items-center justify-center text-white font-bold border-2 border-white/10 shadow-sm cursor-pointer hover:bg-blue-600 transition" onclick="logout()" title="Logout">
-                ${currentUser.name.charAt(0).toUpperCase()}
-              </div>
-            </div>
-          `;
-        }
-      }
-    });
-
-    function logout() {
-      const modal = document.getElementById('logout-modal');
-      const box   = document.getElementById('logout-box');
-      const backdrop = document.getElementById('logout-backdrop');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      // Force reflow before animating
-      void modal.offsetHeight;
-      backdrop.style.opacity = '1';
-      box.style.opacity = '1';
-      box.style.transform = 'scale(1) translateY(0)';
-    }
-    function confirmLogout() {
-      localStorage.removeItem('currentUser');
-      window.location.reload();
-    }
-    function cancelLogout() {
-      const modal = document.getElementById('logout-modal');
-      const box   = document.getElementById('logout-box');
-      const backdrop = document.getElementById('logout-backdrop');
-      backdrop.style.opacity = '0';
-      box.style.opacity = '0';
-      box.style.transform = 'scale(0.92) translateY(16px)';
-      setTimeout(() => {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-      }, 260);
-    }
-  </script>
-
-  <!-- Logout Confirmation Modal -->
-  <style>
-    #logout-backdrop { transition: opacity 0.25s ease; }
-    #logout-box       { transition: opacity 0.25s ease, transform 0.28s cubic-bezier(.34,1.56,.64,1); }
-  </style>
-  <div id="logout-modal" class="hidden fixed inset-0 z-[999] items-center justify-center">
-    <!-- Backdrop -->
-    <div id="logout-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm" style="opacity:0;" onclick="cancelLogout()"></div>
-    <!-- Dialog -->
-    <div id="logout-box" class="relative glass-card border border-white/10 rounded-3xl p-8 w-full max-w-sm mx-4 shadow-2xl shadow-black/50" style="opacity:0;transform:scale(0.92) translateY(16px);">
-      <!-- Glow accent -->
-      <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-40 h-20 bg-red-500/20 rounded-full blur-3xl pointer-events-none"></div>
-      <!-- Icon -->
-      <div class="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-5">
-        <i class="fa-solid fa-arrow-right-from-bracket text-red-400 text-xl"></i>
-      </div>
-      <h3 class="text-xl font-bold text-white text-center mb-2">Keluar dari Akun?</h3>
-      <p class="text-gray-400 text-sm text-center mb-7 leading-relaxed">Apakah Anda yakin ingin keluar? Anda perlu login kembali untuk mengakses fitur premium.</p>
-      <div class="flex gap-3">
-        <button onclick="cancelLogout()"
-          class="flex-1 py-3 rounded-xl glass-card border border-white/10 text-gray-300 font-semibold text-sm hover:bg-white/10 hover:text-white transition-all duration-200">
-          Batal
-        </button>
-        <button onclick="confirmLogout()"
-          class="flex-1 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold text-sm transition-all duration-200 shadow-lg shadow-red-500/30 hover:shadow-red-500/50 hover:-translate-y-0.5 active:translate-y-0">
-          <i class="fa-solid fa-arrow-right-from-bracket mr-1.5"></i> Keluar
-        </button>
-      </div>
-    </div>
-  </div>
 
   <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 px-6 overflow-hidden">
     <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-tech-blue-glow rounded-full blur-[100px] -z-10"></div>
@@ -254,7 +173,7 @@
           lampu lalu lintas.
         </p>
         <div class="flex flex-wrap gap-4">
-          <button onclick="checkAuthAndRedirect('analisa.html')"
+          <button onclick="window.location.href='analisa.html'"
             class="hero-hover-btn bg-tech-blue hover:bg-blue-800 text-white px-8 py-4 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(30,58,138,0.5)]">
             Analisa Data
           </button>
@@ -266,17 +185,7 @@
 
       </div>
 
-      <script>
-        function checkAuthAndRedirect(url) {
-          const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-          if (currentUser) {
-            window.location.href = url;
-          } else {
-            showToast('Silakan login terlebih dahulu untuk mengakses fitur ini.', 'warning');
-            window.location.href = 'auth.html';
-          }
-        }
-      </script>
+
 
       <div class="relative z-10 floating flex justify-center mt-10 lg:mt-0">
         <div
@@ -857,30 +766,6 @@
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      </div>
-
-<div id="login-prompt-review" class="mb-8 section-fade-up">
-        <div class="relative rounded-3xl overflow-hidden group cursor-pointer" onclick="window.location.href='auth.html'">
-          <div class="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
-          <div class="glass-card p-4 sm:p-5 rounded-2xl border border-dashed border-amber-500/20 group-hover:border-amber-500/40 transition-all duration-300 flex flex-col sm:flex-row items-center gap-4 justify-between">
-            <div class="flex items-center gap-4">
-              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <i class="fa-solid fa-comment-dots text-amber-400 text-xl drop-shadow-sm"></i>
-              </div>
-              <div>
-                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold text-amber-400 uppercase tracking-wider mb-2">
-                  <i class="fa-solid fa-lock text-[8px]"></i> Login Required
-                </div>
-                <h4 class="font-black text-white text-base mb-1">Punya Pengalaman? Bagikan!</h4>
-                <p class="text-gray-400 text-sm leading-relaxed">Login dan jadilah bagian dari komunitas trader yang lebih cerdas.</p>
-              </div>
-            </div>
-            <button onclick="window.location.href='auth.html'"
-              class="shrink-0 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-yellow-400 hover:to-amber-400 text-slate-900 px-5 py-2.5 rounded-xl font-black transition-all text-sm flex items-center gap-2 shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 hover:-translate-y-0.5 active:translate-y-0 whitespace-nowrap">
-              <i class="fa-solid fa-arrow-right-to-bracket"></i> Login & Tulis Review
-            </button>
           </div>
         </div>
       </div>

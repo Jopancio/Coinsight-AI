@@ -2,6 +2,7 @@
 
 const RATE_LIMIT = 25;
 const TIME_WINDOW = 60000;
+const localRateLimitStore = new Map();
 
 const CACHE_TTL = {
   "/api/coins": 60,
@@ -31,6 +32,38 @@ function jsonResponse(body, corsHeaders, status = 200) {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+}
+
+function runLocalRateLimit(ip, now = Date.now()) {
+  const key = ip || "unknown";
+  const existing = localRateLimitStore.get(key);
+
+  if (!existing || now >= existing.resetAt) {
+    const resetAt = now + TIME_WINDOW;
+    const nextEntry = { count: 1, resetAt };
+    localRateLimitStore.set(key, nextEntry);
+    return { allowed: true, limit: RATE_LIMIT, remaining: RATE_LIMIT - 1, resetAt, retryAfter: 0 };
+  }
+
+  if (existing.count >= RATE_LIMIT) {
+    return {
+      allowed: false,
+      limit: RATE_LIMIT,
+      remaining: 0,
+      resetAt: existing.resetAt,
+      retryAfter: Math.max(1, Math.ceil((existing.resetAt - now) / 1000)),
+    };
+  }
+
+  existing.count += 1;
+  localRateLimitStore.set(key, existing);
+  return {
+    allowed: true,
+    limit: RATE_LIMIT,
+    remaining: RATE_LIMIT - existing.count,
+    resetAt: existing.resetAt,
+    retryAfter: 0,
+  };
 }
 
 function calculateVolatility(prices) {
@@ -729,20 +762,51 @@ export default {
     }
 
     const ip = request.headers.get("cf-connecting-ip") || "unknown";
-    const now = Date.now();
+    let rateLimitMeta = null;
 
-if (env.RATE_LIMITER && ip !== "unknown") {
+    if (env.RATE_LIMITER && ip !== "unknown") {
       try {
         const { success } = await env.RATE_LIMITER.limit({ key: ip });
+        const resetAt = Date.now() + TIME_WINDOW;
+        rateLimitMeta = { limit: RATE_LIMIT, remaining: success ? RATE_LIMIT - 1 : 0, resetAt };
         if (!success) {
           return new Response(JSON.stringify({ error: "Too many requests. Please wait 60 seconds." }), {
             status: 429,
-            headers: { ...corsHeaders, "Content-Type": "application/json", "Retry-After": "60" },
+            headers: {
+              ...corsHeaders,
+              "Content-Type": "application/json",
+              "Retry-After": "60",
+              "X-RateLimit-Limit": String(rateLimitMeta.limit),
+              "X-RateLimit-Remaining": String(rateLimitMeta.remaining),
+              "X-RateLimit-Reset": String(Math.floor(rateLimitMeta.resetAt / 1000)),
+            },
           });
         }
       } catch (e) {
-        
+        rateLimitMeta = runLocalRateLimit(ip);
       }
+    } else {
+      rateLimitMeta = runLocalRateLimit(ip);
+    }
+
+    if (rateLimitMeta && !rateLimitMeta.allowed) {
+      return new Response(JSON.stringify({ error: `Too many requests. Please wait ${rateLimitMeta.retryAfter} seconds.` }), {
+        status: 429,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+          "Retry-After": String(rateLimitMeta.retryAfter),
+          "X-RateLimit-Limit": String(rateLimitMeta.limit),
+          "X-RateLimit-Remaining": String(rateLimitMeta.remaining),
+          "X-RateLimit-Reset": String(Math.floor(rateLimitMeta.resetAt / 1000)),
+        },
+      });
+    }
+
+    if (rateLimitMeta) {
+      corsHeaders["X-RateLimit-Limit"] = String(rateLimitMeta.limit);
+      corsHeaders["X-RateLimit-Remaining"] = String(rateLimitMeta.remaining);
+      corsHeaders["X-RateLimit-Reset"] = String(Math.floor(rateLimitMeta.resetAt / 1000));
     }
 
 if (path === "/api/ai-analyze") {

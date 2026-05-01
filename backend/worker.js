@@ -26,6 +26,63 @@ async function putCached(cacheKey, body, ttl) {
   await caches.default.put(cacheKey, res);
 }
 
+
+async function hashString(value) {
+  const data = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function isValidPublicIp(ip) {
+  if (!ip) return false;
+  const value = ip.trim();
+
+  if (value.includes(":")) {
+    const lower = value.toLowerCase();
+    if (lower === "::1") return false;
+    if (lower.startsWith("fc") || lower.startsWith("fd")) return false;
+    if (lower.startsWith("fe80")) return false;
+    return true;
+  }
+
+  const octets = value.split(".");
+  if (octets.length !== 4) return false;
+  const nums = octets.map((part) => Number(part));
+  if (nums.some((n, idx) => !Number.isInteger(n) || n < 0 || n > 255 || (String(n) !== octets[idx] && octets[idx] !== `0${n}`))) {
+    return false;
+  }
+
+  if (nums[0] === 10) return false;
+  if (nums[0] === 127) return false;
+  if (nums[0] === 0) return false;
+  if (nums[0] === 169 && nums[1] === 254) return false;
+  if (nums[0] === 172 && nums[1] >= 16 && nums[1] <= 31) return false;
+  if (nums[0] === 192 && nums[1] === 168) return false;
+  if (nums[0] >= 224) return false;
+
+  return true;
+}
+
+async function getClientKey(request) {
+  const cfIp = request.headers.get("cf-connecting-ip");
+  if (isValidPublicIp(cfIp)) return cfIp.trim();
+
+  const xff = request.headers.get("x-forwarded-for");
+  if (xff) {
+    const parts = xff.split(",").map((part) => part.trim());
+    const firstPublic = parts.find(isValidPublicIp);
+    if (firstPublic) return firstPublic;
+  }
+
+  const realIp = request.headers.get("x-real-ip");
+  if (isValidPublicIp(realIp)) return realIp.trim();
+
+  const ua = request.headers.get("user-agent") || "";
+  const origin = new URL(request.url).origin;
+  const hashed = await hashString(`${ua}|${origin}`);
+  return `ua-origin:${hashed}`;
+}
+
 function jsonResponse(body, corsHeaders, status = 200) {
   return new Response(body, {
     status,
@@ -728,12 +785,20 @@ export default {
       return jsonResponse(JSON.stringify({ error: "Method not allowed" }), corsHeaders, 405);
     }
 
-    const ip = request.headers.get("cf-connecting-ip") || "unknown";
-    const now = Date.now();
+    const clientKey = await getClientKey(request);
 
-if (env.RATE_LIMITER && ip !== "unknown") {
+    if (env.RATE_LIMITER) {
       try {
-        const { success } = await env.RATE_LIMITER.limit({ key: ip });
+        const ua = request.headers.get("user-agent") || "";
+        const isEmptyUserAgent = ua.trim().length === 0;
+        const attempts = isEmptyUserAgent ? 2 : 1;
+
+        let success = true;
+        for (let i = 0; i < attempts; i++) {
+          const result = await env.RATE_LIMITER.limit({ key: clientKey });
+          success = success && result.success;
+          if (!success) break;
+        }
         if (!success) {
           return new Response(JSON.stringify({ error: "Too many requests. Please wait 60 seconds." }), {
             status: 429,

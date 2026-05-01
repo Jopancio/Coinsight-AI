@@ -763,8 +763,66 @@ if (path === "/api/ai-compare") {
       }
     }
 
-    const cacheKey = new Request(url.toString());
     const ttl = CACHE_TTL[path];
+
+    const normalizeQueryInput = (value) => value.trim().toLowerCase().replace(/\s+/g, " ");
+    const isAbusiveInput = (value) => {
+      if (value.length > 160) return true;
+      if (/[- ]{4,}/.test(value)) return true;
+      if (/(.)\1{20,}/.test(value)) return true;
+      return false;
+    };
+
+    let cacheUrl = new URL(url.toString());
+
+    if (path === "/api/coin-news") {
+      const ALLOWED_QUERY = /^[a-z0-9\- ]+$/i;
+      const COIN_MAX_LENGTH = 64;
+      const SYMBOL_MAX_LENGTH = 20;
+
+      const rawCoin = url.searchParams.get("coin") || "";
+      const rawSymbol = url.searchParams.get("symbol") || "";
+
+      if (!rawCoin.trim()) {
+        return jsonResponse(JSON.stringify({ error: "coin query parameter is required" }), corsHeaders, 400);
+      }
+
+      if (rawCoin.length > COIN_MAX_LENGTH || isAbusiveInput(rawCoin)) {
+        return jsonResponse(JSON.stringify({ error: "coin query parameter is too long or abusive" }), corsHeaders, 400);
+      }
+
+      if (!ALLOWED_QUERY.test(rawCoin)) {
+        return jsonResponse(JSON.stringify({ error: "coin contains invalid characters" }), corsHeaders, 400);
+      }
+
+      if (rawSymbol) {
+        if (rawSymbol.length > SYMBOL_MAX_LENGTH || isAbusiveInput(rawSymbol)) {
+          return jsonResponse(JSON.stringify({ error: "symbol query parameter is too long or abusive" }), corsHeaders, 400);
+        }
+        if (!ALLOWED_QUERY.test(rawSymbol)) {
+          return jsonResponse(JSON.stringify({ error: "symbol contains invalid characters" }), corsHeaders, 400);
+        }
+      }
+
+      const normalizedCoin = normalizeQueryInput(rawCoin);
+      const normalizedSymbol = rawSymbol ? normalizeQueryInput(rawSymbol) : "";
+
+      if (!normalizedCoin) {
+        return jsonResponse(JSON.stringify({ error: "coin query parameter is required" }), corsHeaders, 400);
+      }
+
+      cacheUrl = new URL(url.origin + "/api/coin-news");
+      cacheUrl.searchParams.set("coin", normalizedCoin);
+
+      url.searchParams.set("coin", normalizedCoin);
+      if (normalizedSymbol) {
+        url.searchParams.set("symbol", normalizedSymbol);
+      } else {
+        url.searchParams.delete("symbol");
+      }
+    }
+
+    const cacheKey = new Request(cacheUrl.toString());
 
     if (ttl) {
       const cached = await getCached(cacheKey);
@@ -809,7 +867,6 @@ if (path === "/api/ai-compare") {
 
       if (path === "/api/coin-news") {
         const coin = url.searchParams.get("coin") || "";
-        const symbol = url.searchParams.get("symbol") || "";
 
         let response = await fetch(`https://data-api.coindesk.com/news/v1/search?search_string=${encodeURIComponent(coin)}&source_key=coindesk&limit=5&lang=EN`);
 
